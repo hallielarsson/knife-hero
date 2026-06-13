@@ -199,3 +199,18 @@ public sealed class VexingMemory() : CreatureCard(-1, CardType.Status, CardRarit
     }
 }
 
+/* Wallow — Hallie's design. Wallowing in despair: gain Block equal to your Grief. Grief hurts you
+   (Vexing Memory cashes it as damage), but here you can also curl up inside it and let it armor you.
+   So Grief becomes a real resource with a pull both ways — let it build for Block, or process it. */
+public sealed class Wallow() : CreatureCard(1, CardType.Skill, CardRarity.Common, TargetType.Self)
+{
+    public override bool GainsBlock => true;
+
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        int grief = (int)(Owner.Creature.Powers.FirstOrDefault(p => p is Grief)?.Amount ?? 0m);
+        if (grief <= 0) return;
+        await CreatureCmd.GainBlock(Owner.Creature, new BlockVar(grief, ValueProp.Move), cardPlay);
+    }
+}
+

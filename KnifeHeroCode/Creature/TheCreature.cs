@@ -24,15 +24,17 @@ public class TheCreature : PlaceholderCharacterModel
     public override CharacterGender Gender => CharacterGender.Neutral; // Hallie's call
     public override int StartingHp => 72;
 
+    // You start as mostly body — Throbbing Hearts (parts that start as curses) — plus just enough to
+    // learn (Books) and fight (Recite/Annotate). Grieving + learning your parts is the game.
     public override IEnumerable<CardModel> StartingDeck => [
-        ModelDb.Card<Recite>(),
-        ModelDb.Card<Recite>(),
+        ModelDb.Card<ThrobbingHeart>(),
+        ModelDb.Card<ThrobbingHeart>(),
+        ModelDb.Card<ThrobbingHeart>(),
+        ModelDb.Card<ThrobbingHeart>(),
         ModelDb.Card<Recite>(),
         ModelDb.Card<Recite>(),
         ModelDb.Card<Annotate>(),
-        ModelDb.Card<Annotate>(),
-        ModelDb.Card<Annotate>(),
-        ModelDb.Card<DontLookAway>(),   // the heart, present from turn one — reach back for your dead
+        ModelDb.Card<OpenBook>(),
         ModelDb.Card<OpenBook>(),
         ModelDb.Card<Marginalia>()
     ];

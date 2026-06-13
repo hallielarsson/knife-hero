@@ -28,5 +28,8 @@
   "KNIFEHERO-POLYMATH_POWER.smartDescription": "At the start of each turn, gain Lessons.",
   "KNIFEHERO-GRIEF.title": "Grief",
   "KNIFEHERO-GRIEF.description": "Accumulated grief. Cards that make you take damage equal to your Grief cash it in. Lessons cancel grief damage.",
-  "KNIFEHERO-GRIEF.smartDescription": "Cards that make you take damage equal to your Grief cash it in. Lessons cancel grief damage."
+  "KNIFEHERO-GRIEF.smartDescription": "Cards that make you take damage equal to your Grief cash it in. Lessons cancel grief damage.",
+  "KNIFEHERO-PROCESSED_PART_POWER.title": "Processed",
+  "KNIFEHERO-PROCESSED_PART_POWER.description": "At the end of combat, grow a new part.",
+  "KNIFEHERO-PROCESSED_PART_POWER.smartDescription": "At the end of combat, grow a new part."
 }

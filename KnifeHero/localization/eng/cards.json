@@ -60,5 +60,9 @@
   "KNIFEHERO-STONEWALL.title": "Stonewall",
   "KNIFEHERO-STONEWALL.description": "Gain 10 Block. Each Flag attacks for 3.",
   "KNIFEHERO-VEXING_MEMORY.title": "Vexing Memory",
-  "KNIFEHERO-VEXING_MEMORY.description": "Unplayable. If this is in your hand at the end of your turn, gain 1 Grief and take grief damage equal to your Grief."
+  "KNIFEHERO-VEXING_MEMORY.description": "Unplayable. If this is in your hand at the end of your turn, gain 1 Grief and take grief damage equal to your Grief.",
+  "KNIFEHERO-THROBBING_HEART.title": "Throbbing Heart",
+  "KNIFEHERO-THROBBING_HEART.description": "A part of you. Cannot be removed. When you draw this, add a Vexing Memory to your hand. Playable only while you have 3 Grief and 3 Lessons: remove all Vexing Memories and Exhaust. At the end of combat, grow a new part.",
+  "KNIFEHERO-WALLOW.title": "Wallow",
+  "KNIFEHERO-WALLOW.description": "Gain Block equal to your Grief."
 }

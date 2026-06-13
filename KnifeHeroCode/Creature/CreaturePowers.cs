@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Models;
 
 namespace KnifeHero.KnifeHeroCode.CreatureHero.Powers;
 
@@ -40,6 +41,23 @@ public sealed class MarginaliaPower : KnifeHeroPower
         if (cardPlay.Card.Owner != Owner.Player) return;
         if (cardPlay.Card is IBook || cardPlay.Card.Type == CardType.Power)
             await PowerCmd.Apply<Lesson>(Owner, 1m, Owner, null, false);
+    }
+}
+
+/* ProcessedPartPower — hidden/transient. Applied when you process a Throbbing Heart; at the end of
+   combat it grants the "new part" to your run deck. PLACEHOLDER reward for now: a fresh Throbbing
+   Heart (the body regrows). What the new part actually IS — a roster, an upgrade, AMALGAM's Accept —
+   is the open design Hallie flagged ("or i dunno"); deliberately not built ahead. */
+public sealed class ProcessedPartPower : KnifeHeroPower
+{
+    public override PowerType Type => PowerType.Buff;
+    public override PowerStackType StackType => PowerStackType.Counter;
+
+    public override Task AfterCombatVictory(MegaCrit.Sts2.Core.Rooms.CombatRoom room)
+    {
+        for (int i = 0; i < (int)Amount; i++)
+            Owner.Player.RunState.AddCard(ModelDb.Card<ThrobbingHeart>(), Owner.Player);
+        return Task.CompletedTask;
     }
 }
 
