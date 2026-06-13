@@ -223,6 +223,28 @@ def recombinant(gs: CombatState):
 def quote_at_length(gs: CombatState):
     gs.deal_damage(gs.player, gs.enemy, gs.player.power("Lesson"))
 
+# ---- the heart: Salt (exhaust pile) / Prehend / Grief ----------------------------------------
+def dont_look_away(gs: CombatState):
+    # prehend a random card from Salt back to hand; mark Grief (direct, to isolate from Marginalia)
+    if gs.exhaust_pile:
+        card = gs.rng.choice(gs.exhaust_pile)
+        gs.exhaust_pile.remove(card)
+        gs.hand.append(card)
+        gs.player.powers["Grief"] = gs.player.powers.get("Grief", 0) + 1
+        gs.log(f"   Don't Look Away → prehend {card.name} from Salt; Grief {gs.player.powers['Grief']}")
+
+def read_the_remainder(gs: CombatState):
+    dead = len(gs.exhaust_pile)
+    if dead > 0:
+        heal = min(dead, gs.player.max_hp - gs.player.hp)
+        gs.player.hp += heal
+        gs.log(f"   Read the Remainder → heal {heal} (Salt={dead}); now {gs.player.hp} hp")
+
+def truth_burden(gs: CombatState):
+    g = gs.player.powers.get("Grief", 0)
+    if g > 0:
+        gs.deal_damage(gs.player, gs.enemy, g)
+
 # Distinct-power Books — each reads into a DIFFERENT one-off Power, so the assemblage axis (count of
 # distinct Powers) actually climbs and Recombinant has something to scale on. Each also grants a
 # Lesson (reading), so they feed both axes. (Frankenstein flavor noted in DESIGN.md.)
@@ -243,6 +265,10 @@ def the_creature_deck() -> list[Card]:
     deck += [C("Polymath", 2, "Power", polymath, is_book=True)]
     deck += [C("Recombinant", 2, "Attack", recombinant)]
     deck += [C("Quote at Length", 1, "Attack", quote_at_length)]
+    # the heart — reach back into Salt, carry Grief, turn it to mending and force
+    deck += [C("Don't Look Away", 1, "Skill", dont_look_away)]
+    deck += [C("Read the Remainder", 1, "Skill", read_the_remainder)]
+    deck += [C("Truth-Burden", 1, "Attack", truth_burden)]
     # distinct-power Books — give the assemblage axis room to climb
     deck += [C("Galvanism", 1, "Skill", galvanism, is_book=True, exhausts=True)]
     deck += [C("Solitude", 1, "Skill", solitude, is_book=True, exhausts=True)]
@@ -259,7 +285,9 @@ def demo():
     # a tiny scripted policy: read books early (build the engine), then swing assemblage payoffs.
     script_priority = ["Marginalia", "Polymath",
                        "Galvanism", "Solitude", "Wretchedness", "Fire, Stolen",  # build breadth
-                       "Open Book", "Footnote",
+                       "Open Book",
+                       "Don't Look Away", "Read the Remainder",   # the heart: prehend + grail question
+                       "Truth-Burden", "Footnote",
                        "Recombinant", "Quote at Length", "Recite", "Annotate"]
 
     while not gs.over and gs.turn < 8:
