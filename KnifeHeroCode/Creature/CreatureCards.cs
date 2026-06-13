@@ -56,7 +56,7 @@ public sealed class OpenBook() : CreatureCard(1, CardType.Skill, CardRarity.Comm
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<Lesson>(Owner.Creature, 3m, Owner.Creature, this, false);
+        await PowerCmd.Apply<Lesson>(Owner.Creature, 2m, Owner.Creature, this, false);
     }
 }
 

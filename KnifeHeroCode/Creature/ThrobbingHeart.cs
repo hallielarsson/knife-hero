@@ -11,46 +11,46 @@ using MegaCrit.Sts2.Core.Models.Cards;
 
 namespace KnifeHero.KnifeHeroCode.CreatureHero.Cards;
 
-/* Throbbing Heart — Hallie's design, the heart (ha) of The Creature: a PART that starts as a curse.
-   A part of your body that won't leave (unremovable) and that, every time you draw it, spits up an
-   intrusive Vexing Memory. You can't power through it — you can only PROCESS it, once you've both
-   GRIEVED enough and LEARNED enough (3 Grief + 3 Lessons). Then: the grief clears (remove all Vexing
-   Memories), the wound resolves (Exhaust), and at the end of combat you grow a new part (a Mended
-   Heart). Metabolizing a wound into growth, as the win condition. AMALGAM's Accept, mechanized. */
+/* Throbbing Heart — the heart of The Creature: a PART that starts as a curse. Eternal + Retain, so it
+   sits in your hand demanding attention. When drawn it spits up an intrusive Vexing Memory. You can
+   only PROCESS it once you've both grieved and learned enough (2 Grief + 2 Lessons) — that resets ALL
+   your Grief and Lessons and marks the part redeemed; it doesn't exhaust. If it's still in your deck
+   at the end of combat (redeemed, not festered), it UPGRADES into a new part. If you DON'T redeem it
+   within 3 turns, it festers into a Festering Wound curse. Redeem your parts or carry the rot.
+   (Hallie's design; "what it upgrades INTO" is still the open keystone — placeholder for now.) */
 public sealed class ThrobbingHeart() : CreatureCard(0, CardType.Curse, CardRarity.Curse, TargetType.Self)
 {
     public override int MaxUpgradeLevel => 0;
 
     private const int TurnsToFester = 3;
     private int _turnsLeft = TurnsToFester;
+    private bool _redeemed;
 
-    // Eternal = unremovable; Retain = it sits in your hand, festering, until you process it.
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
         new List<CardKeyword> { CardKeyword.Eternal, CardKeyword.Retain };
 
-    // Only playable once you've sat with the grief AND learned enough to process it.
-    protected override bool IsPlayable => GriefAmount() >= 3 && LessonAmount() >= 3;
+    // Process at 2 Grief AND 2 Lessons.
+    protected override bool IsPlayable => GriefAmount() >= 2 && LessonAmount() >= 2;
 
-    // If you don't redeem it in time, the part rots: each turn it's in your hand counts down, and
-    // when the clock runs out it festers into a Festering Wound curse (Hallie's design).
-    public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
-    {
-        if (player != Owner || Pile?.Type != PileType.Hand) return;
-        _turnsLeft--;
-        if (_turnsLeft <= 0)
-            await CardCmd.Transform(this, CombatState.CreateCard<FesteringWound>(Owner));
-    }
-
-    // When you draw it, the wound throbs: an intrusive Vexing Memory lands in your hand.
+    // When drawn (and not yet redeemed), the wound throbs: an intrusive Vexing Memory lands in hand.
     public override async Task AfterCardDrawn(PlayerChoiceContext choiceContext, CardModel card, bool fromHandDraw)
     {
-        if (card != this) return;
+        if (card != this || _redeemed) return;
         await Cmd.Wait(0.25f);
         var vex = CombatState.CreateCard<VexingMemory>(Owner);
         await CardPileCmd.AddGeneratedCardToCombat(vex, PileType.Hand, addedByPlayer: false);
     }
 
-    // Process it: clear every Vexing Memory, exhaust the wound, and queue a new part for combat's end.
+    // Unredeemed, it rots: each turn in hand counts down, and at zero it festers into a curse.
+    public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
+    {
+        if (_redeemed || player != Owner || Pile?.Type != PileType.Hand) return;
+        _turnsLeft--;
+        if (_turnsLeft <= 0)
+            await CardCmd.Transform(this, CombatState.CreateCard<FesteringWound>(Owner));
+    }
+
+    // Process: clear Vexing Memories, RESET all Grief and Lessons, mark redeemed. No exhaust.
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         var vexes = CardPile.GetCards(Owner, PileType.Hand, PileType.Draw, PileType.Discard)
@@ -58,8 +58,17 @@ public sealed class ThrobbingHeart() : CreatureCard(0, CardType.Curse, CardRarit
         if (vexes.Count > 0)
             await CardPileCmd.RemoveFromCombat(vexes);
 
-        await CardCmd.Exhaust(choiceContext, this, causedByEthereal: false);
-        await PowerCmd.Apply<ProcessedPartPower>(Owner.Creature, 1m, Owner.Creature, this, false);
+        foreach (var p in Owner.Creature.Powers.Where(p => p is Grief || p is Lesson).ToList())
+            await PowerCmd.Remove(p);
+
+        _redeemed = true;
+    }
+
+    // The upgrade happens if it's still in your deck at the end of the round (redeemed, not festered).
+    public override async Task AfterCombatVictory(MegaCrit.Sts2.Core.Rooms.CombatRoom room)
+    {
+        if (_redeemed)
+            await CardCmd.Transform(this, CombatState.CreateCard<ThrobbingHeart>(Owner));
     }
 
     private int GriefAmount() => (int)(Owner.Creature.Powers.FirstOrDefault(p => p is Grief)?.Amount ?? 0m);
