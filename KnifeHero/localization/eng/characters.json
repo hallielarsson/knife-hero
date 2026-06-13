@@ -1,0 +1,16 @@
+{
+  "KNIFEHERO-KNIFE_HERO.title": "The Gay Blade",
+  "KNIFEHERO-KNIFE_HERO.titleObject": "the Gay Blade",
+  "KNIFEHERO-KNIFE_HERO.description": "A duelist who flexes between offense and defense — managing the loop is the game.",
+  "KNIFEHERO-KNIFE_HERO.pronounObject": "her",
+  "KNIFEHERO-KNIFE_HERO.possessiveAdjective": "her",
+  "KNIFEHERO-KNIFE_HERO.pronounPossessive": "hers",
+  "KNIFEHERO-KNIFE_HERO.pronounSubject": "she",
+  "KNIFEHERO-KNIFE_HERO.goldMonologue": "Be gay, do crimes.",
+  "KNIFEHERO-KNIFE_HERO.eventDeathPrevention": "Not like this.",
+  "KNIFEHERO-KNIFE_HERO.aromaPrinciple": "Stay sharp.",
+  "KNIFEHERO-KNIFE_HERO.cardsModifierTitle": "The Gay Blade's Cards",
+  "KNIFEHERO-KNIFE_HERO.cardsModifierDescription": "Cards belonging to The Gay Blade.",
+  "KNIFEHERO-KNIFE_HERO.banter.alive.endTurnPing": "Your move.",
+  "KNIFEHERO-KNIFE_HERO.banter.dead.endTurnPing": "..."
+}

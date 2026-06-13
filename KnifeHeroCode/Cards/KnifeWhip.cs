@@ -1,0 +1,38 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using BaseLib.Abstracts;
+using KnifeHero.KnifeHeroCode.Character;
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using MegaCrit.Sts2.Core.ValueProps;
+
+namespace KnifeHero.KnifeHeroCode.Cards;
+
+/* Knife Whip — Hallie's design: a card that spends itself down the more you swing it.
+   "Deal 8 damage. Put a shiv in your discard and decrease the damage this card does by 1."
+   The shiv is a Kunai (our 0-cost, deal-3, Exhaust throwing knife). The damage reduction is
+   permanent for this card instance for the rest of combat (UpgradeValueBy(-1)), so each swing
+   trades a point of whip damage for a thrown knife in the pile — managing the decay is the play.
+   Human-sourced mechanic (Hallie); placeholder art via KnifeHeroCard. */
+public sealed class KnifeWhip() : KnifeHeroCard(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy), IBlade
+{
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new List<DynamicVar> { new DamageVar(8m, ValueProp.Move) };
+
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
+        await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
+            .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+
+        // drop a shiv (Kunai) into the discard pile
+        var shiv = CombatState.CreateCard<Kunai>(Owner);
+        CardCmd.PreviewCardPileAdd(await CardPileCmd.AddGeneratedCardToCombat(shiv, PileType.Discard, addedByPlayer: true));
+
+        // the whip wears down: this card permanently does 1 less for the rest of combat
+        DynamicVars.Damage.UpgradeValueBy(-1m);
+    }
+}

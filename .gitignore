@@ -1,0 +1,17 @@
+.godot/
+bin/
+/android/
+.git/
+.idea/
+.vs/
+publish/
+Properties/
+packages/
+.editorconfig
+*.user
+Directory.Build.props
+# decompiled reference (huge, regenerable, third-party game/lib code — do not commit)
+.decompiled/
+.decompiled-baselib/
+obj/
+.DS_Store
