@@ -64,5 +64,7 @@
   "KNIFEHERO-THROBBING_HEART.title": "Throbbing Heart",
   "KNIFEHERO-THROBBING_HEART.description": "A part of you. Cannot be removed. When you draw this, add a Vexing Memory to your hand. Playable only while you have 3 Grief and 3 Lessons: remove all Vexing Memories and Exhaust. At the end of combat, grow a new part.",
   "KNIFEHERO-WALLOW.title": "Wallow",
-  "KNIFEHERO-WALLOW.description": "Gain Block equal to your Grief."
+  "KNIFEHERO-WALLOW.description": "Gain Block equal to your Grief.",
+  "KNIFEHERO-KEENING.title": "Keening",
+  "KNIFEHERO-KEENING.description": "Exhaust your hand. Gain 1 Grief for each card exhausted. Deal damage equal to twice your Grief to ALL enemies."
 }

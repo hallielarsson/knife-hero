@@ -214,3 +214,25 @@ public sealed class Wallow() : CreatureCard(1, CardType.Skill, CardRarity.Common
     }
 }
 
+/* Keening — Hallie's design. A wail of mourning made into force: Exhaust your hand, gain 1 Grief for
+   each card exhausted, then deal damage equal to twice your Grief to ALL enemies. You let everything
+   go and the grief comes out as a scream. (Eternal cards — your unremovable parts — can't be let go,
+   so they stay.) */
+public sealed class Keening() : CreatureCard(2, CardType.Attack, CardRarity.Uncommon, TargetType.AllEnemies)
+{
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        var toExhaust = CardPile.GetCards(Owner, PileType.Hand)
+            .Where(c => c != this && !c.Keywords.Contains(CardKeyword.Eternal)).ToList();
+        foreach (var c in toExhaust)
+            await CardCmd.Exhaust(choiceContext, c, causedByEthereal: false);
+        if (toExhaust.Count > 0)
+            await PowerCmd.Apply<Grief>(Owner.Creature, toExhaust.Count, Owner.Creature, this, false);
+
+        int grief = (int)(Owner.Creature.Powers.FirstOrDefault(p => p is Grief)?.Amount ?? 0m);
+        if (grief <= 0) return;
+        await DamageCmd.Attack(grief * 2).FromCard(this).TargetingAllOpponents(CombatState)
+            .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+    }
+}
+
