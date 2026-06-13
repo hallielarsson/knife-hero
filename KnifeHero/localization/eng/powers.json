@@ -25,5 +25,8 @@
   "KNIFEHERO-MARGINALIA_POWER.smartDescription": "Whenever you play a Book or a Power, gain 1 Lesson.",
   "KNIFEHERO-POLYMATH_POWER.title": "Polymath",
   "KNIFEHERO-POLYMATH_POWER.description": "At the start of each turn, gain Lessons.",
-  "KNIFEHERO-POLYMATH_POWER.smartDescription": "At the start of each turn, gain Lessons."
+  "KNIFEHERO-POLYMATH_POWER.smartDescription": "At the start of each turn, gain Lessons.",
+  "KNIFEHERO-GRIEF.title": "Grief",
+  "KNIFEHERO-GRIEF.description": "What you carry by staying with your dead. Acknowledgment, not erasure. Some cards turn it to force.",
+  "KNIFEHERO-GRIEF.smartDescription": "What you carry by staying with your dead. Some cards turn it to force."
 }

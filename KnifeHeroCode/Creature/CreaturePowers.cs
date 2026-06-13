@@ -17,6 +17,16 @@ public sealed class Lesson : KnifeHeroPower
     public override PowerStackType StackType => PowerStackType.Counter;
 }
 
+/* Grief — acknowledgment-not-erasure (the graph's words). Not a debuff to avoid; the Creature's
+   fuel. You gain it by reaching into your Salt pile (Prehend) — by staying with your dead instead
+   of sealing the corpse. Truth-Burden turns it to force; one day Wholeness will turn it whole.
+   A stacking counter; it persists, because grief does. */
+public sealed class Grief : KnifeHeroPower
+{
+    public override PowerType Type => PowerType.Buff;
+    public override PowerStackType StackType => PowerStackType.Counter;
+}
+
 /* Marginalia — the learning engine. Whenever you play a Book or a Power, gain a Lesson. (The engine
    has no on-power-GAINED hook, so we hook card-play instead — same shape as Panache/Closeted.)
    Single-stack: presence matters, not count. */

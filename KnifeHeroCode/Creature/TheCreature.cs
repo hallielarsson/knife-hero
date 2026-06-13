@@ -32,7 +32,7 @@ public class TheCreature : PlaceholderCharacterModel
         ModelDb.Card<Annotate>(),
         ModelDb.Card<Annotate>(),
         ModelDb.Card<Annotate>(),
-        ModelDb.Card<Annotate>(),
+        ModelDb.Card<DontLookAway>(),   // the heart, present from turn one — reach back for your dead
         ModelDb.Card<OpenBook>(),
         ModelDb.Card<Marginalia>()
     ];

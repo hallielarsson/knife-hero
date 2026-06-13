@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Powers;
+using MegaCrit.Sts2.Core.Random;
 using MegaCrit.Sts2.Core.ValueProps;
 
 namespace KnifeHero.KnifeHeroCode.CreatureHero.Cards;
@@ -142,6 +143,51 @@ public sealed class QuoteAtLength() : CreatureCard(1, CardType.Attack, CardRarit
         int lessons = (int)(Owner.Creature.Powers.FirstOrDefault(p => p is Lesson)?.Amount ?? 0m);
         if (lessons <= 0) return;
         await DamageCmd.Attack(lessons).FromCard(this).Targeting(cardPlay.Target)
+            .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+    }
+}
+
+// ---- the heart: Salt / Prehend / Grief ------------------------------------------------------
+// The society of bro, speaking as its actual events. Spent cards perish to the Exhaust pile —
+// "Salt": dated, not deleted. These three let the Creature stay with its dead instead of sealing
+// the corpse. (Random pull, no card-picker — the picker is the screen that soft-locked in playtest.)
+
+/* Don't Look Away — the defiance of Izanami. Reach into your Salt pile and take a perished card back
+   into your hand; mark 1 Grief for staying with it. The Creature cannot abandon what it's made of. */
+public sealed class DontLookAway() : CreatureCard(1, CardType.Skill, CardRarity.Common, TargetType.Self)
+{
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        var salt = CardPile.GetCards(Owner, PileType.Exhaust).ToList();
+        if (salt.Count == 0) return;
+        var card = Owner.RunState.Rng.CombatCardGeneration.NextItem(salt);
+        await CardPileCmd.Add(card, PileType.Hand);
+        await PowerCmd.Apply<Grief>(Owner.Creature, 1m, Owner.Creature, this, false);
+    }
+}
+
+/* Read the Remainder — the grail question the creature was denied: ask your dead why they died, and
+   the answer heals. Heal equal to the number of cards in your Salt pile — the more you've lost and
+   are willing to look at, the more it mends. */
+public sealed class ReadTheRemainder() : CreatureCard(1, CardType.Skill, CardRarity.Common, TargetType.Self)
+{
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        int dead = CardPile.GetCards(Owner, PileType.Exhaust).Count();
+        if (dead <= 0) return;
+        await CreatureCmd.Heal(Owner.Creature, dead, false);
+    }
+}
+
+/* Truth-Burden — abandonment metabolized into force. Deal damage equal to your Grief. Jagged. */
+public sealed class TruthBurden() : CreatureCard(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
+{
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
+        int grief = (int)(Owner.Creature.Powers.FirstOrDefault(p => p is Grief)?.Amount ?? 0m);
+        if (grief <= 0) return;
+        await DamageCmd.Attack(grief).FromCard(this).Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
     }
 }
