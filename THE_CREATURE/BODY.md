@@ -64,3 +64,25 @@ having a body — you're asked what it costs to keep one whole when no one's hel
 Extend the sim from one combat to a **run**: N combats + between-combat tend phases with a gold
 budget and degrade-if-untended Parts. Measure: does devotion pay off? Does the tax feel like a
 meaningful choice or just a beating? Find the cathartic/bleak line before any mod code.
+
+---
+
+## Design north star: vengeance is the EASY route (on purpose)
+The Creature has two paths and they are deliberately NOT balanced:
+- **Avenging monster = the easy slide.** Let Grief pile up (Vexing Memories do it for free) and dump
+  it into force — Wallow (Block = Grief), Keening (×2 AoE), raw grief-damage. Ungated, immediate,
+  forgiving. The deck pushes you here. **This should be the comfortably winnable route, at least
+  through Acts 1–2** — the world makes becoming the monster easy, and the game should too.
+- **Healing = the hard, deliberate route.** Throbbing Heart gates on 3 Grief AND 3 Lessons at once —
+  sit with the pain *and* do the work, while resisting the easy temptation to spend the grief on
+  damage. Slower, demanding, asks more of you.
+
+The *choice* between them is the game, and the tragedy: vengeance is open and kind isn't, so you
+slide toward the monster unless you choose otherwise (Frankenstein's actual arc; real grief; the
+margins). Tuning rule: keep the vengeance cards generous and low-friction; keep processing demanding.
+
+**Open (the loop's keystone): what does healing GIVE that vengeance can't?** For the hard route to be
+worth choosing, processing a part must make you *become more* — grow, transform, gain a part vengeance
+can never reach. That's the "(New Part)" placeholder, still blank by design. Vengeance keeps you the
+monster; healing is how you become more than one. Likely matters most late (Act 3+), where raw grief
+plateaus and only the grown parts scale.
