@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using KnifeHero.KnifeHeroCode.CreatureHero.Powers;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
@@ -20,12 +21,25 @@ public sealed class ThrobbingHeart() : CreatureCard(0, CardType.Curse, CardRarit
 {
     public override int MaxUpgradeLevel => 0;
 
-    // Eternal = unremovable: it's your heart, you can't buy your way out of it at a shop.
+    private const int TurnsToFester = 3;
+    private int _turnsLeft = TurnsToFester;
+
+    // Eternal = unremovable; Retain = it sits in your hand, festering, until you process it.
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
-        new List<CardKeyword> { CardKeyword.Eternal };
+        new List<CardKeyword> { CardKeyword.Eternal, CardKeyword.Retain };
 
     // Only playable once you've sat with the grief AND learned enough to process it.
     protected override bool IsPlayable => GriefAmount() >= 3 && LessonAmount() >= 3;
+
+    // If you don't redeem it in time, the part rots: each turn it's in your hand counts down, and
+    // when the clock runs out it festers into a Festering Wound curse (Hallie's design).
+    public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
+    {
+        if (player != Owner || Pile?.Type != PileType.Hand) return;
+        _turnsLeft--;
+        if (_turnsLeft <= 0)
+            await CardCmd.Transform(this, CombatState.CreateCard<FesteringWound>(Owner));
+    }
 
     // When you draw it, the wound throbs: an intrusive Vexing Memory lands in your hand.
     public override async Task AfterCardDrawn(PlayerChoiceContext choiceContext, CardModel card, bool fromHandDraw)
