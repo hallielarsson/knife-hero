@@ -21,21 +21,14 @@ public abstract class CreatureCard(int cost, CardType type, CardRarity rarity, T
     public override string PortraitPath => "card.png".CardImagePath();
     public override string BetaPortraitPath => "card.png".CardImagePath();
 
-    /* Grief damage — Hallie's design. Reaching back into your Exhaust (refusing to let go) hurts.
-       But Lessons cancel grief: "Whenever you would take grief damage, lose a Lesson instead."
-       Each Lesson absorbs 1 point; only the remainder lands on your HP. So you Learn (read Books)
-       in order to afford staying with your dead — and Lessons are also a damage resource elsewhere,
-       so spending them to buffer grief is a real choice. */
+    /* Grief damage is just damage. The old "Lessons cancel grief" rule was draining the very Lessons
+       you need to bank to reach the processing threshold (3 Lessons) — the two currencies fought, so
+       you could never accumulate either. Removed per Hallie's playtest. Now grief hurts your HP
+       straight (the monster's pain), and Lessons are free to pile toward healing. */
     protected async Task TakeGriefDamage(PlayerChoiceContext choiceContext, int amount)
     {
-        var lesson = Owner.Creature.Powers.FirstOrDefault(p => p is Lesson);
-        int lessons = (int)(lesson?.Amount ?? 0m);
-        int absorbed = lessons < amount ? lessons : amount;
-        if (absorbed > 0)
-            await PowerCmd.Apply<Lesson>(Owner.Creature, -absorbed, Owner.Creature, this, false);
-        int remaining = amount - absorbed;
-        if (remaining > 0)
-            await CreatureCmd.Damage(choiceContext, Owner.Creature, remaining, ValueProp.Unpowered, Owner.Creature, this);
+        if (amount > 0)
+            await CreatureCmd.Damage(choiceContext, Owner.Creature, amount, ValueProp.Unpowered, Owner.Creature, this);
     }
 }
 

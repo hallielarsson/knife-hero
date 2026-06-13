@@ -49,28 +49,36 @@ public sealed class FancyFootwork() : KnifeHeroCard(1, CardType.Attack, CardRari
         // no Exhaust: it discards normally at end of turn and recycles, so the loop continues
     }
 
+    // You get +1 Strength if you have ANY Top, capped at 1 regardless of how much you've fed it
+    // (Hallie). So the buff lands only when Top is first summoned; later feeds just grow its HP.
     private async Task FeedTop()
     {
         var top = CombatState.Creatures.FirstOrDefault(c => c.Monster is TopPet);
         if (top == null)
+        {
             top = await SummonPole<TopPet>();
+            await PowerCmd.Apply<StrengthPower>(Owner.Creature, 1m, Owner.Creature, this);
+            ((TopPet)top.Monster!).GrantedStrength = 1;   // max 1 from Top
+        }
         else
-            await GrowPet(top);
-
-        await PowerCmd.Apply<StrengthPower>(Owner.Creature, 1m, Owner.Creature, this);
-        ((TopPet)top.Monster!).GrantedStrength += 1;
+        {
+            await GrowPet(top);   // already have Top: just grow its HP, Strength stays capped
+        }
     }
 
     private async Task FeedBottom()
     {
         var bottom = CombatState.Creatures.FirstOrDefault(c => c.Monster is BottomPet);
         if (bottom == null)
+        {
             bottom = await SummonPole<BottomPet>();
+            await PowerCmd.Apply<DexterityPower>(Owner.Creature, 1m, Owner.Creature, this);
+            ((BottomPet)bottom.Monster!).GrantedDexterity = 1;   // max 1 from Bottom
+        }
         else
+        {
             await GrowPet(bottom);
-
-        await PowerCmd.Apply<DexterityPower>(Owner.Creature, 1m, Owner.Creature, this);
-        ((BottomPet)bottom.Monster!).GrantedDexterity += 1;
+        }
     }
 
     private async Task<Creature> SummonPole<T>() where T : MonsterModel

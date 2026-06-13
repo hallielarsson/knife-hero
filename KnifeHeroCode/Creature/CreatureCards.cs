@@ -56,7 +56,7 @@ public sealed class OpenBook() : CreatureCard(1, CardType.Skill, CardRarity.Comm
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<Lesson>(Owner.Creature, 2m, Owner.Creature, this, false);
+        await PowerCmd.Apply<Lesson>(Owner.Creature, 3m, Owner.Creature, this, false);
     }
 }
 
@@ -186,8 +186,10 @@ public sealed class ReadTheRemainder() : CreatureCard(1, CardType.Skill, CardRar
    Status-rarity (generated, never a reward); extends CreatureCard for the required [Pool]. */
 public sealed class VexingMemory() : CreatureCard(-1, CardType.Status, CardRarity.Status, TargetType.None)
 {
+    // Ethereal: it festers once (end of turn) then vanishes, instead of piling up forever — fixes
+    // "vexing memories stack up too quick." One pulse of grief per wound drawn, not permanent clutter.
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
-        new List<CardKeyword> { CardKeyword.Unplayable };
+        new List<CardKeyword> { CardKeyword.Unplayable, CardKeyword.Ethereal };
 
     public override bool HasTurnEndInHandEffect => true;
 

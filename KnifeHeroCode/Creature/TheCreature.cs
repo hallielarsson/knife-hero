@@ -30,10 +30,10 @@ public class TheCreature : PlaceholderCharacterModel
         ModelDb.Card<ThrobbingHeart>(),
         ModelDb.Card<ThrobbingHeart>(),
         ModelDb.Card<ThrobbingHeart>(),
-        ModelDb.Card<ThrobbingHeart>(),
         ModelDb.Card<Recite>(),
         ModelDb.Card<Recite>(),
         ModelDb.Card<Annotate>(),
+        ModelDb.Card<OpenBook>(),
         ModelDb.Card<OpenBook>(),
         ModelDb.Card<OpenBook>(),
         ModelDb.Card<Marginalia>()
