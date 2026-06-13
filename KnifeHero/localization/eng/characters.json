@@ -12,5 +12,19 @@
   "KNIFEHERO-KNIFE_HERO.cardsModifierTitle": "The Gay Blade's Cards",
   "KNIFEHERO-KNIFE_HERO.cardsModifierDescription": "Cards belonging to The Gay Blade.",
   "KNIFEHERO-KNIFE_HERO.banter.alive.endTurnPing": "Your move.",
-  "KNIFEHERO-KNIFE_HERO.banter.dead.endTurnPing": "..."
+  "KNIFEHERO-KNIFE_HERO.banter.dead.endTurnPing": "...",
+  "KNIFEHERO-THE_CREATURE.title": "The Creature",
+  "KNIFEHERO-THE_CREATURE.titleObject": "the Creature",
+  "KNIFEHERO-THE_CREATURE.description": "Assembled from many parts; it reads books and learns things. A power deck of depth (Lessons) and breadth (assemblage). Design authored by Claude.",
+  "KNIFEHERO-THE_CREATURE.pronounObject": "them",
+  "KNIFEHERO-THE_CREATURE.possessiveAdjective": "their",
+  "KNIFEHERO-THE_CREATURE.pronounPossessive": "theirs",
+  "KNIFEHERO-THE_CREATURE.pronounSubject": "they",
+  "KNIFEHERO-THE_CREATURE.goldMonologue": "I ought to be thy Adam; but I am rather the fallen angel.",
+  "KNIFEHERO-THE_CREATURE.eventDeathPrevention": "Life, although it may only be an accumulation of anguish, is dear to me, and I will defend it.",
+  "KNIFEHERO-THE_CREATURE.aromaPrinciple": "I learned.",
+  "KNIFEHERO-THE_CREATURE.cardsModifierTitle": "The Creature's Cards",
+  "KNIFEHERO-THE_CREATURE.cardsModifierDescription": "Cards belonging to The Creature.",
+  "KNIFEHERO-THE_CREATURE.banter.alive.endTurnPing": "I have read.",
+  "KNIFEHERO-THE_CREATURE.banter.dead.endTurnPing": "..."
 }

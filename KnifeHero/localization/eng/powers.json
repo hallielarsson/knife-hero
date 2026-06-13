@@ -16,5 +16,14 @@
   "KNIFEHERO-PORTAL_TO_THE_KNIFE_DIMENSION_POWER.smartDescription": "At the start of each turn, put a copy of a Blade from your deck into your hand. It gains Exhaust and Ethereal.",
   "KNIFEHERO-PRIDE_GOLEM_THORNS.title": "Pride Golem",
   "KNIFEHERO-PRIDE_GOLEM_THORNS.description": "Whenever this takes damage, it deals that much damage back to the attacker.",
-  "KNIFEHERO-PRIDE_GOLEM_THORNS.smartDescription": "Whenever this takes damage, it deals that much damage back to the attacker."
+  "KNIFEHERO-PRIDE_GOLEM_THORNS.smartDescription": "Whenever this takes damage, it deals that much damage back to the attacker.",
+  "KNIFEHERO-LESSON.title": "Lesson",
+  "KNIFEHERO-LESSON.description": "What you have learned. Spent by some of the Creature's cards.",
+  "KNIFEHERO-LESSON.smartDescription": "What you have learned. Spent by some of the Creature's cards.",
+  "KNIFEHERO-MARGINALIA_POWER.title": "Marginalia",
+  "KNIFEHERO-MARGINALIA_POWER.description": "Whenever you play a Book or a Power, gain 1 Lesson.",
+  "KNIFEHERO-MARGINALIA_POWER.smartDescription": "Whenever you play a Book or a Power, gain 1 Lesson.",
+  "KNIFEHERO-POLYMATH_POWER.title": "Polymath",
+  "KNIFEHERO-POLYMATH_POWER.description": "At the start of each turn, gain Lessons.",
+  "KNIFEHERO-POLYMATH_POWER.smartDescription": "At the start of each turn, gain Lessons."
 }
