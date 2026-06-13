@@ -11,3 +11,7 @@ namespace KnifeHero.KnifeHeroCode.Cards;
    "Blade." printed on the card). If we later want it shown, that's separate loc/UI work; the keying
    logic works today. To make any card a Blade, add ", IBlade" to its class declaration. */
 public interface IBlade { }
+
+/* IFlagBlade — a retained "flag-blade" card (Top, Bottom, and the pride swords). Held in hand, it's
+   one of your Flags (counts in FlagCount). The flags are swords you carry, not just pets. */
+public interface IFlagBlade { }

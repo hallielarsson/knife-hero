@@ -1,104 +1,50 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using BaseLib.Abstracts;
 using KnifeHero.KnifeHeroCode.Character;
-using KnifeHero.KnifeHeroCode.Monsters;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
 
 namespace KnifeHero.KnifeHeroCode.Cards;
 
-/* Fancy Footwork — the flex card and the engine of The Gay Blade. The loop ("managing it is the
-   game"): how you USE it decides which Flag Pet you feed.
-     - PLAY it as an attack  -> deal damage, then summon/feed TOP   (+1 Strength while Top lives).
-     - HOLD it to end of turn -> gain Block, then summon/feed BOTTOM (+1 Dexterity while Bottom lives).
-   Top and Bottom are sword-pets that stand in front of you and eat hits (DieForYou). Each use grows
-   the matching pet's HP and your matching stat; lean one pole for offense, the other for defense.
-   It does NOT exhaust — it recycles through your discard so the loop keeps going.
-   Human-sourced mechanic + art (Hallie); placeholder art via KnifeHeroCard. */
+/* Fancy Footwork — the flex, and the engine that makes your blades. How you USE it decides which
+   blade you forge:
+     - PLAY it as an attack  -> deal 6, then a TOP blade joins your hand (Retain: +1 dmg while held).
+     - HOLD it to end of turn -> gain 3 Block, then a BOTTOM blade joins your hand (Retain: +3 Block
+       at end of turn while held).
+   The blades stick around (Retain), so leaning a pole stacks held blades — managing the loop is the
+   game. Human-sourced mechanic (Hallie). */
 public sealed class FancyFootwork() : KnifeHeroCard(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
 {
-    private const int FeedHp = 4;
-
     public override bool GainsBlock => true;
     public override bool HasTurnEndInHandEffect => true;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
-        new List<DynamicVar> { new DamageVar(6m, ValueProp.Move), new BlockVar(5m, ValueProp.Move) };
+        new List<DynamicVar> { new DamageVar(6m, ValueProp.Move), new BlockVar(3m, ValueProp.Move) };
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
-        await FeedTop();
+        var top = CombatState.CreateCard<Top>(Owner);
+        await CardPileCmd.AddGeneratedCardToCombat(top, PileType.Hand, addedByPlayer: true);
     }
 
     public override async Task OnTurnEndInHand(PlayerChoiceContext choiceContext)
     {
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, null);
-        await FeedBottom();
-        // no Exhaust: it discards normally at end of turn and recycles, so the loop continues
-    }
-
-    // You get +1 Strength if you have ANY Top, capped at 1 regardless of how much you've fed it
-    // (Hallie). So the buff lands only when Top is first summoned; later feeds just grow its HP.
-    private async Task FeedTop()
-    {
-        var top = CombatState.Creatures.FirstOrDefault(c => c.Monster is TopPet);
-        if (top == null)
-        {
-            top = await SummonPole<TopPet>();
-            await PowerCmd.Apply<StrengthPower>(Owner.Creature, 1m, Owner.Creature, this);
-            ((TopPet)top.Monster!).GrantedStrength = 1;   // max 1 from Top
-        }
-        else
-        {
-            await GrowPet(top);   // already have Top: just grow its HP, Strength stays capped
-        }
-    }
-
-    private async Task FeedBottom()
-    {
-        var bottom = CombatState.Creatures.FirstOrDefault(c => c.Monster is BottomPet);
-        if (bottom == null)
-        {
-            bottom = await SummonPole<BottomPet>();
-            await PowerCmd.Apply<DexterityPower>(Owner.Creature, 1m, Owner.Creature, this);
-            ((BottomPet)bottom.Monster!).GrantedDexterity = 1;   // max 1 from Bottom
-        }
-        else
-        {
-            await GrowPet(bottom);
-        }
-    }
-
-    private async Task<Creature> SummonPole<T>() where T : MonsterModel
-    {
-        var pet = await PlayerCmd.AddPet<T>(Owner);
-        await CreatureCmd.SetMaxHp(pet, FeedHp);
-        await CreatureCmd.Heal(pet, FeedHp, false);
-        await PowerCmd.Apply<DieForYouPower>(pet, 1m, null, this, true);
-        return pet;
-    }
-
-    private static async Task GrowPet(Creature pet)
-    {
-        await CreatureCmd.SetMaxHp(pet, pet.MaxHp + FeedHp);
-        await CreatureCmd.Heal(pet, FeedHp, false);
+        var bottom = CombatState.CreateCard<Bottom>(Owner);
+        await CardPileCmd.AddGeneratedCardToCombat(bottom, PileType.Hand, addedByPlayer: true);
     }
 
     protected override void OnUpgrade()
     {
         DynamicVars.Damage.UpgradeValueBy(3m);
-        DynamicVars.Block.UpgradeValueBy(3m);
+        DynamicVars.Block.UpgradeValueBy(2m);
     }
 }
