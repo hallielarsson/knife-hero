@@ -18,8 +18,8 @@
   "KNIFEHERO-PRIDE_GOLEM_THORNS.description": "Whenever this takes damage, it deals that much damage back to the attacker.",
   "KNIFEHERO-PRIDE_GOLEM_THORNS.smartDescription": "Whenever this takes damage, it deals that much damage back to the attacker.",
   "KNIFEHERO-LESSON.title": "Lesson",
-  "KNIFEHERO-LESSON.description": "What you have learned. Spent by some of the Creature's cards.",
-  "KNIFEHERO-LESSON.smartDescription": "What you have learned. Spent by some of the Creature's cards.",
+  "KNIFEHERO-LESSON.description": "Whenever you would take grief damage, lose a Lesson instead. Spent by some cards.",
+  "KNIFEHERO-LESSON.smartDescription": "Whenever you would take grief damage, lose a Lesson instead. Spent by some cards.",
   "KNIFEHERO-MARGINALIA_POWER.title": "Marginalia",
   "KNIFEHERO-MARGINALIA_POWER.description": "Whenever you play a Book or a Power, gain 1 Lesson.",
   "KNIFEHERO-MARGINALIA_POWER.smartDescription": "Whenever you play a Book or a Power, gain 1 Lesson.",
@@ -27,6 +27,6 @@
   "KNIFEHERO-POLYMATH_POWER.description": "At the start of each turn, gain Lessons.",
   "KNIFEHERO-POLYMATH_POWER.smartDescription": "At the start of each turn, gain Lessons.",
   "KNIFEHERO-GRIEF.title": "Grief",
-  "KNIFEHERO-GRIEF.description": "What you carry by staying with your dead. Acknowledgment, not erasure. Some cards turn it to force.",
-  "KNIFEHERO-GRIEF.smartDescription": "What you carry by staying with your dead. Some cards turn it to force."
+  "KNIFEHERO-GRIEF.description": "Accumulated grief. Cards that make you take damage equal to your Grief cash it in. Lessons cancel grief damage.",
+  "KNIFEHERO-GRIEF.smartDescription": "Cards that make you take damage equal to your Grief cash it in. Lessons cancel grief damage."
 }

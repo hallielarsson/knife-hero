@@ -17,13 +17,13 @@ public sealed class Lesson : KnifeHeroPower
     public override PowerStackType StackType => PowerStackType.Counter;
 }
 
-/* Grief — acknowledgment-not-erasure (the graph's words). Not a debuff to avoid; the Creature's
-   fuel. You gain it by reaching into your Salt pile (Prehend) — by staying with your dead instead
-   of sealing the corpse. Truth-Burden turns it to force; one day Wholeness will turn it whole.
-   A stacking counter; it persists, because grief does. */
+/* Grief — a stacking debuff you accumulate (e.g. a Vexing Memory festering in hand). Inert on its
+   own, but cards that make you "take damage equal to your Grief" cash it in — and the more you've
+   stacked, the worse it bites. Note: that damage is grief damage, so Lessons can cancel it
+   (see CreatureCard.TakeGriefDamage). */
 public sealed class Grief : KnifeHeroPower
 {
-    public override PowerType Type => PowerType.Buff;
+    public override PowerType Type => PowerType.Debuff;
     public override PowerStackType StackType => PowerStackType.Counter;
 }
 

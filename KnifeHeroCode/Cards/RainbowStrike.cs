@@ -11,7 +11,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 namespace KnifeHero.KnifeHeroCode.Cards;
 
 /* Rainbow Strike — deal 2 damage for every Flag you're flying (sum of your Flag stacks). */
-public sealed class RainbowStrike() : KnifeHeroCard(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
+public sealed class RainbowStrike() : KnifeHeroCard(1, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy)
 {
     private const int PerFlag = 2;
 

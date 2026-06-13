@@ -152,8 +152,9 @@ public sealed class QuoteAtLength() : CreatureCard(1, CardType.Attack, CardRarit
 // "Salt": dated, not deleted. These three let the Creature stay with its dead instead of sealing
 // the corpse. (Random pull, no card-picker — the picker is the screen that soft-locked in playtest.)
 
-/* Don't Look Away — the defiance of Izanami. Reach into your Salt pile and take a perished card back
-   into your hand; mark 1 Grief for staying with it. The Creature cannot abandon what it's made of. */
+/* Don't Look Away — refusing to let go. Reach into your Salt pile and take a perished card back into
+   your hand. Pulling a card back from the dead is the OPPOSITE of grieving it, so it costs 2 grief
+   damage — but Lessons cancel grief (you Learn so you can afford to stay with your dead). */
 public sealed class DontLookAway() : CreatureCard(1, CardType.Skill, CardRarity.Common, TargetType.Self)
 {
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -162,7 +163,7 @@ public sealed class DontLookAway() : CreatureCard(1, CardType.Skill, CardRarity.
         if (salt.Count == 0) return;
         var card = Owner.RunState.Rng.CombatCardGeneration.NextItem(salt);
         await CardPileCmd.Add(card, PileType.Hand);
-        await PowerCmd.Apply<Grief>(Owner.Creature, 1m, Owner.Creature, this, false);
+        await TakeGriefDamage(choiceContext, 2);
     }
 }
 
@@ -179,15 +180,22 @@ public sealed class ReadTheRemainder() : CreatureCard(1, CardType.Skill, CardRar
     }
 }
 
-/* Truth-Burden — abandonment metabolized into force. Deal damage equal to your Grief. Jagged. */
-public sealed class TruthBurden() : CreatureCard(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
+/* Vexing Memory — Hallie's design. A Status: it festers in your hand. At the end of your turn it
+   gains you 1 Grief and you take grief damage equal to your Grief — so the longer it sits, the more
+   your accumulated grief bites. Lessons cancel the damage (you learn to live with it). Unplayable,
+   Status-rarity (generated, never a reward); extends CreatureCard for the required [Pool]. */
+public sealed class VexingMemory() : CreatureCard(-1, CardType.Status, CardRarity.Status, TargetType.None)
 {
-    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    public override IEnumerable<CardKeyword> CanonicalKeywords =>
+        new List<CardKeyword> { CardKeyword.Unplayable };
+
+    public override bool HasTurnEndInHandEffect => true;
+
+    public override async Task OnTurnEndInHand(PlayerChoiceContext choiceContext)
     {
-        ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
+        await PowerCmd.Apply<Grief>(Owner.Creature, 1m, Owner.Creature, this, false);
         int grief = (int)(Owner.Creature.Powers.FirstOrDefault(p => p is Grief)?.Amount ?? 0m);
-        if (grief <= 0) return;
-        await DamageCmd.Attack(grief).FromCard(this).Targeting(cardPlay.Target)
-            .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+        await TakeGriefDamage(choiceContext, grief);
     }
 }
+

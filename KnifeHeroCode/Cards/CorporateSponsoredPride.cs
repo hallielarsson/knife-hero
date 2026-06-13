@@ -10,7 +10,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 namespace KnifeHero.KnifeHeroCode.Cards;
 
 /* Corporate Sponsored Pride — cash in a Flag for Energy. Remove a Flag; if you did, gain 2 Energy. */
-public sealed class CorporateSponsoredPride() : KnifeHeroCard(0, CardType.Skill, CardRarity.Common, TargetType.Self)
+public sealed class CorporateSponsoredPride() : KnifeHeroCard(0, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
 {
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
