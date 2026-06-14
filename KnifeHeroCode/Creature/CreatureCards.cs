@@ -51,13 +51,20 @@ public sealed class Annotate() : CreatureCard(1, CardType.Skill, CardRarity.Basi
 // ---- Books (read for Lessons + Powers) -------------------------------------------------------
 public sealed class OpenBook() : CreatureCard(1, CardType.Skill, CardRarity.Common, TargetType.Self), IBook
 {
-    public override IEnumerable<CardKeyword> CanonicalKeywords =>
-        new List<CardKeyword> { CardKeyword.Exhaust };
+    public override bool GainsBlock => true;
 
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new List<DynamicVar> { new BlockVar(5m, ValueProp.Move) };
+
+    // A book you read for protection AND learning — lessons and defense. Recurs (no Exhaust) so it's
+    // the deck's reliable defend-and-learn engine.
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
         await PowerCmd.Apply<Lesson>(Owner.Creature, 2m, Owner.Creature, this, false);
     }
+
+    protected override void OnUpgrade() => DynamicVars.Block.UpgradeValueBy(3m);
 }
 
 public sealed class Marginalia() : CreatureCard(1, CardType.Power, CardRarity.Common, TargetType.Self), IBook

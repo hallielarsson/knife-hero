@@ -24,17 +24,19 @@ public class TheCreature : PlaceholderCharacterModel
     public override CharacterGender Gender => CharacterGender.Neutral; // Hallie's call
     public override int StartingHp => 72;
 
-    // You start as mostly body — Throbbing Hearts (parts that start as curses) — plus just enough to
-    // learn (Books) and fight (Recite/Annotate). Grieving + learning your parts is the game.
+    // You start with two parts (Throbbing Hearts — body that begins as curse) plus a normal backbone:
+    // Recite IS your Strike (deal 6), Annotate IS your Defend (gain 5). Two parts was too punishing at
+    // three; the deck needs reliable action to survive long enough to grieve and learn them.
     public override IEnumerable<CardModel> StartingDeck => [
         ModelDb.Card<ThrobbingHeart>(),
         ModelDb.Card<ThrobbingHeart>(),
-        ModelDb.Card<ThrobbingHeart>(),
+        ModelDb.Card<Recite>(),
+        ModelDb.Card<Recite>(),
         ModelDb.Card<Recite>(),
         ModelDb.Card<Recite>(),
         ModelDb.Card<Annotate>(),
-        ModelDb.Card<OpenBook>(),
-        ModelDb.Card<OpenBook>(),
+        ModelDb.Card<Annotate>(),
+        ModelDb.Card<Annotate>(),
         ModelDb.Card<OpenBook>(),
         ModelDb.Card<Marginalia>()
     ];

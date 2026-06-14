@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using BaseLib.Abstracts;
 using KnifeHero.KnifeHeroCode.Character;
+using KnifeHero.KnifeHeroCode.Extensions;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -31,15 +32,15 @@ public sealed class FancyFootwork() : KnifeHeroCard(1, CardType.Attack, CardRari
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
-        var top = CombatState.CreateCard<Top>(Owner);
-        await CardPileCmd.AddGeneratedCardToCombat(top, PileType.Hand, addedByPlayer: true);
+        // Attack use forges a Butch Blade — or sharpens the one you already carry (one copy per flag).
+        await CombatState.AddOrUpgradeFlagBlade<ButchBlade>(Owner);
     }
 
     public override async Task OnTurnEndInHand(PlayerChoiceContext choiceContext)
     {
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, null);
-        var bottom = CombatState.CreateCard<Bottom>(Owner);
-        await CardPileCmd.AddGeneratedCardToCombat(bottom, PileType.Hand, addedByPlayer: true);
+        // Defend use forges a Femme Flechette — or sharpens the one you already carry.
+        await CombatState.AddOrUpgradeFlagBlade<FemmeFlechette>(Owner);
     }
 
     protected override void OnUpgrade()
