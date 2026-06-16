@@ -8,11 +8,13 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 
 namespace KnifeHero.KnifeHeroCode.Cards;
 
-/* The Closet — Hallie's design: "Gain Stealth 3. If you play an attack, lose Stealth."
-   A big burst of Stealth (3 stored turns of Intangible) that holds only as long as you stay
-   hidden — swing once and the whole stance collapses (the Closeted watcher strips it). High
-   defense, zero offense: the tension is the card. Human-sourced mechanic (Hallie); placeholder
-   art via KnifeHeroCard. */
+/* The Closet — Hallie's design, reworked into a *maintained posture* (whetstone 2026-06-15,
+   see Closeted.cs / WHETSTONE-the-closet.md). Gain 3 Stealth and become Closeted:
+     - At the start of each turn the closet collects rent — discard a card to void the next
+       instance of HP loss (a Buffer charge); an empty hand breaks the closet for a Dazed.
+     - Playing an Attack blows your cover: you lose all Stealth and the posture ends.
+   High defense, zero offense; staying hidden has an upkeep cost. Human-sourced mechanic
+   (Hallie); placeholder art via KnifeHeroCard. */
 public sealed class TheCloset() : KnifeHeroCard(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
 {
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
