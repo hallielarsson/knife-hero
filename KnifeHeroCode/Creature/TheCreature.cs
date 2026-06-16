@@ -45,9 +45,12 @@ public class TheCreature : PlaceholderCharacterModel
         ModelDb.Card<Marginalia>()
     ];
 
+    // Start with Mended Body — the run-persistent, visible Wholeness counter (re-derives Wholeness
+    // from your Mended Hearts at the start of each combat). DECIDED (bro, design owner, 2026-06-15):
+    // the Creature's healing axis needs a stable home that survives combat; the relic is it.
     public override IReadOnlyList<RelicModel> StartingRelics =>
     [
-        ModelDb.Relic<BurningBlood>()
+        ModelDb.Relic<MendedBody>()
     ];
 
     public override CardPoolModel CardPool => ModelDb.CardPool<TheCreatureCardPool>();
