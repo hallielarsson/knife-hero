@@ -13,6 +13,10 @@ namespace KnifeHero.KnifeHeroCode.Cards;
 /* Rainbow Strike — deal 2 damage for every Flag you're flying (sum of your Flag stacks). */
 public sealed class RainbowStrike() : KnifeHeroCard(1, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy)
 {
+    public override string PortraitPath => "rainbow_strike.png".CardImagePath();
+    public override string CustomPortraitPath => "rainbow_strike.png".BigCardImagePath();
+
+
     // Damage per Flag. Upgradeable so the rainbow brightens with the deck.
     // PROPOSAL (Claude 2026-06-15): base 2, +1 on upgrade (every flag hits harder). Hallie to tune.
     private int _perFlag = 2;

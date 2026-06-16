@@ -21,12 +21,20 @@ namespace KnifeHero.KnifeHeroCode.Cards;
    game. Human-sourced mechanic (Hallie). */
 public sealed class FancyFootwork() : KnifeHeroCard(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
 {
+    // Art slug is switch_blade.png — per ART_MAPPING this card is slated to become "Switch Blade"
+    // (Hallie's rename, still gated). The drawing is ready, so wire it now; the rename rides her pass.
+    public override string PortraitPath => "switch_blade.png".CardImagePath();
+    public override string CustomPortraitPath => "switch_blade.png".BigCardImagePath();
+
     public override bool GainsBlock => true;
     public override bool HasTurnEndInHandEffect => true;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
-        new List<DynamicVar> { new DamageVar(6m, ValueProp.Move), new BlockVar(3m, ValueProp.Move) };
-
+        new List<DynamicVar> { new DamageVar(6m, ValueProp.Move), new BlockVar(2m, ValueProp.Move) };
+    
+    public override IEnumerable<CardKeyword> CanonicalKeywords =>
+        new List<CardKeyword> { CardKeyword.Exhaust };
+    
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
@@ -41,6 +49,7 @@ public sealed class FancyFootwork() : KnifeHeroCard(1, CardType.Attack, CardRari
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, null);
         // Defend use forges a Femme Flechette — or sharpens the one you already carry.
         await CombatState.AddOrUpgradeFlagBlade<FemmeFlechette>(Owner);
+        await CardCmd.Exhaust(choiceContext, this, causedByEthereal: false);
     }
 
     protected override void OnUpgrade()
