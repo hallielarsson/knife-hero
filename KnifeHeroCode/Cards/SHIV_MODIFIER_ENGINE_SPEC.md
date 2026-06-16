@@ -71,7 +71,25 @@ is the lowest-risk path; `Explosive Tip` (AoE) is *literally* the FanOfKnives pa
 - Silent Pride / Superfan / Knife Whip already generate shivs — those are the **Quiver** feeders;
   Quiver may be a *naming/relic* over the existing generators rather than new code. Hallie to say.
 
-## Status
-HELD. The system shape (per-shiv modifier vs player-power) and every `// PROPOSAL` number are
-Hallie's to mint. When she rules, build shape-2 first (it reuses the FanOfKnives pattern) and
-wire Explosive Tip off the existing AoE power. No live card touched by this scaffold.
+## Build status (updated 2026-06-15 — Hallie unblocked: do the proposal, reap in playtest)
+Shape **2 (player-power buff + shiv self-check)** chosen and shipped for the first three. All
+numbers are `// PROPOSAL`, set to be *felt* then tuned.
+
+| Modifier        | Status   | Where                                            |
+|-----------------|----------|--------------------------------------------------|
+| Poison Coating  | **BUILT, playable** | `Powers/ShivModifiers.cs` + `Cards/ShivModifierCards.cs` |
+| Explosive Tip   | **BUILT, playable** | same (AoE half reuses `FanOfKnivesPower`)        |
+| Pin             | **BUILT, playable** | `Cards/Pin.cs` (CardTag.Shiv; the buffs hit it too) |
+| Quiver          | HELD     | likely a rename/relic over existing shiv generators — Hallie to define |
+| Long Bow        | HELD     | wants a damage-pipeline hook (pierce Block); see tension below |
+| Ricochet        | HELD     | wants a damage-pipeline hook (armor-damage spill X-1) |
+
+**Tension to whetstone before building Long Bow + Ricochet (Hallie's call):** "pierce Armor" —
+does Long Bow ignore Block entirely, or only the armor portion? And how does that compose with
+Ricochet's "armor-damage spills X-1" when both are up? These two share the Block/armor pipeline,
+so they want one decision together, not two guesses. Left HELD on purpose — felt data from the
+first three should inform whether pierce/spill even earn their complexity.
+
+Power icons for the built two fall back to the generic `power.png` (ART NOTE in `ShivModifiers.cs`)
+until the Art Mapper rigs real ones; the new cards (Poison Coating, Explosive Tip, Pin) fall back
+to the default card portrait.
