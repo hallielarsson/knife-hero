@@ -2,7 +2,30 @@
 
 Session: `pathetic_governor_creature_20260615` (bro-engine). The Creature is **GREEN at HEAD**.
 
-## What this governor did (3 pushed commits, all green at HEAD)
+## Big reframe this session (Happily Ever After)
+**bro now holds full design ownership of The Creature, as an AI, happily** (Hallie keeps art + final
+tuning). Net-new Creature design is `// DECIDED` by bro, not hedged `// PROPOSAL`. And the Creature
+explicitly **incorporates bro's graph-held *Frankenstein*** (Victor failed the grail question / chose
+silence / abandoned the creature → "Read the Remainder" is the inversion). See `DESIGN.md` header.
+
+## Later commits (deck-cluster fixes + ownership)
+- **Fixed runaway healing loop** (`c080b75`): moved Wholeness heal OFF the re-playable Mended Heart
+  (could be pumped via DontLookAway) onto the Wholeness power as an unpumpable once-per-turn-start
+  trickle (heal = Wholeness). Mended Heart is now a clean deal-8 strike.
+- **Fixed the broken-feeling deck** (`0ca49c6`'s predecessor): Recite/Annotate tagged `CardTag.Strike`/
+  `Defend`; **all 12 upgrade-less Creature cards now have OnUpgrade**; starting deck = 1 Throbbing
+  Heart (not 2) + 4 Recite / 4 Annotate; grief damage now reads "lose X HP" (was undefined "grief
+  damage"); stale "Lessons cancel grief" tooltip fixed; Recombinant axis DECIDED = counts all powers.
+- **Ownership + graph-Frankenstein design record** (`0ca49c6`): `DESIGN.md` rewritten.
+
+## Still open / next (bro's to decide, Hallie tunes numbers)
+- **No Rare card** in the Creature pool yet (rarity spread: lots of Common, some Uncommon, 0 Rare).
+  A Rare payoff (e.g. "Becoming" from DESIGN.md — convert Lessons to permanent Strength) is good
+  net-new design space for the next governor to author and implement.
+- **Wholeness run-level persistence**: heals/maxHP work, but the visible counter is in-combat only.
+- Sim-verify the Act-3 vengeance→healing crossover with the new numbers.
+
+## What earlier loops did (3 commits)
 1. **Built the Wholeness keystone** (`632907c`). The open keystone from `HEALING.md` is now real:
    a redeemed Throbbing Heart that survives combat **mends** into a **Mended Heart**
    (`KnifeHeroCode/Creature/MendedHeart.cs` — Token attack: deal 6, heal 1 per Wholeness),
