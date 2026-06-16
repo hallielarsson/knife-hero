@@ -65,6 +65,8 @@
   "KNIFEHERO-READ_THE_REMAINDER.description": "Heal HP equal to the number of cards in your Exhaust pile.",
   "KNIFEHERO-STONEWALL.title": "Stonewall",
   "KNIFEHERO-STONEWALL.description": "Gain 10 Block. Each Flag attacks for 3.",
+  "KNIFEHERO-PIN.title": "Pin",
+  "KNIFEHERO-PIN.description": "Deal 4 damage. If this damages the enemy, apply 2 Weak and 2 Vulnerable.",
   "KNIFEHERO-POISON_COATING.title": "Poison Coating",
   "KNIFEHERO-POISON_COATING.description": "This turn, the Shivs you play apply 3 Poison.",
   "KNIFEHERO-EXPLOSIVE_TIP.title": "Explosive Tip",
