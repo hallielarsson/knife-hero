@@ -96,10 +96,10 @@ all fight and receives combat hooks — so it hosts `AfterCardChangedPiles` dire
 |-------------------------------|--------|-------|
 | Queer curse (Innate/Eternal/Unplayable) | **BUILT** | `Cards/Queer.cs` |
 | Exhaust interception           | **BUILT** | catches a card landing in Exhaust; re-entry-guarded |
-| "Becoming" (transform)         | **BUILT, placeholder** | Strike/Defend → Throwing Shiv (`TransformTo<Kunai>`), returned to the **deck (draw pile)** — it comes back to be drawn again, not just saved to discard |
+| "Becoming" (chassis + rider)   | **BUILT** | Hallie: "return the original card with a queer rider." The card keeps its identity; a `QueerRiderMod` (`Powers/QueerRiderMod.cs`) bolts on. Returned to the **deck (draw pile)** to be drawn again. |
 | Scope = basic Strike/Defend    | **BUILT** | `CardTag.Strike/Defend`; shivs DEFERRED (firehose) |
 | Run-level removal (BeforeCardRemoved) | **HELD** | needs run-scoped host (relic/character), not an in-combat card |
-| Rider pool (Tinker chassis+rider) | **HELD** | needs BaseLib `CardModifier` ModelDb plumbing; `TransformToRandom` over a curated out-pool is the divergence path |
+| Rider pool (Tinker chassis+rider) | **BUILT (seed)** | ONE rider: relocated Poison Coating (`QueerRiderMod`, // PROPOSAL 2 Poison/play). The pool + per-source divergence (random/Tinker-chosen) is the next cut — that divergence is the diversity. |
 
 **Verify in playtest (Hallie's felt-first principle):** does the curse's `AfterCardChangedPiles`
 fire reliably for exhausts of *other* cards while it sits Innate in hand? (It should —

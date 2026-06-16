@@ -1,5 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using BaseLib.Abstracts;
+using KnifeHero.KnifeHeroCode.Powers;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
@@ -52,11 +55,13 @@ public sealed class Queer() : KnifeHeroCard(-1, CardType.Curse, CardRarity.Curse
         if (oldPileType == PileType.Exhaust) return;        // ignore our own relocation — no re-entry loop
         if (card.Owner != Owner) return;                    // only your own cast-out cards
         if (!card.Tags.Contains(CardTag.Strike) && !card.Tags.Contains(CardTag.Defend)) return;
-        if (!card.IsTransformable) return;
 
-        // Refuse erasure: return it to the deck (the draw pile), come back OTHER (a throwing shiv).
-        // You can't cast the normative out — it returns to your deck, queer, to be drawn again.
+        // Refuse erasure: return the ORIGINAL card to the deck (draw pile) with a queer rider bolted
+        // on. Chassis + rider (the Tinker model) — it stays a Strike/Defend but comes back OUT. You
+        // can't cast the normative away; it returns to your deck, queer, to be drawn again.
+        bool alreadyQueer = CardModifier.DirectModifiers(card).Any(m => m is QueerRiderMod);
         await CardPileCmd.Add(card, PileType.Draw);
-        await CardCmd.TransformTo<Kunai>(card);
+        if (!alreadyQueer)
+            CardModifier.AddModifier(card, (QueerRiderMod)CardModifier.Get<QueerRiderMod>().MutableClone());
     }
 }
