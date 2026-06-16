@@ -25,12 +25,16 @@ public class KnifeHero : PlaceholderCharacterModel
         ModelDb.Card<GayBladeStrike>(),
         ModelDb.Card<GayBladeStrike>(),
         ModelDb.Card<GayBladeDefend>(),
+       ModelDb.Card<GayBladeDefend>(),
         ModelDb.Card<GayBladeDefend>(),
-        ModelDb.Card<GayBladeDefend>(),
         ModelDb.Card<FancyFootwork>(),
         ModelDb.Card<FancyFootwork>(),
         ModelDb.Card<FancyFootwork>(),
-        ModelDb.Card<FancyFootwork>()
+        ModelDb.Card<FancyFootwork>(),
+        // The core engine, as a starting Curse: Innate · Eternal · Unplayable. Casting out the
+        // normative (exhaust a Strike/Defend) queers it — it comes back as a throwing shiv.
+        // QUEER_ENGINE_SPEC.md. v1 — felt-first, tune by playtest.
+        ModelDb.Card<Queer>()
     ];
 
     public override IReadOnlyList<RelicModel> StartingRelics =>
