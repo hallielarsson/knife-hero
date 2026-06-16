@@ -49,5 +49,8 @@
   "KNIFEHERO-GRIEF.smartDescription": "Cards that make you take damage equal to your Grief cash it in. Lessons cancel grief damage.",
   "KNIFEHERO-PROCESSED_PART_POWER.title": "Processed",
   "KNIFEHERO-PROCESSED_PART_POWER.description": "At the end of combat, grow a new part.",
-  "KNIFEHERO-PROCESSED_PART_POWER.smartDescription": "At the end of combat, grow a new part."
+  "KNIFEHERO-PROCESSED_PART_POWER.smartDescription": "At the end of combat, grow a new part.",
+  "KNIFEHERO-WHOLENESS.title": "Wholeness",
+  "KNIFEHERO-WHOLENESS.description": "You have mended this many parts. Each grants +2 max HP and amplifies your healing.",
+  "KNIFEHERO-WHOLENESS.smartDescription": "Mended Hearts heal 1 more HP per Wholeness."
 }

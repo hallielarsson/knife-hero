@@ -61,6 +61,24 @@ public sealed class ProcessedPartPower : KnifeHeroPower
     }
 }
 
+/* Wholeness — the healing axis (THE_CREATURE/HEALING.md, the open keystone, now built).
+   A counter you raise ONLY by mending a part (redeeming a Throbbing Heart that survives the combat).
+   Vengeance scales with Grief — loud, capped, reset every fight. Wholeness is the orthogonal payoff:
+   it amplifies your healing (Mended Hearts heal +1 per Wholeness) and, alongside the permanent max-HP
+   raise the mend grants, it is the slow road that out-scales vengeance late.
+
+   PROPOSAL (Claude, Pathetic Governor 2026-06-15): HEALING.md specified "+1 Wholeness per part mended,
+   +2 max HP per Wholeness, healing amplified per Wholeness." The permanent max-HP raise is applied
+   directly on the creature when a heart mends (SetMaxHp — it persists across combats, the run-long
+   body), and this power is the visible in-combat tracker that amplifies healing. A cleaner run-level
+   persistence (re-deriving the count each combat) is left for Hallie once a stable run-state hook is
+   chosen — flagged rather than guessed. */
+public sealed class Wholeness : KnifeHeroPower
+{
+    public override PowerType Type => PowerType.Buff;
+    public override PowerStackType StackType => PowerStackType.Counter;
+}
+
 /* Polymath — at the start of each turn, gain a Lesson (compounding study). Counter-stacks. */
 public sealed class PolymathPower : KnifeHeroPower
 {

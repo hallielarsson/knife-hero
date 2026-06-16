@@ -80,11 +80,13 @@
   "KNIFEHERO-VEXING_MEMORY.title": "Vexing Memory",
   "KNIFEHERO-VEXING_MEMORY.description": "Unplayable. If this is in your hand at the end of your turn, gain 1 Grief and take grief damage equal to your Grief.",
   "KNIFEHERO-THROBBING_HEART.title": "Throbbing Heart",
-  "KNIFEHERO-THROBBING_HEART.description": "Retain. A part of you; cannot be removed. When drawn, add a Vexing Memory to your hand. Playable with 2 Grief and 2 Lessons: remove all Vexing Memories and reset your Grief and Lessons. If still in your deck at the end of combat, it grows into a new part. If not redeemed within 3 turns, it festers into a curse.",
+  "KNIFEHERO-THROBBING_HEART.description": "Retain. A part of you; cannot be removed. When drawn, add a Vexing Memory to your hand. Playable with 2 Grief and 2 Lessons: remove all Vexing Memories and reset your Grief and Lessons. If redeemed and still in your deck at the end of combat, it mends into a Mended Heart, granting 1 Wholeness and +2 max HP. If not redeemed within 3 turns, it festers into a curse.",
   "KNIFEHERO-FESTERING_WOUND.title": "Festering Wound",
   "KNIFEHERO-FESTERING_WOUND.description": "Unplayable. While this is in your hand, your attacks deal 1 more damage. At the end of each turn it's in your hand, take 2 grief damage.",
   "KNIFEHERO-WALLOW.title": "Wallow",
   "KNIFEHERO-WALLOW.description": "Gain Block equal to your Grief.",
   "KNIFEHERO-KEENING.title": "Keening",
-  "KNIFEHERO-KEENING.description": "Exhaust your hand. Gain 1 Grief for each card exhausted. Deal damage equal to twice your Grief to ALL enemies."
+  "KNIFEHERO-KEENING.description": "Exhaust your hand. Gain 1 Grief for each card exhausted. Deal damage equal to twice your Grief to ALL enemies.",
+  "KNIFEHERO-MENDED_HEART.title": "Mended Heart",
+  "KNIFEHERO-MENDED_HEART.description": "Deal 6 damage. Heal 1 HP per Wholeness. \"Nothing is ever completely broken.\""
 }

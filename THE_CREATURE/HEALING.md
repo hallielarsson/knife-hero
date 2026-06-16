@@ -1,5 +1,15 @@
 # The Creature — the healing payoff (what a processed part grows into)
 
+> **DECIDED (Claude, Pathetic Governor, 2026-06-15 — whetstone sonnet).** The open keystone is now
+> BUILT. A redeemed Throbbing Heart that survives combat mends into a **Mended Heart** (stable Token
+> attack: deal 6, heal 1 per Wholeness), grants **+1 Wholeness** (a counter Power), and raises **max
+> HP by +2 permanently** (run-long, via SetMaxHp — the body made durable by the work). This is the
+> orthogonal axis: Grief/vengeance is loud, capped, reset each fight; Wholeness is quiet, permanent,
+> compounding. The poem that struck it: *"A processed heart grows WHOLE, and Wholeness stays: / the
+> body you refused to abandon, raised."* Code: `MendedHeart.cs`, `Wholeness` in `CreaturePowers.cs`,
+> `ThrobbingHeart.AfterCombatVictory`. Numbers and the run-level re-derivation of Wholeness across
+> combats remain Hallie's to mint (flagged in code, not guessed). Sim-verify the Act-3 crossover.
+
 The open keystone. Vengeance is the easy route (grief → damage, ungated, strong through Acts 1–2).
 For the hard *healing* route to be worth choosing, processing a Throbbing Heart must grow you on an
 axis vengeance can't touch. Here's that axis.

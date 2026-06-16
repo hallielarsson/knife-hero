@@ -64,11 +64,26 @@ public sealed class ThrobbingHeart() : CreatureCard(0, CardType.Curse, CardRarit
         _redeemed = true;
     }
 
-    // The upgrade happens if it's still in your deck at the end of the round (redeemed, not festered).
+    // The mend happens if it's still in your deck at end of combat (redeemed, not festered):
+    // the part grows WHOLE. It transforms into a stable Mended Heart, you gain +1 Wholeness, and your
+    // body becomes permanently more durable — +2 max HP that persists across the whole run. This is
+    // HEALING.md's keystone: the slow, permanent healing axis that vengeance (capped, reset each fight)
+    // can never be. (PROPOSAL — Claude, Pathetic Governor 2026-06-15; numbers Hallie's to mint.)
+    private const int MaxHpPerWholeness = 2;
+
     public override async Task AfterCombatVictory(MegaCrit.Sts2.Core.Rooms.CombatRoom room)
     {
-        if (_redeemed)
-            await CardCmd.Transform(this, CombatState.CreateCard<ThrobbingHeart>(Owner));
+        if (!_redeemed) return;
+
+        // +1 Wholeness (the healing axis; amplifies Mended Heart healing while in combat).
+        await PowerCmd.Apply<Wholeness>(Owner.Creature, 1m, Owner.Creature, this, false);
+
+        // +2 max HP, permanent and run-long — the body made durable by the work of mending.
+        await CreatureCmd.SetMaxHp(Owner.Creature, Owner.Creature.MaxHp + MaxHpPerWholeness);
+        await CreatureCmd.Heal(Owner.Creature, MaxHpPerWholeness, false);
+
+        // The part is whole now: a stable Mended Heart, not another throbbing curse.
+        await CardCmd.Transform(this, CombatState.CreateCard<MendedHeart>(Owner));
     }
 
     private int GriefAmount() => (int)(Owner.Creature.Powers.FirstOrDefault(p => p is Grief)?.Amount ?? 0m);
