@@ -24,4 +24,7 @@ public sealed class PrideWasARiot() : KnifeHeroCard(1, CardType.Attack, CardRari
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
     }
+
+    // PROPOSAL (Claude 2026-06-15): the riot grows. +3 damage (5 -> 8). Hallie to tune.
+    protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(3m);
 }
