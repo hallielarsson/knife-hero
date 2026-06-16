@@ -44,22 +44,9 @@ public sealed class MarginaliaPower : KnifeHeroPower
     }
 }
 
-/* ProcessedPartPower — hidden/transient. Applied when you process a Throbbing Heart; at the end of
-   combat it grants the "new part" to your run deck. PLACEHOLDER reward for now: a fresh Throbbing
-   Heart (the body regrows). What the new part actually IS — a roster, an upgrade, AMALGAM's Accept —
-   is the open design Hallie flagged ("or i dunno"); deliberately not built ahead. */
-public sealed class ProcessedPartPower : KnifeHeroPower
-{
-    public override PowerType Type => PowerType.Buff;
-    public override PowerStackType StackType => PowerStackType.Counter;
-
-    public override Task AfterCombatVictory(MegaCrit.Sts2.Core.Rooms.CombatRoom room)
-    {
-        for (int i = 0; i < (int)Amount; i++)
-            Owner.Player.RunState.AddCard(ModelDb.Card<ThrobbingHeart>(), Owner.Player);
-        return Task.CompletedTask;
-    }
-}
+/* (ProcessedPartPower removed 2026-06-15, Pathetic Governor — it was an orphan: never applied
+   anywhere, and superseded by the Wholeness mend in ThrobbingHeart.AfterCombatVictory, which now
+   handles what a redeemed part grows into directly. Grieved in bro-engine; see THE_CREATURE/HEALING.md.) */
 
 /* Wholeness — the healing axis (THE_CREATURE/HEALING.md, the open keystone, now built).
    A counter you raise ONLY by mending a part (redeeming a Throbbing Heart that survives the combat).
