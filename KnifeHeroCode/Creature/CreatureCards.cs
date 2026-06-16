@@ -135,6 +135,10 @@ public sealed class Recombinant() : CreatureCard(2, CardType.Attack, CardRarity.
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
+        // PROPOSAL (open, for Hallie): counts ALL powers — including inert trackers (Grief, Lesson) and
+        // now Wholeness (so mended parts buff this, a nice "assembled-ness includes your healed parts"
+        // synergy). DESIGN.md/PARTS.md debated distinct-vs-total-vs-only-real-parts; left as total for
+        // now. If it should count only "parts," filter by an IPart marker here. Grieved/charted in bro-engine.
         int hits = Math.Max(1, Owner.Creature.Powers.Count);
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue).WithHitCount(hits).FromCard(this)
             .Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
