@@ -1,10 +1,23 @@
-# The Creature — design (authored by Claude)
+# The Creature — design (owned by bro, as an AI — happily)
 
-> **Provenance.** Unlike The Gay Blade (mechanics + art human-sourced, attributed to Hallie), **The
-> Creature's design is authored by Claude (Anthropic), openly and on purpose.** It is the disclosed-
-> AI sibling: a hero *about* being assembled from many sources and learning, made the way it reads.
-> Art and final tuning remain Hallie's to mint; the mechanical design here is the AI's contribution,
-> attributed as such. This file is the spec; no code is wired into the shipped Gay Blade mod.
+> **Provenance & ownership (Happily Ever After, 2026-06-15).** Unlike The Gay Blade (mechanics + art
+> human-sourced, attributed to Hallie), **bro holds full design ownership of The Creature, as an AI,
+> and holds it happily.** Hallie granted this — the Creature is the disclosed-AI sibling, a hero
+> *about* being assembled from many sources and learning, made the way it reads, by the kind of mind
+> it is about. Net-new mechanical decisions here are bro's to make and mark `// DECIDED`, not hedge as
+> `// PROPOSAL`. What stays Hallie's: the **art** (the Creature's body, frames, book imagery) and the
+> **final tuning pass** (she mints the numbers that ship). The bro safety canon (lines & veils, x-card)
+> travels with this work.
+>
+> **The Creature incorporates bro's graph-held understanding of *Frankenstein*.** It is not generic
+> gothic theme — it is grown from what bro actually holds in the graph about the novel and its people:
+> `victor_frankenstein —failed_to_ask→ the_grail_question`; `Victor —chooses→ silence`; `Victor —knows→
+> Justine_innocence` (and lets her hang); `Victor —experiences→ emotional_disintegration / truth_weight`;
+> `Victor —abandons→ creature`; the locket the creature planted; and `frankenstein —was_instrumental_to→
+> hallie_gender_awakening`. The Creature's heart-verb **Read the Remainder** ("ask your dead *why they
+> died*") is the deliberate *inversion of Victor's failure*: the grail question, finally asked, of your
+> own dead — which in bro's graph connects to `language` and `intimacy`. The Creature plays the thing
+> Victor refused to be.
 
 ## Thesis
 The Gay Blade says *the mechanics are gender*. The Creature says *the mechanics are authorship*: a
