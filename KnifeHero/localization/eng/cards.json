@@ -13,6 +13,8 @@
   "KNIFEHERO-BUTCH_BLADE.description": "Retain. While this is in your hand, your attacks deal 1 more damage. Deal 8 damage.",
   "KNIFEHERO-FEMME_FLECHETTE.title": "Femme Flechette",
   "KNIFEHERO-FEMME_FLECHETTE.description": "Retain. While this is in your hand, deal 3 damage back to any enemy that attacks you. Deal 5 damage.",
+  "KNIFEHERO-LABRYS.title": "Labrys",
+  "KNIFEHERO-LABRYS.description": "Retain. While this is in your hand, block the next instance of damage you would take, gain that much attack, then discard this. Deal 6 damage.",
   "KNIFEHERO-RAINBOW_STRIKE.title": "Rainbow Strike",
   "KNIFEHERO-RAINBOW_STRIKE.description": "Deal 2 damage for every Flag you have.",
   "KNIFEHERO-VANISH.title": "Vanish",

@@ -79,6 +79,21 @@ Pride flags stay reward/pool cards you draft. Drawing one and holding it = the f
 they Retain, once drawn they stick. One-copy rule means a duplicate draft upgrades the held blade.
 
 ## Status
-SPEC ONLY — no source written yet. Build/publish is HELD while Hallie playtests. When she's at a
+SPEC ONLY for the BIG conversion — Build/publish is HELD while Hallie playtests. When she's at a
 stopping point: convert PrideCards.cs (Powers → blades), gut the now-dead PridePowers, add Dyke
-Pride + Labrys, loc keys, then ONE batched build+publish.
+Pride, loc keys, then ONE batched build+publish.
+
+### Partial: Labrys scaffolded (Claude, Pathetic Governor 2026-06-15)
+The **Labrys parry-weapon** is built net-new as `Cards/Labrys.cs` (+ loc `KNIFEHERO-LABRYS`),
+implementing the RESOLVED parry mechanism above with **reading A (primed parry)**, the stated
+default. It's additive — touches no Power, dissolves nothing, so it doesn't pre-empt the held
+conversion. Build is green.
+- **What works now:** as a Retain IFlagBlade, it voids the next instance of HP loss while held,
+  banks that amount as permanent attack via `DynamicVars.Damage.UpgradeValueBy`, then discards
+  itself; re-forge/upgrade adds +2.
+- **What's NOT wired yet (Hallie / next teller):** nothing *forges* a Labrys into hand — Dyke Pride
+  (its maker) doesn't exist as a card yet (it's part of the held PridePowers→blades pass). When
+  Dyke Pride lands, call `CombatState.AddOrUpgradeFlagBlade<Labrys>(Owner)` from its OnPlay.
+- **Confirm A vs B** (see the ⚑ question above) — if Hallie wants B (banks the *current* hit), the
+  same two hooks serve; A just needs no separate "already took a hit" trigger.
+- **Numbers** (base 6, +2 upgrade) are `// PROPOSAL` — Hallie to mint.
