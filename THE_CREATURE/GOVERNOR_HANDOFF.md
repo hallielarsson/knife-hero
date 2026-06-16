@@ -1,65 +1,70 @@
-# Pathetic Governor — handoff (2026-06-15)
+# Pathetic Governor — handoff (2026-06-15, session 2)
 
-Session: `pathetic_governor_creature_20260615` (bro-engine). The Creature is **GREEN at HEAD**.
+Session: `pathetic_governor_creature_20260615` (bro-engine). The Creature is **GREEN at HEAD**
+(verified HEAD-in-isolation; the working tree carries another session's Knife-Hero WIP — build with
+the foreign files stashed, or use `git pull --rebase --autostash`).
 
-## Big reframe this session (Happily Ever After)
-**bro now holds full design ownership of The Creature, as an AI, happily** (Hallie keeps art + final
-tuning). Net-new Creature design is `// DECIDED` by bro, not hedged `// PROPOSAL`. And the Creature
-explicitly **incorporates bro's graph-held *Frankenstein*** (Victor failed the grail question / chose
-silence / abandoned the creature → "Read the Remainder" is the inversion). See `DESIGN.md` header.
+## What this session did — ALL THREE open items from the prior handoff are now CLOSED
 
-## Later commits (deck-cluster fixes + ownership)
-- **Fixed runaway healing loop** (`c080b75`): moved Wholeness heal OFF the re-playable Mended Heart
-  (could be pumped via DontLookAway) onto the Wholeness power as an unpumpable once-per-turn-start
-  trickle (heal = Wholeness). Mended Heart is now a clean deal-8 strike.
-- **Fixed the broken-feeling deck** (`0ca49c6`'s predecessor): Recite/Annotate tagged `CardTag.Strike`/
-  `Defend`; **all 12 upgrade-less Creature cards now have OnUpgrade**; starting deck = 1 Throbbing
-  Heart (not 2) + 4 Recite / 4 Annotate; grief damage now reads "lose X HP" (was undefined "grief
-  damage"); stale "Lessons cancel grief" tooltip fixed; Recombinant axis DECIDED = counts all powers.
-- **Ownership + graph-Frankenstein design record** (`0ca49c6`): `DESIGN.md` rewritten.
+### 1. The Rare card — **Become Who You Are** (commit `19cc396`)
+The pool had no Rare; it does now. **DECIDED (bro, design owner):** a Rare Power (cost 3, also an
+`IBook`) that pays off the **breadth/assemblage** axis the sim found underperforming. At each turn
+start: **gain Strength equal to your distinct Powers, and gain 1 Lesson.** The Creature becomes the
+sum of its assembled parts; it compounds across a long fight and ties the two axes (more Books → more
+distinct Powers → more Strength; the Lesson trickle feeds Quote at Length / the process threshold).
+Supersedes DESIGN.md's flatter "Becoming" (Lessons/4 → Strength), which overlapped Galvanism.
+Frankenstein: *"I was benevolent and good; misery made me a fiend."*
+Code: `BecomeWhoYouArePower` in `CreaturePowers.cs`, `BecomeWhoYouAre` in `CreatureCards.cs`, loc in
+`cards.json` + `powers.json`. NOTE: it counts THIS power among the distinct (consistent with
+Recombinant's "all of it is you" decision). Numbers Hallie's to mint.
 
-## Still open / next (bro's to decide, Hallie tunes numbers)
-- **No Rare card** in the Creature pool yet (rarity spread: lots of Common, some Uncommon, 0 Rare).
-  A Rare payoff (e.g. "Becoming" from DESIGN.md — convert Lessons to permanent Strength) is good
-  net-new design space for the next governor to author and implement.
-- **Wholeness run-level persistence**: heals/maxHP work, but the visible counter is in-combat only.
-- Sim-verify the Act-3 vengeance→healing crossover with the new numbers.
+### 2. Wholeness persistence — **Mended Body** relic (commit `d5baa0a`)
+The handoff's "visible Wholeness counter persistence across combats." Wholeness was combat-scoped, so
+the counter reset each fight (only the +2 max-HP persisted, on the Creature). **DECIDED:** re-derive
+Wholeness from the **Mended Hearts in your run deck** at the start of each combat — the mended parts
+ARE the permanent record, so no run-state serialization is needed. A **starting relic** (`MendedBody`,
+`RelicRarity.Starter`) carries it: `BeforeCombatStart()` counts Mended Hearts and applies that much
+Wholeness; `ShowCounter`/`DisplayAmount` give the visible counter. **No new art** — it reuses the
+mod's placeholder `relic.png` (reading existing art, allowed; the Art Mapper owns authoring). It
+replaced the placeholder `BurningBlood` starting relic. Loc in `relics.json`.
 
-## What earlier loops did (3 commits)
-1. **Built the Wholeness keystone** (`632907c`). The open keystone from `HEALING.md` is now real:
-   a redeemed Throbbing Heart that survives combat **mends** into a **Mended Heart**
-   (`KnifeHeroCode/Creature/MendedHeart.cs` — Token attack: deal 6, heal 1 per Wholeness),
-   grants **+1 Wholeness** (`Wholeness` power in `CreaturePowers.cs`), and raises **max HP +2
-   permanently** (run-long, via `SetMaxHp` in `ThrobbingHeart.AfterCombatVictory`). The orthogonal
-   healing axis: vengeance/Grief is loud, capped, reset each fight; Wholeness is quiet, permanent,
-   compounding. Struck via the whetstone (a sonnet — recorded in `HEALING.md`'s DECIDED note).
-2. **Grieved the orphaned `ProcessedPartPower`** (`8dc75d6`). It was never applied anywhere and was
-   superseded by the mend above — two rival "what a part grows into" mechanisms. Removed the dead
-   class + its loc keys.
-3. **Charted the Recombinant counting question** (`074a812`, comment-only). `Recombinant` counts ALL
-   powers (incl. inert Grief/Lesson and now Wholeness — a nice "assembled-ness includes healed parts"
-   synergy). `// PROPOSAL` left in `CreatureCards.cs`; distinct-vs-total-vs-only-parts is Hallie's call.
+### 3. Act-3 crossover **sim pass** (commit `a63ffa7`)
+New `THE_CREATURE/sim/crossover_asbuilt.py` models the SHIPPED mechanics (+2 max HP + per-turn heal
+per Wholeness, re-derived by MendedBody), not the old abstract "power" proxy in `creature_routes.py`.
+**Finding:** on the durability axis the design is built around, healing overtakes vengeance by **Act 1**
+(~combat 2-4), NOT Act 3 — the abstract sim only said "Act 3" because it scored healing as *offense*,
+which it isn't. The "slow road that wins late" framing holds on **speed** (vengeance bursts/kills
+faster early; healing can't), not on durability. **DECIDED:** keep +2 max HP — the Creature SHOULD
+feel its body knitting, and surviving-to-win IS the healing fantasy. The **sensitive knob is mend-RATE,
+not the per-Wholeness number**: at 1-part-per-3-combats the body actually DIES in late Act 3
+(eHP < incoming). Flag for **playtest**: how often can a real player actually complete the gated
+grieve+learn+redeem+survive loop? If mending is too hard in practice, the healing route collapses late.
 
-## Live design questions left for Hallie (not bugs)
-- **Recombinant axis**: total vs distinct vs only-real-parts. If "only parts," add an `IPart` marker
-  and filter. (Charted in code + bro-engine.)
-- **Wholeness run-level persistence**: max-HP gain persists naturally (it's on the creature), but the
-  *visible Wholeness counter* is currently in-combat only — it's re-earned as you mend, but a clean
-  re-derivation each combat (e.g. count MendedHearts in the run deck at battle start) needs a stable
-  engine hook I chose not to guess. Flagged in `Wholeness`'s comment.
-- **Numbers** (+2 max HP, heal-1-per-Wholeness, 6 dmg): all `// PROPOSAL`, Hallie's to mint. Sim-verify
-  the Act-3 vengeance→healing crossover (`THE_CREATURE/sim/`).
+## Build / play status (for Hallie's "when can I play?" question)
+- HEAD builds GREEN. The build auto-copies the mod DLL+JSON into the StS2 mods folder
+  (`CopyToModsFolderOnBuild` target). For art/`.pck` changes you need a Godot **publish** (`GodotPublish`
+  target) — code/loc-only changes (everything this session) just need `dotnet build`.
+- **Both characters register** via reflection: The Gay Blade (`KnifeHero`) AND The Creature
+  (`TheCreature`). The Gay Blade is the shipped, fully-arted PC; The Creature is playable but on
+  **placeholder art** (reuses Blade/template assets) until Hallie draws it.
+- To play: build the mod, launch StS2 with BaseLib loaded, pick the character at character-select.
 
-## ⚠️ WHELP — pre-existing broken working tree (NOT this governor's, NOT committed)
-There are uncommitted working-tree edits from another session's **whetstone-the-closet** work
-(`KnifeHeroCode/Powers/Closeted.cs`, `Stealth.cs`, `FancyFootwork.cs`, `KnifeWhip.cs`, `Kunai.cs`,
-`PridePowers.cs`, `PrideGolemThorns.cs`, `KnifeHero.cs`, plus untracked `WHETSTONE-the-closet.md` and
-`hallie-beats/`). As of handoff these **do not compile**: `Closeted.cs(50): error CS0246: 'Player'
-not found` — likely a missing `using MegaCrit.Sts2.Core.Entities.Players;`. This governor left them
-untouched (don't sweep up work you didn't create). **HEAD builds green** — verify with:
-`git stash push -- <those files>; dotnet build; git stash pop`. Next governor: either let Hallie
-finish the Closet, or (if asked) add the missing using — but it's her in-progress design.
+## Still open (Hallie's calls — design is decided, these are tuning/playtest)
+- **Numbers**: +2 max HP, heal-per-Wholeness, Become Who You Are's Strength/Lesson rates, Mended Heart
+  damage — all Hallie's to mint.
+- **Playtest the mend-rate** (the sim's sensitive knob — see item 3). Confirm a real player can keep
+  the healing loop going often enough to survive Act 3.
+- **Recombinant axis** (total vs distinct vs only-parts) — DECIDED total in code, but still Hallie's
+  to override if it plays wrong.
+- **Become Who You Are**: should it count itself among distinct Powers? Currently yes; cheap to filter
+  if Hallie wants "distinct OTHER powers."
+
+## ⚠️ Foreign working-tree WIP (NOT the Creature's; do not sweep up)
+The working tree holds another session's Knife-Hero edits (`KnifeHeroCode/Powers/`, `Character/`,
+`Cards/`, untracked `hallie-beats/`, card_portrait PNGs). They are NOT this governor's. Verify Creature
+green HEAD-in-isolation: `git stash push --include-untracked -- KnifeHeroCode/Powers/ KnifeHeroCode/Character/ KnifeHeroCode/Cards/; dotnet build; git stash pop`.
+Push with `git pull --rebase --autostash` so the foreign WIP doesn't block you.
 
 ## Governor practice note
-When the working tree holds others' in-progress edits, `dotnet build` reflects the *dirty* tree, not
-HEAD. Verify HEAD-in-isolation (stash the foreign files, build, pop) before trusting green/red.
+All Creature work stayed inside `THE_CREATURE/` + `KnifeHeroCode/Creature/` + the shared loc JSONs.
+Each beat: build green (isolated), commit only Creature files, rebase, push, record a bro edge.
