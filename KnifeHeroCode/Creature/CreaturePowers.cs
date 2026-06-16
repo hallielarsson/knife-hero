@@ -51,19 +51,33 @@ public sealed class MarginaliaPower : KnifeHeroPower
 /* Wholeness — the healing axis (THE_CREATURE/HEALING.md, the open keystone, now built).
    A counter you raise ONLY by mending a part (redeeming a Throbbing Heart that survives the combat).
    Vengeance scales with Grief — loud, capped, reset every fight. Wholeness is the orthogonal payoff:
-   it amplifies your healing (Mended Hearts heal +1 per Wholeness) and, alongside the permanent max-HP
-   raise the mend grants, it is the slow road that out-scales vengeance late.
+   alongside the permanent max-HP raise the mend grants, it knits your body a little each turn — the
+   slow road that out-scales vengeance late.
+
+   The healing is a PASSIVE turn-start trickle on the power itself: at the start of each of your turns,
+   heal equal to your Wholeness. Once per turn-start, it is UNPUMPABLE — there is no playable card that
+   re-triggers it, so it cannot feed back into a runaway healing loop.
 
    PROPOSAL (Claude, Pathetic Governor 2026-06-15): HEALING.md specified "+1 Wholeness per part mended,
    +2 max HP per Wholeness, healing amplified per Wholeness." The permanent max-HP raise is applied
    directly on the creature when a heart mends (SetMaxHp — it persists across combats, the run-long
-   body), and this power is the visible in-combat tracker that amplifies healing. A cleaner run-level
-   persistence (re-deriving the count each combat) is left for Hallie once a stable run-state hook is
-   chosen — flagged rather than guessed. */
+   body). The in-combat healing lives here as the passive trickle (NOT on Mended Heart — the earlier
+   per-play heal there could be re-played via DontLookAway → runaway loop, fixed/grieved 2026-06-15).
+   A cleaner run-level persistence (re-deriving the count each combat) is left for Hallie once a stable
+   run-state hook is chosen — flagged rather than guessed. Final numbers are Hallie's to mint. */
 public sealed class Wholeness : KnifeHeroPower
 {
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
+
+    // The healed body knits a little each turn. Heal equal to Wholeness at turn start — fires exactly
+    // once per turn no matter how many cards you play, so it can't be pumped into a feedback loop.
+    public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
+    {
+        if (player != Owner.Player || Amount <= 0m) return;
+        Flash();
+        await CreatureCmd.Heal(Owner, Amount, false);
+    }
 }
 
 /* Polymath — at the start of each turn, gain a Lesson (compounding study). Counter-stacks. */
