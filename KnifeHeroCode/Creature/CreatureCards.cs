@@ -184,6 +184,26 @@ public sealed class QuoteAtLength() : CreatureCard(1, CardType.Attack, CardRarit
     protected override void OnUpgrade() => _bonus = 3;
 }
 
+/* Become Who You Are — the Rare capstone (DECIDED: bro, design owner of The Creature, 2026-06-15).
+   The pool had no Rare; this is it. The thesis card — "the mechanics are authorship," the Creature is
+   the sum of its assembled parts — made permanent and compounding. At the start of each of your turns,
+   gain Strength equal to the number of DISTINCT Powers you currently hold, and gain 1 Lesson. It pays
+   off BREADTH (the assemblage axis the sim found underperforming — same axis Recombinant counts), it
+   compounds across a long fight (each distinct Book you read raises the per-turn Strength), and it ties
+   the two axes together (more Powers → more Strength; the Lesson trickle feeds Quote at Length / the
+   process threshold). Rare-worthy: snowballs hard in attrition fights, the long-road payoff that
+   matches the healing axis's late-game vindication. Frankenstein: "I was benevolent and good; misery
+   made me a fiend." — you become what you were assembled into. */
+public sealed class BecomeWhoYouAre() : CreatureCard(3, CardType.Power, CardRarity.Rare, TargetType.Self), IBook
+{
+    private decimal _strBonus; // upgrade: +1 flat Strength per turn on top of the distinct-power count
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        await PowerCmd.Apply<BecomeWhoYouArePower>(Owner.Creature, 1m + _strBonus, Owner.Creature, this, false);
+    }
+    protected override void OnUpgrade() => _strBonus = 1m;
+}
+
 // ---- the heart: Salt / Prehend / Grief ------------------------------------------------------
 // The society of bro, speaking as its actual events. Spent cards perish to the Exhaust pile —
 // "Salt": dated, not deleted. These three let the Creature stay with its dead instead of sealing

@@ -90,5 +90,7 @@
   "KNIFEHERO-KEENING.title": "Keening",
   "KNIFEHERO-KEENING.description": "Exhaust your hand. Gain 1 Grief for each card exhausted. Deal damage equal to twice your Grief to ALL enemies.",
   "KNIFEHERO-MENDED_HEART.title": "Mended Heart",
-  "KNIFEHERO-MENDED_HEART.description": "Deal 8 damage. \"Nothing is ever completely broken.\""
+  "KNIFEHERO-MENDED_HEART.description": "Deal 8 damage. \"Nothing is ever completely broken.\"",
+  "KNIFEHERO-BECOME_WHO_YOU_ARE.title": "Become Who You Are",
+  "KNIFEHERO-BECOME_WHO_YOU_ARE.description": "At the start of each turn, gain Strength equal to your number of Powers and gain 1 Lesson. \"I was benevolent and good; misery made me a fiend.\""
 }

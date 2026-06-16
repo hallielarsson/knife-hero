@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using KnifeHero.KnifeHeroCode.CreatureHero.Cards;
 using KnifeHero.KnifeHeroCode.Powers;
@@ -7,6 +8,7 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Powers;
 
 namespace KnifeHero.KnifeHeroCode.CreatureHero.Powers;
 
@@ -77,6 +79,32 @@ public sealed class Wholeness : KnifeHeroPower
         if (player != Owner.Player || Amount <= 0m) return;
         Flash();
         await CreatureCmd.Heal(Owner, Amount, false);
+    }
+}
+
+/* BecomeWhoYouArePower — the Rare capstone's engine (THE_CREATURE/DESIGN.md, the breadth payoff).
+   At the start of each of your turns: gain Strength equal to your number of DISTINCT Powers, then gain
+   1 Lesson. The Creature becomes the sum of its assembled parts — and the more distinct parts you've
+   read into yourself, the faster it compounds. Stack count adds a flat bonus per stack (so a second
+   copy / upgrade just adds to the per-turn Strength), but the scaling driver is breadth, not stacks.
+   Counts THIS power among the distinct powers (you are also a part you're made of) — consistent with
+   Recombinant's "all of it is you" decision. */
+public sealed class BecomeWhoYouArePower : KnifeHeroPower
+{
+    public override PowerType Type => PowerType.Buff;
+    public override PowerStackType StackType => PowerStackType.Counter;
+
+    public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
+    {
+        if (player != Owner.Player || Amount <= 0m) return;
+        Flash();
+        int distinct = Owner.Powers.Select(p => p.GetType()).Distinct().Count();
+        // Per-turn Strength = distinct Powers + (flat bonus per stack of this power). Amount is the
+        // stack count; the flat add per stack is (Amount - 1), so 1 stack = pure breadth, upgrades add.
+        decimal str = distinct + (Amount - 1m);
+        if (str > 0m)
+            await PowerCmd.Apply<StrengthPower>(Owner, str, Owner, null);
+        await PowerCmd.Apply<Lesson>(Owner, 1m, Owner, null, false);
     }
 }
 
