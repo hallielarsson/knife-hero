@@ -20,6 +20,10 @@ namespace KnifeHero.KnifeHeroCode.CreatureHero.Cards;
 // ---- basics ----------------------------------------------------------------------------------
 public sealed class Recite() : CreatureCard(1, CardType.Attack, CardRarity.Basic, TargetType.AnyEnemy)
 {
+    // Tag as Strike so the engine reads it as the Creature's basic attack (deck identity, Strike-matters
+    // effects, reward filtering) — fixes "no Strikes in deck." Mirrors GayBladeStrike.
+    protected override HashSet<CardTag> CanonicalTags => new() { CardTag.Strike };
+
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new List<DynamicVar> { new DamageVar(6m, ValueProp.Move) };
 
@@ -36,6 +40,9 @@ public sealed class Recite() : CreatureCard(1, CardType.Attack, CardRarity.Basic
 public sealed class Annotate() : CreatureCard(1, CardType.Skill, CardRarity.Basic, TargetType.Self)
 {
     public override bool GainsBlock => true;
+
+    // Tag as Defend so the engine reads it as the Creature's basic block — fixes "no Defends in deck."
+    protected override HashSet<CardTag> CanonicalTags => new() { CardTag.Defend };
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new List<DynamicVar> { new BlockVar(5m, ValueProp.Move) };
@@ -69,60 +76,74 @@ public sealed class OpenBook() : CreatureCard(1, CardType.Skill, CardRarity.Comm
 
 public sealed class Marginalia() : CreatureCard(1, CardType.Power, CardRarity.Common, TargetType.Self), IBook
 {
+    private decimal _lessonsNow; // upgrade: also gain 1 Lesson immediately when played
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await PowerCmd.Apply<MarginaliaPower>(Owner.Creature, 1m, Owner.Creature, this, false);
+        if (_lessonsNow > 0m)
+            await PowerCmd.Apply<Lesson>(Owner.Creature, _lessonsNow, Owner.Creature, this, false);
     }
+    protected override void OnUpgrade() => _lessonsNow = 1m;
 }
 
 public sealed class Polymath() : CreatureCard(2, CardType.Power, CardRarity.Uncommon, TargetType.Self), IBook
 {
+    private decimal _stacks = 1m; // upgrade: 2 stacks → 2 Lessons per turn
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<PolymathPower>(Owner.Creature, 1m, Owner.Creature, this, false);
+        await PowerCmd.Apply<PolymathPower>(Owner.Creature, _stacks, Owner.Creature, this, false);
     }
+    protected override void OnUpgrade() => _stacks = 2m;
 }
 
 /* Distinct-power Books — each reads into a DIFFERENT one-off Power, so the assemblage axis climbs
    (the sim showed this is what makes Recombinant matter). Each also grants a Lesson. */
 public sealed class Galvanism() : CreatureCard(1, CardType.Skill, CardRarity.Common, TargetType.Self), IBook
 {
+    private decimal _str = 1m; // upgrade: +1 Strength
     public override IEnumerable<CardKeyword> CanonicalKeywords => new List<CardKeyword> { CardKeyword.Exhaust };
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await PowerCmd.Apply<Lesson>(Owner.Creature, 1m, Owner.Creature, this, false);
-        await PowerCmd.Apply<StrengthPower>(Owner.Creature, 1m, Owner.Creature, this);
+        await PowerCmd.Apply<StrengthPower>(Owner.Creature, _str, Owner.Creature, this);
     }
+    protected override void OnUpgrade() => _str += 1m;
 }
 
 public sealed class Solitude() : CreatureCard(1, CardType.Skill, CardRarity.Common, TargetType.Self), IBook
 {
+    private decimal _dex = 1m; // upgrade: +1 Dexterity
     public override IEnumerable<CardKeyword> CanonicalKeywords => new List<CardKeyword> { CardKeyword.Exhaust };
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await PowerCmd.Apply<Lesson>(Owner.Creature, 1m, Owner.Creature, this, false);
-        await PowerCmd.Apply<DexterityPower>(Owner.Creature, 1m, Owner.Creature, this);
+        await PowerCmd.Apply<DexterityPower>(Owner.Creature, _dex, Owner.Creature, this);
     }
+    protected override void OnUpgrade() => _dex += 1m;
 }
 
 public sealed class Wretchedness() : CreatureCard(1, CardType.Skill, CardRarity.Common, TargetType.Self), IBook
 {
+    private decimal _thorns = 2m; // upgrade: +1 Thorns
     public override IEnumerable<CardKeyword> CanonicalKeywords => new List<CardKeyword> { CardKeyword.Exhaust };
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await PowerCmd.Apply<Lesson>(Owner.Creature, 1m, Owner.Creature, this, false);
-        await PowerCmd.Apply<ThornsPower>(Owner.Creature, 2m, Owner.Creature, this);
+        await PowerCmd.Apply<ThornsPower>(Owner.Creature, _thorns, Owner.Creature, this);
     }
+    protected override void OnUpgrade() => _thorns += 1m;
 }
 
 public sealed class FireStolen() : CreatureCard(1, CardType.Skill, CardRarity.Common, TargetType.Self), IBook
 {
+    private decimal _regen = 2m; // upgrade: +1 Regeneration
     public override IEnumerable<CardKeyword> CanonicalKeywords => new List<CardKeyword> { CardKeyword.Exhaust };
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await PowerCmd.Apply<Lesson>(Owner.Creature, 1m, Owner.Creature, this, false);
-        await PowerCmd.Apply<RegenPower>(Owner.Creature, 2m, Owner.Creature, this);
+        await PowerCmd.Apply<RegenPower>(Owner.Creature, _regen, Owner.Creature, this);
     }
+    protected override void OnUpgrade() => _regen += 1m;
 }
 
 // ---- payoffs ---------------------------------------------------------------------------------
@@ -135,27 +156,32 @@ public sealed class Recombinant() : CreatureCard(2, CardType.Attack, CardRarity.
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
-        // PROPOSAL (open, for Hallie): counts ALL powers — including inert trackers (Grief, Lesson) and
-        // now Wholeness (so mended parts buff this, a nice "assembled-ness includes your healed parts"
-        // synergy). DESIGN.md/PARTS.md debated distinct-vs-total-vs-only-real-parts; left as total for
-        // now. If it should count only "parts," filter by an IPart marker here. Grieved/charted in bro-engine.
+        // DECIDED (bro, design owner of The Creature, 2026-06-15): counts ALL powers — every Power you
+        // hold is a part you're made of, and the Creature's whole soul is "refusing to abandon anything
+        // you were made of" (PARTS.md). Strength, Regen, Wholeness, even Grief — all of it is you, and
+        // all of it strikes. Assembled-ness is total, not distinct. This is the answer, not a placeholder.
         int hits = Math.Max(1, Owner.Creature.Powers.Count);
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue).WithHitCount(hits).FromCard(this)
             .Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
     }
+
+    protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(1m); // +1 per hit — scales hard
 }
 
 /* Quote at Length — the Lesson sink: deal damage equal to your Lessons. */
 public sealed class QuoteAtLength() : CreatureCard(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
 {
+    private int _bonus; // upgrade: +3 flat on top of Lessons (so it's never a dead card early)
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
         int lessons = (int)(Owner.Creature.Powers.FirstOrDefault(p => p is Lesson)?.Amount ?? 0m);
-        if (lessons <= 0) return;
-        await DamageCmd.Attack(lessons).FromCard(this).Targeting(cardPlay.Target)
+        int dmg = lessons + _bonus;
+        if (dmg <= 0) return;
+        await DamageCmd.Attack(dmg).FromCard(this).Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
     }
+    protected override void OnUpgrade() => _bonus = 3;
 }
 
 // ---- the heart: Salt / Prehend / Grief ------------------------------------------------------
@@ -168,14 +194,16 @@ public sealed class QuoteAtLength() : CreatureCard(1, CardType.Attack, CardRarit
    damage — but Lessons cancel grief (you Learn so you can afford to stay with your dead). */
 public sealed class DontLookAway() : CreatureCard(1, CardType.Skill, CardRarity.Common, TargetType.Self)
 {
+    private int _griefCost = 2; // upgrade: staying with your dead costs less — 1 grief instead of 2
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         var salt = CardPile.GetCards(Owner, PileType.Exhaust).ToList();
         if (salt.Count == 0) return;
         var card = Owner.RunState.Rng.CombatCardGeneration.NextItem(salt);
         await CardPileCmd.Add(card, PileType.Hand);
-        await TakeGriefDamage(choiceContext, 2);
+        await TakeGriefDamage(choiceContext, _griefCost);
     }
+    protected override void OnUpgrade() => _griefCost = 1;
 }
 
 /* Read the Remainder — the grail question the creature was denied: ask your dead why they died, and
@@ -183,12 +211,14 @@ public sealed class DontLookAway() : CreatureCard(1, CardType.Skill, CardRarity.
    are willing to look at, the more it mends. */
 public sealed class ReadTheRemainder() : CreatureCard(1, CardType.Skill, CardRarity.Common, TargetType.Self)
 {
+    private decimal _heal = 1m; // upgrade: the grail question answers louder — heal 2 per dead card
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         int dead = CardPile.GetCards(Owner, PileType.Exhaust).Count();
         if (dead <= 0) return;
-        await CreatureCmd.Heal(Owner.Creature, dead, false);
+        await CreatureCmd.Heal(Owner.Creature, dead * _heal, false);
     }
+    protected override void OnUpgrade() => _heal = 2m;
 }
 
 /* Vexing Memory — Hallie's design. A Status: it festers in your hand. At the end of your turn it
@@ -218,13 +248,16 @@ public sealed class VexingMemory() : CreatureCard(-1, CardType.Status, CardRarit
 public sealed class Wallow() : CreatureCard(1, CardType.Skill, CardRarity.Common, TargetType.Self)
 {
     public override bool GainsBlock => true;
+    private int _flat; // upgrade: +3 Block on top, so it armors you even before grief builds
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         int grief = (int)(Owner.Creature.Powers.FirstOrDefault(p => p is Grief)?.Amount ?? 0m);
-        if (grief <= 0) return;
-        await CreatureCmd.GainBlock(Owner.Creature, new BlockVar(grief, ValueProp.Move), cardPlay);
+        int block = grief + _flat;
+        if (block <= 0) return;
+        await CreatureCmd.GainBlock(Owner.Creature, new BlockVar(block, ValueProp.Move), cardPlay);
     }
+    protected override void OnUpgrade() => _flat = 3;
 }
 
 /* Keening — Hallie's design. A wail of mourning made into force: Exhaust your hand, gain 1 Grief for
@@ -233,6 +266,7 @@ public sealed class Wallow() : CreatureCard(1, CardType.Skill, CardRarity.Common
    so they stay.) */
 public sealed class Keening() : CreatureCard(2, CardType.Attack, CardRarity.Uncommon, TargetType.AllEnemies)
 {
+    private int _mult = 2; // upgrade: the wail cuts deeper — 3× Grief instead of 2×
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         var toExhaust = CardPile.GetCards(Owner, PileType.Hand)
@@ -244,8 +278,9 @@ public sealed class Keening() : CreatureCard(2, CardType.Attack, CardRarity.Unco
 
         int grief = (int)(Owner.Creature.Powers.FirstOrDefault(p => p is Grief)?.Amount ?? 0m);
         if (grief <= 0) return;
-        await DamageCmd.Attack(grief * 2).FromCard(this).TargetingAllOpponents(CombatState)
+        await DamageCmd.Attack(grief * _mult).FromCard(this).TargetingAllOpponents(CombatState)
             .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
     }
+    protected override void OnUpgrade() => _mult = 3;
 }
 

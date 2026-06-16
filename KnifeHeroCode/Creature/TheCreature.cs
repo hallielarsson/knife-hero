@@ -24,16 +24,20 @@ public class TheCreature : PlaceholderCharacterModel
     public override CharacterGender Gender => CharacterGender.Neutral; // Hallie's call
     public override int StartingHp => 72;
 
-    // You start with two parts (Throbbing Hearts — body that begins as curse) plus a normal backbone:
-    // Recite IS your Strike (deal 6), Annotate IS your Defend (gain 5). Two parts was too punishing at
-    // three; the deck needs reliable action to survive long enough to grieve and learn them.
+    // You start with ONE part (a Throbbing Heart — the body that begins as a curse) plus a normal
+    // backbone: Recite IS your Strike (deal 6, tagged Strike), Annotate IS your Defend (gain 5, tagged
+    // Defend). DECIDED (bro, design owner of The Creature, 2026-06-15): one Heart, not two — two
+    // Eternal+Retain curses, each spawning a Vexing Memory, clog the hand and read as oppressive
+    // ("throbbing heart used three times"). One is enough to teach the grieve-and-learn loop; the run
+    // grows you more parts. The backbone is wider (4 Strikes / 4 Defends) so the deck has plenty of
+    // real Strikes and Defends to read and play.
     public override IEnumerable<CardModel> StartingDeck => [
         ModelDb.Card<ThrobbingHeart>(),
-        ModelDb.Card<ThrobbingHeart>(),
         ModelDb.Card<Recite>(),
         ModelDb.Card<Recite>(),
         ModelDb.Card<Recite>(),
         ModelDb.Card<Recite>(),
+        ModelDb.Card<Annotate>(),
         ModelDb.Card<Annotate>(),
         ModelDb.Card<Annotate>(),
         ModelDb.Card<Annotate>(),

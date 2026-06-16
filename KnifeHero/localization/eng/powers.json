@@ -45,8 +45,8 @@
   "KNIFEHERO-POLYMATH_POWER.description": "At the start of each turn, gain Lessons.",
   "KNIFEHERO-POLYMATH_POWER.smartDescription": "At the start of each turn, gain Lessons.",
   "KNIFEHERO-GRIEF.title": "Grief",
-  "KNIFEHERO-GRIEF.description": "Accumulated grief. Cards that make you take damage equal to your Grief cash it in. Lessons cancel grief damage.",
-  "KNIFEHERO-GRIEF.smartDescription": "Cards that make you take damage equal to your Grief cash it in. Lessons cancel grief damage.",
+  "KNIFEHERO-GRIEF.description": "Accumulated grief — a part of you that aches. Some cards make you lose HP equal to your Grief; others (Wallow) turn it into Block. Process a Throbbing Heart to reset it.",
+  "KNIFEHERO-GRIEF.smartDescription": "Grief: some cards lose you HP equal to it; some turn it into Block.",
   "KNIFEHERO-WHOLENESS.title": "Wholeness",
   "KNIFEHERO-WHOLENESS.description": "You have mended this many parts. Each grants +2 max HP. At the start of your turn, heal HP equal to your Wholeness.",
   "KNIFEHERO-WHOLENESS.smartDescription": "At the start of your turn, heal Wholeness HP."
