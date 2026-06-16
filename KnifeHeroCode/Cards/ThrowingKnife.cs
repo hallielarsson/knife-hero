@@ -34,4 +34,7 @@ public sealed class ThrowingKnife() : KnifeHeroCard(1, CardType.Attack, CardRari
         else
             await CardPileCmd.Add(this, PileType.Hand);                             // bounced off Block — throw again
     }
+
+    // PROPOSAL (Claude 2026-06-15): upgrade = a sharper edge. +3 damage (6 -> 9). Hallie to tune.
+    protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(3m);
 }

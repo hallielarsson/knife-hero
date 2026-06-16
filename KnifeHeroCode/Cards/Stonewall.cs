@@ -32,4 +32,12 @@ public sealed class Stonewall() : KnifeHeroCard(2, CardType.Attack, CardRarity.U
             await DamageCmd.Attack(DynamicVars.Damage.BaseValue).WithHitCount(flags).FromCard(this)
                 .Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
     }
+
+    // PROPOSAL (Claude 2026-06-15): hold the line harder. +5 Block (10 -> 15) and +1 per-flag
+    // damage (3 -> 4), so the wall and the pride both grow. Hallie to tune.
+    protected override void OnUpgrade()
+    {
+        DynamicVars.Block.UpgradeValueBy(5m);
+        DynamicVars.Damage.UpgradeValueBy(1m);
+    }
 }

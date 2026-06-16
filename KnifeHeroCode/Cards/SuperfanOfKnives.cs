@@ -36,4 +36,7 @@ public sealed class SuperfanOfKnives() : KnifeHeroCard(2, CardType.Attack, CardR
         await PowerCmd.Apply<FanOfKnivesThisTurnPower>(Owner.Creature, 1m, Owner.Creature, this, false);
         await Shiv.CreateInHand(Owner, count, CombatState);
     }
+
+    // PROPOSAL (Claude 2026-06-15): a thicker storm. +3 AoE damage (4 -> 7). Hallie to tune.
+    protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(3m);
 }

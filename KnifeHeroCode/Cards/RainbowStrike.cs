@@ -13,13 +13,17 @@ namespace KnifeHero.KnifeHeroCode.Cards;
 /* Rainbow Strike — deal 2 damage for every Flag you're flying (sum of your Flag stacks). */
 public sealed class RainbowStrike() : KnifeHeroCard(1, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy)
 {
-    private const int PerFlag = 2;
+    // Damage per Flag. Upgradeable so the rainbow brightens with the deck.
+    // PROPOSAL (Claude 2026-06-15): base 2, +1 on upgrade (every flag hits harder). Hallie to tune.
+    private int _perFlag = 2;
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
         int flags = Owner.Creature.FlagCount();
-        await DamageCmd.Attack(PerFlag * flags).FromCard(this).Targeting(cardPlay.Target)
+        await DamageCmd.Attack(_perFlag * flags).FromCard(this).Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
     }
+
+    protected override void OnUpgrade() => _perFlag += 1;
 }
