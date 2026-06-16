@@ -1,6 +1,6 @@
 {
-  "KNIFEHERO-KUNAI.title": "Kunai",
-  "KNIFEHERO-KUNAI.description": "Deal 3 damage. Exhaust.",
+  "KNIFEHERO-KUNAI.title": "Throwing Shiv",
+  "KNIFEHERO-KUNAI.description": "Deal 1 damage. If this is in your hand at the end of your turn, deal 3 damage to ALL enemies and Exhaust.",
   "KNIFEHERO-GAY_BLADE_STRIKE.title": "Strike",
   "KNIFEHERO-GAY_BLADE_STRIKE.description": "Deal 6 damage.",
   "KNIFEHERO-GAY_BLADE_DEFEND.title": "Defend",
