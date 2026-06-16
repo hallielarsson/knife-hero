@@ -28,7 +28,7 @@
   "KNIFEHERO-THROWING_KNIFE.title": "Throwing Knife",
   "KNIFEHERO-THROWING_KNIFE.description": "Deal 6 damage. If this deals HP damage, Exhaust it. If it doesn't, return it to your hand.",
   "KNIFEHERO-THE_CLOSET.title": "The Closet",
-  "KNIFEHERO-THE_CLOSET.description": "Gain 3 Stealth. The next time you play an Attack, lose all Stealth.",
+  "KNIFEHERO-THE_CLOSET.description": "Gain 3 Stealth and become Closeted: each turn, discard a card to prevent the next damage you take (an empty hand breaks the closet for a Dazed). Playing an Attack blows your cover — lose all Stealth.",
   "KNIFEHERO-THE_DISCOURSE.title": "The Discourse",
   "KNIFEHERO-THE_DISCOURSE.description": "If this is in your hand at the end of your turn, gain 1 less energy next turn. Exhaust.",
   "KNIFEHERO-EXTREMELY_ONLINE.title": "Extremely Online",
