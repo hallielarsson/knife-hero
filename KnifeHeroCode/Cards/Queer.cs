@@ -54,8 +54,9 @@ public sealed class Queer() : KnifeHeroCard(-1, CardType.Curse, CardRarity.Curse
         if (!card.Tags.Contains(CardTag.Strike) && !card.Tags.Contains(CardTag.Defend)) return;
         if (!card.IsTransformable) return;
 
-        // Refuse erasure (back into play via Discard), then come back OTHER (a throwing shiv).
-        await CardPileCmd.Add(card, PileType.Discard);
+        // Refuse erasure: return it to the deck (the draw pile), come back OTHER (a throwing shiv).
+        // You can't cast the normative out — it returns to your deck, queer, to be drawn again.
+        await CardPileCmd.Add(card, PileType.Draw);
         await CardCmd.TransformTo<Kunai>(card);
     }
 }

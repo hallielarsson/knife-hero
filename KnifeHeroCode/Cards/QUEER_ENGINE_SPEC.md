@@ -96,7 +96,7 @@ all fight and receives combat hooks — so it hosts `AfterCardChangedPiles` dire
 |-------------------------------|--------|-------|
 | Queer curse (Innate/Eternal/Unplayable) | **BUILT** | `Cards/Queer.cs` |
 | Exhaust interception           | **BUILT** | catches a card landing in Exhaust; re-entry-guarded |
-| "Becoming" (transform)         | **BUILT, placeholder** | Strike/Defend → Throwing Shiv (`TransformTo<Kunai>`) |
+| "Becoming" (transform)         | **BUILT, placeholder** | Strike/Defend → Throwing Shiv (`TransformTo<Kunai>`), returned to the **deck (draw pile)** — it comes back to be drawn again, not just saved to discard |
 | Scope = basic Strike/Defend    | **BUILT** | `CardTag.Strike/Defend`; shivs DEFERRED (firehose) |
 | Run-level removal (BeforeCardRemoved) | **HELD** | needs run-scoped host (relic/character), not an in-combat card |
 | Rider pool (Tinker chassis+rider) | **HELD** | needs BaseLib `CardModifier` ModelDb plumbing; `TransformToRandom` over a curated out-pool is the divergence path |
