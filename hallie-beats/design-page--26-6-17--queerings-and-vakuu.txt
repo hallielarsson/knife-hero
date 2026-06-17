@@ -1,0 +1,72 @@
+GAY BLADE — handwritten design page (Hallie, 2026-06-17, IMG_0434)
+Transcribed by Claude. [?] = uncertain reading, needs Hallie confirm. Verbatim intent preserved.
+
+LOCKED THIS SESSION:
+- "Queering" is the locked term for the riders bolted onto cast-out cards (the QueerRiderMod pool).
+- "Vakuu" = canon StS2 Ancient, "The First Demon" (wiki: Vakuu). The patron demon. Canon boon
+  "Whispering Earring": "Gain energy at the start of each turn. Vakuu plays your first turn for
+  you." Hallie's X-energy card draws on this. Vakuu = the anti-consistency Ancient (rewards chaos,
+  punishes lean decks) → he is the canon backing for the Gay Blade thesis (diversity as strength).
+  The Queer curse reads as a Vakuu PACT (he gives curses; you make the curse your engine).
+
+================================================================================
+NEW CARDS
+================================================================================
+
+FAITH — (1)
+  Deal 1 damage.
+  The next time you draw Faith, deal 10 damage.
+  [Q: 1 -> 10 once, or escalates each draw?]
+
+ALL YOU CAN EAT
+  Exhaust all knives + shivs.
+  Gain X HP. Lose all Block.
+  Exhaust.
+  [Q: X = number of knives/shivs exhausted? or = Block lost?]
+
+I WANT TO RECRUIT YOU
+  Deal 6 damage. Queer a card in your hand.
+  [= the ACTIVE queer: player chooses a card to Queer, vs the Queer curse's passive on-exhaust.]
+
+================================================================================
+— QUEERINGS — (the rider pool; each becomes a QueerRiderMod variant)
+================================================================================
+
+1. Instead of dealing damage, gain Block — and vice versa.
+   [the Switchblade fluidity as a rider. HARD: overrides a card's base effect, not just adds.]
+
+2. When you play this, convert Strength -> [?dfcts: Dexterity / Block?].   [Q: confirm target stat]
+
+3. When you spend energy on this, gain that much energy next turn.
+
+4. [crossed: "Close"] You [?____] to [?Mods / Mads].   [Q: illegible — confirm]
+
+5. SHUFFLE. When you put this into your discard, shuffle your discard into your deck.
+
+6. OOPS. When this deals damage, a random enemy [?gains / takes] that much [?____].   [Q: confirm]
+
+7. VAKUU. Vakuu plays [it] from your hand if this card is in it to start. [?]   [needs Vakuu subsystem]
+
+================================================================================
+ATTACKS / THE VAKUU LINE  (below the divider on the page)
+================================================================================
+
+[crossed-out attack name]
+DEMONIC PRIDE / VAKUU'S NAILS
+  [scribbled line: "If this is in your hand, Vakuu plays [it] / you ..."]
+
+X-COST ATTACK
+  Gain X energy. Vakuu plays your hand.
+  [crossed: "This gains X damage."]
+  If this is in your hand at the end of your turn, draw an extra card next turn.
+  [Q: is "Vakuu plays your hand" the full Whispering-Earring auto-play subsystem, or lighter?]
+
+================================================================================
+ARCHITECTURE NOTES (Claude)
+================================================================================
+- Queerings 5 (Shuffle), 6 (Oops), 3 (energy-refund) are clean CardModifier adds (OnPlay /
+  AfterCardChangedPiles). Poison Coating rider is already shipped as the seed (QueerRiderMod).
+- Queering 1 (swap damage<->block) is the hard one: it overrides the card's base behavior.
+- Vakuu "plays your hand" is a real subsystem; canon Whispering-Earring gives its shape.
+- Three pillars now: Queering (riders) | Vakuu (patron demon + card line) | active-queer (Recruit).
+- See QUEER_ENGINE_SPEC.md for the engine these feed.

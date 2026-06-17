@@ -106,6 +106,22 @@ fire reliably for exhausts of *other* cards while it sits Innate in hand? (It sh
 `ShouldReceiveCombatHooks` is true while in a combat pile — but confirm by feel.) Does transform on
 a card sitting in the exhaust→discard relocation read cleanly, or flicker?
 
+## Incoming content — the Queerings pool & Vakuu (2026-06-17 design page)
+Hallie's handwritten page (transcribed verbatim: `hallie-beats/design-page--26-6-17--queerings-and-vakuu.txt`)
+delivers the rider-pool contents and a third pillar. **"Queering" is the locked term** for riders.
+
+- **The Queerings** = the `QueerRiderMod` pool. Seven so far (swap damage↔block; convert Strength→[?];
+  energy-refund; [illegible]; Shuffle-on-discard; "Oops" splash; a Vakuu rider). Poison Coating is the
+  shipped seed. Build the clean ones first (Shuffle / Oops / energy-refund are simple `CardModifier`
+  adds; swap-damage↔block overrides base behavior — its own pass). Some words need Hallie's confirm.
+- **Vakuu** = canon StS2 Ancient, *The First Demon* (anti-consistency, makes pacts, gives curses).
+  He is the Gay Blade's **patron**: the Queer curse reads as a Vakuu pact, and he is the canon backing
+  for the diversity-as-strength thesis. Canon boon *Whispering Earring* ("Gain energy each turn; Vakuu
+  plays your first turn for you") grounds Hallie's "Gain X energy, Vakuu plays your hand" card. A
+  separate subsystem + card line (Demonic Pride, Vakuu's Nails). HELD pending scope.
+- **Active queer** = "I Want To Recruit You: deal 6, Queer a card in hand" — player-chosen queer,
+  distinct from the curse's passive on-exhaust.
+
 ## Implementation path (the *can* — substrate already shipped)
 - **Riders are `CardModifier`s.** BaseLib's `CardModifier`
   (`.decompiled-baselib/Baselib/Abstracts/CardModifier.cs`) is exactly the per-card attachment the
