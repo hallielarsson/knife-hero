@@ -19,11 +19,12 @@ FAITH — (1)   [CONFIRMED + BUILT 2026-06-17: Cards/Faith.cs]
   Hallie: "just the flat climb. You have to have faith." => 1 -> 10 once, no compounding.
   Per-combat (fresh copy starts at 1). The payoff is for keeping/redrawing it.
 
-ALL YOU CAN EAT
-  Exhaust all knives + shivs.
-  Gain X HP. Lose all Block.
-  Exhaust.
-  [Q: X = number of knives/shivs exhausted? or = Block lost?]
+ALL YOU CAN EAT   [CONFIRMED + BUILT 2026-06-17: Cards/AllYouCanEat.cs]
+  Exhaust all knives (IBlade) + shivs (CardTag.Shiv) in your HAND. Gain 3 HP each (// PROPOSAL).
+  Cap = max HP (no overheal); healing past it becomes Block instead. Card self-Exhausts.
+  Hallie: "the heal one should have a cap. Everything over the cap becomes block." -> never a dead
+  heal: low HP mends, full HP turns the meal into armor. "Lose all Block" CUT (overflow->block
+  supersedes it). Hand-only (whole-deck set aside as the bigger swing).
 
 I WANT TO RECRUIT YOU
   Deal 6 damage. Queer a card in your hand.
