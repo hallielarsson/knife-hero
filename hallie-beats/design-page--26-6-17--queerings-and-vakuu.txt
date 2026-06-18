@@ -13,10 +13,11 @@ LOCKED THIS SESSION:
 NEW CARDS
 ================================================================================
 
-FAITH — (1)
+FAITH — (1)   [CONFIRMED + BUILT 2026-06-17: Cards/Faith.cs]
   Deal 1 damage.
   The next time you draw Faith, deal 10 damage.
-  [Q: 1 -> 10 once, or escalates each draw?]
+  Hallie: "just the flat climb. You have to have faith." => 1 -> 10 once, no compounding.
+  Per-combat (fresh copy starts at 1). The payoff is for keeping/redrawing it.
 
 ALL YOU CAN EAT
   Exhaust all knives + shivs.
@@ -35,17 +36,20 @@ I WANT TO RECRUIT YOU
 1. Instead of dealing damage, gain Block — and vice versa.
    [the Switchblade fluidity as a rider. HARD: overrides a card's base effect, not just adds.]
 
-2. When you play this, convert Strength -> [?dfcts: Dexterity / Block?].   [Q: confirm target stat]
+2. When you play this, convert Strength -> Dexterity.   [CONFIRMED: str -> dex]
 
 3. When you spend energy on this, gain that much energy next turn.
 
-4. [crossed: "Close"] You [?____] to [?Mods / Mads].   [Q: illegible — confirm]
+4. The standard ones (Clone, Madness, etc.).   [CONFIRMED: the canonical card-mod effects —
+   Clone (duplicate), Madness (cost -> 0), and kin. Queering can apply these standard modifiers.]
 
 5. SHUFFLE. When you put this into your discard, shuffle your discard into your deck.
 
-6. OOPS. When this deals damage, a random enemy [?gains / takes] that much [?____].   [Q: confirm]
+6. OOPS. When this deals damage, a random TARGET takes that much damage — enemy OR the hero,
+   anyone.   [CONFIRMED: random target, can hit yourself. Chaotic splash, very Vakuu.]
 
-7. VAKUU. Vakuu plays [it] from your hand if this card is in it to start. [?]   [needs Vakuu subsystem]
+7. VAKUU. Vakuu plays [it] from your hand if this card is in it to start.   [FULL VAKUU subsystem
+   confirmed — he plays your hand. See Vakuu line below.]
 
 ================================================================================
 ATTACKS / THE VAKUU LINE  (below the divider on the page)
@@ -59,7 +63,9 @@ X-COST ATTACK
   Gain X energy. Vakuu plays your hand.
   [crossed: "This gains X damage."]
   If this is in your hand at the end of your turn, draw an extra card next turn.
-  [Q: is "Vakuu plays your hand" the full Whispering-Earring auto-play subsystem, or lighter?]
+  [CONFIRMED: FULL Vakuu. "Vakuu plays your hand" = the real subsystem — he auto-plays your
+  cards (canon Whispering Earring shape). Its own focused build beat. STILL OPEN: All You Can
+  Eat's X (= count exhausted? or Block lost?).]
 
 ================================================================================
 ARCHITECTURE NOTES (Claude)
