@@ -34,7 +34,7 @@ public sealed class KnifeWhip() : KnifeHeroCard(1, CardType.Attack, CardRarity.C
 
         // drop a standard Shiv into the discard pile
         var shiv = CombatState.CreateCard<MegaCrit.Sts2.Core.Models.Cards.Shiv>(Owner);
-        CardCmd.PreviewCardPileAdd(await CardPileCmd.AddGeneratedCardToCombat(shiv, PileType.Discard, addedByPlayer: true));
+        CardCmd.PreviewCardPileAdd(await CardPileCmd.AddGeneratedCardToCombat(shiv, PileType.Discard, Owner));
 
 
 

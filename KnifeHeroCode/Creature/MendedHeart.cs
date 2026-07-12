@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using KnifeHero.KnifeHeroCode.Extensions;
 using KnifeHero.KnifeHeroCode.CreatureHero.Powers;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -24,6 +25,14 @@ namespace KnifeHero.KnifeHeroCode.CreatureHero.Cards;
 // Token rarity: only ever created by transforming a mended Throbbing Heart, never offered as a reward.
 public sealed class MendedHeart() : CreatureCard(1, CardType.Attack, CardRarity.Token, TargetType.AnyEnemy)
 {
+    // Art: Gray490 — the heart IN SITU, between the lungs, trachea and pericardium intact. Deliberately
+    // paired against the Throbbing Heart's Gray505, which is the same organ EXCISED, its vagus nerves
+    // trailing as cut threads and the aorta severed clean. Excised → restored. And the page is quiet:
+    // the Throbbing Heart is printed over Milton's "Did I request thee, Maker, from my clay" — the
+    // Mended Heart is on a blank leaf. The argument is over.
+    public override string PortraitPath => "mended_heart.png".CardImagePath();
+    public override string CustomPortraitPath => "mended_heart.png".BigCardImagePath();
+
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new List<DynamicVar> { new DamageVar(8m, ValueProp.Move) };
 

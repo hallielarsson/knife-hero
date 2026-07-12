@@ -1,7 +1,7 @@
 {
   "KNIFEHERO-STEALTH.title": "Stealth",
-  "KNIFEHERO-STEALTH.description": "At the end of your turn, consume a Flag and gain Intangible.",
-  "KNIFEHERO-STEALTH.smartDescription": "At the end of your turn, consume a Flag and gain Intangible.",
+  "KNIFEHERO-STEALTH.description": "Incoming attacks are capped at 1 damage. If you lose HP, you lose ALL Stealth.",
+  "KNIFEHERO-STEALTH.smartDescription": "Incoming attacks are capped at 1 damage. If you lose HP, you lose ALL Stealth.",
   "KNIFEHERO-CLOSETED.title": "Closeted",
   "KNIFEHERO-CLOSETED.description": "At the start of your turn, discard a card to prevent the next damage you would take. If you can't, lose Closeted and add a Dazed to your hand. Playing an Attack removes all your Stealth and Closeted.",
   "KNIFEHERO-CLOSETED.smartDescription": "At the start of your turn, discard a card to prevent the next damage you would take. If you can't, lose Closeted and add a Dazed to your hand. Playing an Attack removes all your Stealth and Closeted.",
@@ -58,5 +58,8 @@
   "KNIFEHERO-WHOLENESS.smartDescription": "At the start of your turn, heal Wholeness HP.",
   "KNIFEHERO-BECOME_WHO_YOU_ARE_POWER.title": "Become Who You Are",
   "KNIFEHERO-BECOME_WHO_YOU_ARE_POWER.description": "At the start of each turn, gain Strength equal to your number of Powers, then gain 1 Lesson.",
-  "KNIFEHERO-BECOME_WHO_YOU_ARE_POWER.smartDescription": "At the start of each turn, gain Strength equal to your Powers, then gain 1 Lesson."
+  "KNIFEHERO-BECOME_WHO_YOU_ARE_POWER.smartDescription": "At the start of each turn, gain Strength equal to your Powers, then gain 1 Lesson.",
+  "KNIFEHERO-PRIDES_PLAYED.title": "Prides Played",
+  "KNIFEHERO-PRIDES_PLAYED.description": "The number of Pride cards you have played this combat.",
+  "KNIFEHERO-PRIDES_PLAYED.smartDescription": "The number of Pride cards you have played this combat."
 }

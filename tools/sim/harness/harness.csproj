@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>true</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RootNamespace>KnifeHero.Sim</RootNamespace>
+    <AssemblyName>knifehero-sim</AssemblyName>
+    <!--
+      This project is NOT part of the mod build. It is a standalone playtesting harness that
+      references the real game DLLs read-only from the Steam install plus the mod's own built
+      KnifeHero.dll, and drives real combat logic headlessly (no Godot engine process).
+      See tools/sim/README.md for how this works and what it does/doesn't model.
+    -->
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Sts2DataDir>/Users/hallie/Library/Application Support/Steam/steamapps/common/Slay the Spire 2/SlayTheSpire2.app/Contents/Resources/data_sts2_macos_arm64</Sts2DataDir>
+    <KnifeHeroRepoRoot>$(MSBuildThisFileDirectory)../../..</KnifeHeroRepoRoot>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="sts2">
+      <HintPath>$(Sts2DataDir)/sts2.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="GodotSharp">
+      <HintPath>$(Sts2DataDir)/GodotSharp.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="0Harmony">
+      <HintPath>$(Sts2DataDir)/0Harmony.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="KnifeHero">
+      <HintPath>$(KnifeHeroRepoRoot)/.godot/mono/temp/bin/Debug/KnifeHero.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <!-- BaseLib ships as a NuGet package (Alchyr.Sts2.BaseLib), not a loose DLL next to the game.
+         Resolve it from the same nuget cache the mod build already uses. -->
+    <Reference Include="BaseLib">
+      <HintPath>$(NuGetPackageRoot)alchyr.sts2.baselib/3.3.5/lib/net9.0/BaseLib.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+  </ItemGroup>
+
+</Project>

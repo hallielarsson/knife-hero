@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using BaseLib.Abstracts;
 using KnifeHero.KnifeHeroCode.Character;
+using KnifeHero.KnifeHeroCode.Extensions;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
@@ -19,6 +20,9 @@ namespace KnifeHero.KnifeHeroCode.Cards;
    and doesn't exhaust. */
 public sealed class ButchBlade() : KnifeHeroCard(1, CardType.Attack, CardRarity.Token, TargetType.AnyEnemy), IBlade, IFlagBlade
 {
+    public override string PortraitPath => "butch_blade.png".CardImagePath();
+    public override string CustomPortraitPath => "butch_blade.png".BigCardImagePath();
+
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
         new List<CardKeyword> { CardKeyword.Retain };
 

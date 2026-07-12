@@ -19,7 +19,7 @@ public sealed class PoisonCoating() : KnifeHeroCard(1, CardType.Skill, CardRarit
 {
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<PoisonCoatingPower>(Owner.Creature, 3m, Owner.Creature, this, false);
+        await PowerCmd.Apply<PoisonCoatingPower>(choiceContext, Owner.Creature, 3m, Owner.Creature, this, false);
     }
 }
 
@@ -29,6 +29,6 @@ public sealed class ExplosiveTip() : KnifeHeroCard(1, CardType.Skill, CardRarity
 {
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<ExplosiveTipPower>(Owner.Creature, 1m, Owner.Creature, this, false);
+        await PowerCmd.Apply<ExplosiveTipPower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
     }
 }

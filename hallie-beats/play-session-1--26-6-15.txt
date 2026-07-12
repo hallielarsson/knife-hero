@@ -1,0 +1,13 @@
+beat
+establish drama: resolve drama - the tweakwe we made work and compile and the fancy footwoork feels less broken
+establish drama: The stealth mechanic does not read well.
+establish drama: Hallie wanted to rename fance footwork "switch blade" and make it a pride blade
+establish drama: none of the cards upgrade
+establish drama: we update card mechanics but the coards read wrong
+establish drama: many of the cards are out of date
+foreshadow script beat: all pride powers become pride blades
+foreshadow script beat: kunai and shiv mechanics unified with 'throwing shiv' that deals BASE_DAMAGE - 2 on play, or deales BASE_DAMAGE damage and exhausts if in hand at end of turn. BASE_DAMAGE = 3.
+foreshadow script beat: Butch-Blade -> Chop Top, and Femme-Flechette -> Princess Pillow.
+will resolve drama - conflation of butch/femme and top/bottom may result in Discourse
+foreshadow script beat: Chop Top and Princess Pillow should both transform into X strikes or defends, repectively, when played from hand where x is the number of times they've been upgraded.
+:

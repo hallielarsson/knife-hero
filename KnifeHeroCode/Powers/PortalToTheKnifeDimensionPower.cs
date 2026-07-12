@@ -34,7 +34,7 @@ public sealed class PortalToTheKnifeDimensionPower : KnifeHeroPower
         {
             var clone = rng.NextItem(blades).CreateClone();
             CardCmd.ApplyKeyword(clone, CardKeyword.Exhaust, CardKeyword.Ethereal);
-            await CardPileCmd.AddGeneratedCardToCombat(clone, PileType.Hand, addedByPlayer: true);
+            await CardPileCmd.AddGeneratedCardToCombat(clone, PileType.Hand, player);
         }
     }
 }

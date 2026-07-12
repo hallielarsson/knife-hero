@@ -40,6 +40,6 @@ public sealed class PrideGolem() : KnifeHeroCard(2, CardType.Skill, CardRarity.R
         var golem = await PlayerCmd.AddPet<PrideGolemPet>(Owner);
         await CreatureCmd.SetMaxHp(golem, hp);
         await CreatureCmd.Heal(golem, hp, false);
-        await PowerCmd.Apply<PrideGolemThorns>(golem, 1m, golem, this, false);
+        await PowerCmd.Apply<PrideGolemThorns>(choiceContext, golem, 1m, golem, this, false);
     }
 }

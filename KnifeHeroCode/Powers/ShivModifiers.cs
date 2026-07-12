@@ -42,10 +42,10 @@ public sealed class PoisonCoatingPower : KnifeHeroPower
         if (!cardPlay.Card.Tags.Contains(CardTag.Shiv)) return;
         if (cardPlay.Target == null) return;
 
-        await PowerCmd.Apply<PoisonPower>(cardPlay.Target, Amount, Owner, null, false);
+        await PowerCmd.Apply<PoisonPower>(context, cardPlay.Target, Amount, Owner, null, false);
     }
 
-    public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
+    public override async Task AfterSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side, System.Collections.Generic.IEnumerable<MegaCrit.Sts2.Core.Entities.Creatures.Creature> participants)
     {
         await PowerCmd.Remove(this);
     }
@@ -67,7 +67,7 @@ public sealed class ExplosiveTipPower : KnifeHeroPower
     public override async Task AfterApplied(Creature? applier, CardModel? cardSource)
     {
         if (Owner.GetPower<FanOfKnivesPower>() == null)
-            await PowerCmd.Apply<FanOfKnivesPower>(Owner, 1m, Owner, null, false);
+            await PowerCmd.Apply<FanOfKnivesPower>(new ThrowingPlayerChoiceContext(), Owner, 1m, Owner, null, false);
     }
 
     // The "explosive" half: a shiv you play this turn Exhausts after it goes off.
@@ -80,7 +80,7 @@ public sealed class ExplosiveTipPower : KnifeHeroPower
         await CardCmd.Exhaust(context, cardPlay.Card, causedByEthereal: false);
     }
 
-    public override async Task AfterTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
+    public override async Task AfterSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side, System.Collections.Generic.IEnumerable<MegaCrit.Sts2.Core.Entities.Creatures.Creature> participants)
     {
         var fan = Owner.GetPower<FanOfKnivesPower>();
         if (fan != null) await PowerCmd.Remove(fan);

@@ -15,6 +15,6 @@ public sealed class PortalToTheKnifeDimension() : KnifeHeroCard(3, CardType.Powe
 {
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<PortalToTheKnifeDimensionPower>(Owner.Creature, 1m, Owner.Creature, this, false);
+        await PowerCmd.Apply<PortalToTheKnifeDimensionPower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
     }
 }

@@ -42,7 +42,7 @@ public sealed class MarginaliaPower : KnifeHeroPower
     {
         if (cardPlay.Card.Owner != Owner.Player) return;
         if (cardPlay.Card is IBook || cardPlay.Card.Type == CardType.Power)
-            await PowerCmd.Apply<Lesson>(Owner, 1m, Owner, null, false);
+            await PowerCmd.Apply<Lesson>(context, Owner, 1m, Owner, null, false);
     }
 }
 
@@ -103,8 +103,8 @@ public sealed class BecomeWhoYouArePower : KnifeHeroPower
         // stack count; the flat add per stack is (Amount - 1), so 1 stack = pure breadth, upgrades add.
         decimal str = distinct + (Amount - 1m);
         if (str > 0m)
-            await PowerCmd.Apply<StrengthPower>(Owner, str, Owner, null);
-        await PowerCmd.Apply<Lesson>(Owner, 1m, Owner, null, false);
+            await PowerCmd.Apply<StrengthPower>(choiceContext, Owner, str, Owner, null);
+        await PowerCmd.Apply<Lesson>(choiceContext, Owner, 1m, Owner, null, false);
     }
 }
 
@@ -118,6 +118,6 @@ public sealed class PolymathPower : KnifeHeroPower
     {
         if (player != Owner.Player) return;
         Flash();
-        await PowerCmd.Apply<Lesson>(Owner, Amount, Owner, null, false);
+        await PowerCmd.Apply<Lesson>(choiceContext, Owner, Amount, Owner, null, false);
     }
 }

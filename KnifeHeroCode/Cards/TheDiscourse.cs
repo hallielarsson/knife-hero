@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using BaseLib.Abstracts;
 using KnifeHero.KnifeHeroCode.Character;
+using KnifeHero.KnifeHeroCode.Extensions;
 using KnifeHero.KnifeHeroCode.Powers;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -17,6 +18,9 @@ namespace KnifeHero.KnifeHeroCode.Cards;
    it only enters play when something generates it (Extremely Online shuffles it in). */
 public sealed class TheDiscourse() : KnifeHeroCard(1, CardType.Status, CardRarity.Status, TargetType.None)
 {
+    public override string PortraitPath => "the_discourse.png".CardImagePath();
+    public override string CustomPortraitPath => "the_discourse.png".BigCardImagePath();
+
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
         new List<CardKeyword> { CardKeyword.Exhaust };
 
@@ -26,8 +30,8 @@ public sealed class TheDiscourse() : KnifeHeroCard(1, CardType.Status, CardRarit
     protected override Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) =>
         Task.CompletedTask;
 
-    public override async Task OnTurnEndInHand(PlayerChoiceContext choiceContext)
+    protected override async Task OnTurnEndInHand(PlayerChoiceContext choiceContext)
     {
-        await PowerCmd.Apply<Discoursed>(Owner.Creature, 1m, Owner.Creature, this, false);
+        await PowerCmd.Apply<Discoursed>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
     }
 }

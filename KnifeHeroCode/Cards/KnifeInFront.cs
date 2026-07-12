@@ -25,6 +25,6 @@ public sealed class KnifeInFront() : KnifeHeroCard(1, CardType.Skill, CardRarity
         var knife = await PlayerCmd.AddPet<KnifePet>(Owner);
         await CreatureCmd.SetMaxHp(knife, KnifeHp);
         await CreatureCmd.Heal(knife, KnifeHp, false);
-        await PowerCmd.Apply<DieForYouPower>(knife, 1m, null, this, true);
+        await PowerCmd.Apply<DieForYouPower>(choiceContext, knife, 1m, null, this, true);
     }
 }

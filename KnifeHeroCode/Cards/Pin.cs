@@ -41,8 +41,8 @@ public sealed class Pin() : KnifeHeroCard(1, CardType.Attack, CardRarity.Uncommo
         bool damaged = cardPlay.Target.CurrentHp < hpBefore || cardPlay.Target.Block < blockBefore;
         if (damaged)
         {
-            await PowerCmd.Apply<WeakPower>(cardPlay.Target, WeakAmount, Owner.Creature, this, false);
-            await PowerCmd.Apply<VulnerablePower>(cardPlay.Target, VulnerableAmount, Owner.Creature, this, false);
+            await PowerCmd.Apply<WeakPower>(choiceContext, cardPlay.Target, WeakAmount, Owner.Creature, this, false);
+            await PowerCmd.Apply<VulnerablePower>(choiceContext, cardPlay.Target, VulnerableAmount, Owner.Creature, this, false);
         }
     }
 

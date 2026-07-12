@@ -9,6 +9,9 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace KnifeHero.KnifeHeroCode.Powers;
 
+
+
+//We should remove pride golem, not there yert.
 /* Pride Golem's retaliation — whenever the golem takes HP damage, it deals that much straight back
    to the attacker. Built on the engine's ReflectPower pattern (AfterDamageReceived) but reflecting
    the FULL UnblockedDamage (the damage that actually landed on the golem's HP), not just blocked

@@ -14,9 +14,26 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace KnifeHero.KnifeHeroCode.Powers;
 
+
+//We need to revisit these. 
+//Each one of these should be a Retained Blade instead of a power, even if it's a power that PRODUCES the blane. 
+//
+//Silent -- on retain, gain 3 block when you discard a card and Inflicts Weak what it hits
+
+//Flags for cards then, instead, count Pride cards in hand or deck. 
+//
+//IronClad pride inflicts (level) vulnerable. On retain, deals 3 damage when you exhaust a card.
+//
+//
 /* Pride flags themed after the StS characters — each a passive Flag (IFlag, so it counts for
    Stonewall / Rainbow Strike). Silent = shivs, Ironclad = heal. */
 
+
+//Regent works as is as long as it applies to Pride Blades instead of Pets
+//
+//Watcher Pride -- draw two cards and discard one at the beginning of your turn.
+//
+//
 /* Silent Pride — the Silent's shiv engine: at the start of each turn, put a Shiv in your discard. */
 public sealed class SilentPridePower : KnifeHeroPower, IFlag
 {
@@ -29,7 +46,7 @@ public sealed class SilentPridePower : KnifeHeroPower, IFlag
         for (int i = 0; i < (int)Amount; i++)
         {
             var shiv = Owner.CombatState.CreateCard<Shiv>(player);
-            await CardPileCmd.AddGeneratedCardToCombat(shiv, PileType.Discard, addedByPlayer: false);
+            await CardPileCmd.AddGeneratedCardToCombat(shiv, PileType.Discard, null);
         }
     }
 }
@@ -45,6 +62,8 @@ public sealed class IroncladPridePower : KnifeHeroPower, IFlag
         await CreatureCmd.Heal(Owner, 5m * Amount, false);
     }
 }
+
+
 
 /* Regent Pride — the ruler that feeds on its own court: it costs another Pride (a pet sacrificed on
    play), and in return, each turn, deal 6 damage to an enemy and gain 6 Block. */

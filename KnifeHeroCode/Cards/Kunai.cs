@@ -42,7 +42,7 @@ public sealed class Kunai() : KnifeHeroCard(0, CardType.Attack, CardRarity.Commo
     }
 
     // Held to end of turn: the buried throw — deal full BASE damage to the field, then Exhaust.
-    public override async Task OnTurnEndInHand(PlayerChoiceContext choiceContext)
+    protected override async Task OnTurnEndInHand(PlayerChoiceContext choiceContext)
     {
         await DamageCmd.Attack(BaseDamage).FromCard(this).TargetingAllOpponents(CombatState)
             .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);

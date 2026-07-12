@@ -41,6 +41,6 @@ public sealed class QueerRiderMod : CardModifier
         Creature? me = Owner?.Owner?.Creature;       // Owner = the card; Owner.Owner = the Player
         if (me != null && enemy == me) return;        // a queered Defend targets self — no poison (v1)
 
-        await PowerCmd.Apply<PoisonPower>(enemy, PoisonAmount, me, null, false);
+        await PowerCmd.Apply<PoisonPower>(choiceContext, enemy, PoisonAmount, me, null, false);
     }
 }

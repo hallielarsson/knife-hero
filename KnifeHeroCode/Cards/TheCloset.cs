@@ -19,7 +19,7 @@ public sealed class TheCloset() : KnifeHeroCard(1, CardType.Skill, CardRarity.Un
 {
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<Stealth>(Owner.Creature, 3m, Owner.Creature, this, false);
-        await PowerCmd.Apply<Closeted>(Owner.Creature, 1m, Owner.Creature, this, false);
+        await PowerCmd.Apply<Stealth>(choiceContext, Owner.Creature, 3m, Owner.Creature, this, false);
+        await PowerCmd.Apply<Closeted>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
     }
 }

@@ -16,9 +16,9 @@ public sealed class ExtremelyOnline() : KnifeHeroCard(0, CardType.Power, CardRar
 {
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<ExtremelyOnlinePower>(Owner.Creature, 2m, Owner.Creature, this, false); // +2 energy/turn (a Flag)
+        await PowerCmd.Apply<ExtremelyOnlinePower>(choiceContext, Owner.Creature, 2m, Owner.Creature, this, false); // +2 energy/turn (a Flag)
         await PlayerCmd.GainEnergy(2m, Owner);                                                        // and 2 right now
         var clutter = CombatState.CreateCard<TheDiscourse>(Owner);
-        await CardPileCmd.AddGeneratedCardToCombat(clutter, PileType.Draw, addedByPlayer: false, CardPilePosition.Random);
+        await CardPileCmd.AddGeneratedCardToCombat(clutter, PileType.Draw, null, CardPilePosition.Random);
     }
 }

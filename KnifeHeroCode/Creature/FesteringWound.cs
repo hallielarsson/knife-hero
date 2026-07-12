@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using KnifeHero.KnifeHeroCode.Extensions;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -17,6 +18,9 @@ namespace KnifeHero.KnifeHeroCode.CreatureHero.Cards;
    deadlier as you fall apart. The tragic build-around. Hold them for the edge, or let them go. */
 public sealed class FesteringWound() : CreatureCard(-1, CardType.Curse, CardRarity.Curse, TargetType.None)
 {
+    public override string PortraitPath => "festering_wound.png".CardImagePath();
+    public override string CustomPortraitPath => "festering_wound.png".BigCardImagePath();
+
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
         new List<CardKeyword> { CardKeyword.Unplayable };
 
@@ -30,7 +34,7 @@ public sealed class FesteringWound() : CreatureCard(-1, CardType.Curse, CardRari
 
     public override bool HasTurnEndInHandEffect => true;
 
-    public override async Task OnTurnEndInHand(PlayerChoiceContext choiceContext)
+    protected override async Task OnTurnEndInHand(PlayerChoiceContext choiceContext)
     {
         await TakeGriefDamage(choiceContext, 2);
     }

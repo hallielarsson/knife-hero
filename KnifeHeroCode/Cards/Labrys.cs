@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using BaseLib.Abstracts;
 using KnifeHero.KnifeHeroCode.Character;
+using KnifeHero.KnifeHeroCode.Extensions;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
@@ -33,6 +34,9 @@ namespace KnifeHero.KnifeHeroCode.Cards;
    different hook, don't conflate. See spec.) */
 public sealed class Labrys() : KnifeHeroCard(1, CardType.Attack, CardRarity.Token, TargetType.AnyEnemy), IBlade, IFlagBlade
 {
+    public override string PortraitPath => "labrys.png".CardImagePath();
+    public override string CustomPortraitPath => "labrys.png".BigCardImagePath();
+
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
         new List<CardKeyword> { CardKeyword.Retain };
 

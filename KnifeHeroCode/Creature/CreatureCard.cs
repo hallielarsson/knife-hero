@@ -21,6 +21,12 @@ public abstract class CreatureCard(int cost, CardType type, CardRarity rarity, T
     public override string PortraitPath => "card.png".CardImagePath();
     public override string BetaPortraitPath => "card.png".CardImagePath();
 
+    // API DRIFT SHIM (see KnifeHeroCard): the shipped build dropped CardModel.CombatState; the base
+    // getter throws MissingMethodException and hangs the turn. Route through Creature.CombatState.
+    // NOTE: Creature.CombatState is ICombatState?, not the concrete CombatState class — typed
+    // accordingly (2026-07-11 API re-verify against .decompiled).
+    public new MegaCrit.Sts2.Core.Combat.ICombatState? CombatState => Owner.Creature.CombatState;
+
     /* Grief damage is just damage. The old "Lessons cancel grief" rule was draining the very Lessons
        you need to bank to reach the processing threshold (3 Lessons) — the two currencies fought, so
        you could never accumulate either. Removed per Hallie's playtest. Now grief hurts your HP

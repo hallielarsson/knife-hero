@@ -41,14 +41,14 @@ public sealed class FancyFootwork() : KnifeHeroCard(1, CardType.Attack, CardRari
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
         // Attack use forges a Butch Blade — or sharpens the one you already carry (one copy per flag).
-        await CombatState.AddOrUpgradeFlagBlade<ButchBlade>(Owner);
+        await CombatState.AddOrUpgradeFlagBlade<TopChop>(Owner);
     }
 
-    public override async Task OnTurnEndInHand(PlayerChoiceContext choiceContext)
+    protected override async Task OnTurnEndInHand(PlayerChoiceContext choiceContext)
     {
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, null);
         // Defend use forges a Femme Flechette — or sharpens the one you already carry.
-        await CombatState.AddOrUpgradeFlagBlade<FemmeFlechette>(Owner);
+        await CombatState.AddOrUpgradeFlagBlade<PrincessPin>(Owner);
         await CardCmd.Exhaust(choiceContext, this, causedByEthereal: false);
     }
 

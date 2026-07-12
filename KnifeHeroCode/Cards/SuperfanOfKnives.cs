@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BaseLib.Abstracts;
 using KnifeHero.KnifeHeroCode.Character;
+using KnifeHero.KnifeHeroCode.Extensions;
 using KnifeHero.KnifeHeroCode.Powers;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -19,6 +20,9 @@ namespace KnifeHero.KnifeHeroCode.Cards;
    just for this turn). A knife storm that scales with the number of enemies. Exhaust. */
 public sealed class SuperfanOfKnives() : KnifeHeroCard(2, CardType.Attack, CardRarity.Rare, TargetType.AllEnemies)
 {
+    public override string PortraitPath => "fan_of_knives.png".CardImagePath();
+    public override string CustomPortraitPath => "fan_of_knives.png".BigCardImagePath();
+
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
         new List<CardKeyword> { CardKeyword.Exhaust };
 
@@ -32,8 +36,8 @@ public sealed class SuperfanOfKnives() : KnifeHeroCard(2, CardType.Attack, CardR
             .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
 
         // Shivs hit all enemies this turn, then make one standard Shiv per enemy.
-        await PowerCmd.Apply<FanOfKnivesPower>(Owner.Creature, 1m, Owner.Creature, this, false);
-        await PowerCmd.Apply<FanOfKnivesThisTurnPower>(Owner.Creature, 1m, Owner.Creature, this, false);
+        await PowerCmd.Apply<FanOfKnivesPower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
+        await PowerCmd.Apply<FanOfKnivesThisTurnPower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
         await Shiv.CreateInHand(Owner, count, CombatState);
     }
 

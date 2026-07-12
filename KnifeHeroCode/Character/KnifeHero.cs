@@ -8,6 +8,8 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Relics;
 
+using KnifeHero.KnifeHeroCode.Relics;
+
 namespace KnifeHero.KnifeHeroCode.Character;
 
 public class KnifeHero : PlaceholderCharacterModel
@@ -37,8 +39,11 @@ public class KnifeHero : PlaceholderCharacterModel
         ModelDb.Card<Queer>()
     ];
 
+    /* THE WASH is the signature starting relic — the whole engine hangs off it. Without it, Switch
+       Blades never enter the deck and the forge → bank → cash → recycle loop never turns at all. */
     public override IReadOnlyList<RelicModel> StartingRelics =>
     [
+        ModelDb.Relic<TheWash>(),
         ModelDb.Relic<BurningBlood>()
     ];
     

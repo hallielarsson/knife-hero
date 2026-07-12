@@ -32,7 +32,15 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Alchyr.Sts2.BaseLib" Version="*" PrivateAssets="All"/>
+        <!-- PIN BaseLib. Do NOT use Version="*".
+             2026-07-11: this was an unpinned wildcard. The game has BaseLib v3.2.1 installed, but a
+             rebuild made NuGet silently resolve "*" to the newest feed package (3.3.5) — so the mod's
+             DLL demanded 'BaseLib, Version=3.3.5.0', couldn't find it at runtime, threw
+             ReflectionTypeLoadException, and the mod failed to load entirely (no characters at all).
+             It only ever worked by accident, on days when the installed version happened to be latest.
+             This version MUST match mods/BaseLib/BaseLib.json. If you upgrade BaseLib in the game
+             folder, bump it here in the same commit — and check the .pck's Godot version too. -->
+        <PackageReference Include="Alchyr.Sts2.BaseLib" Version="3.2.1" PrivateAssets="All"/>
         <PackageReference Include="Krafs.Publicizer" Version="2.3.0" PrivateAssets="All"/>
         <PackageReference Include="Alchyr.Sts2.ModAnalyzers" Version="*" />
         <!-- Generates a .pck file when building if only using simple assets. May not work on all setups. Uncomment to test. -->
@@ -89,6 +97,27 @@
                Condition="'$(GodotPath)' == '' or !Exists('$(GodotPath)')"/>
     </Target>
     
+    <!-- tools/ is NOT part of the mod assembly. Without this, the SDK's default **/*.cs glob sucks in
+         anything anyone puts under tools/ — including a scratch C# spike project and its generated
+         obj/ AssemblyInfo, which then explodes the mod build with CS0579 duplicate-attribute errors.
+         (That is exactly what happened on 2026-07-11 when a playtest-harness spike landed in
+         tools/sim/spike/.) Excluding tools/ makes the directory safe to work in. -->
+    <ItemGroup>
+        <Compile Remove="tools/**" />
+        <None Remove="tools/**" />
+        <EmbeddedResource Remove="tools/**" />
+    </ItemGroup>
+
+    <!-- Reconcile the design doc (CARDS.md) against what is actually implemented, every build.
+         WARNS, never errors: design is *supposed* to run ahead of code — it just shouldn't do it
+         silently. CARDS.md went a month stale (a 06-13 snapshot vs 53 compiled cards, including a
+         Creature deck it barely mentioned) and nobody noticed. Now the compiler notices.
+         Also regenerates nothing — see ./tools/cards.py for the generated mirror. -->
+    <Target Name="CardSync" AfterTargets="Build" Condition="'$(IsInnerGodotExport)' != 'true'">
+        <Exec Command="python3 &quot;$(MSBuildProjectDirectory)/tools/sync.py&quot; --warn"
+              ContinueOnError="true" StandardOutputImportance="high" />
+    </Target>
+
     <Target Name="GodotPublish" AfterTargets="Publish" Condition="'$(GodotPath)' != '' and Exists('$(GodotPath)') and '$(IsInnerGodotExport)' != 'true'">
         <Message Text="Exporting Godot .pck to mods folder" Importance="high"/>
         <Exec Command="&quot;$(GodotPath)&quot; --headless --export-pack &quot;BasicExport&quot; &quot;$(ModsPath)$(MSBuildProjectName)/$(MSBuildProjectName).pck&quot;"

@@ -7,6 +7,7 @@ using KnifeHero.KnifeHeroCode.Extensions;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Relics;
+using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 
 namespace KnifeHero.KnifeHeroCode.CreatureHero;
 
@@ -51,7 +52,7 @@ public sealed class MendedBody : CustomRelicModel
         int whole = MendedHeartCount();
         if (whole <= 0) return;
         Flash();
-        await PowerCmd.Apply<Wholeness>(Owner.Creature, whole, Owner.Creature, null, false);
+        await PowerCmd.Apply<Wholeness>(new ThrowingPlayerChoiceContext(), Owner.Creature, whole, Owner.Creature, null, false);
     }
 
     // Mended Hearts live permanently in the run deck — count them across all piles (combat or map).

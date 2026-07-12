@@ -14,6 +14,6 @@ public sealed class Vanish() : KnifeHeroCard(1, CardType.Skill, CardRarity.Commo
 {
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<Stealth>(Owner.Creature, 2m, Owner.Creature, this, false);
+        await PowerCmd.Apply<Stealth>(choiceContext, Owner.Creature, 2m, Owner.Creature, this, false);
     }
 }

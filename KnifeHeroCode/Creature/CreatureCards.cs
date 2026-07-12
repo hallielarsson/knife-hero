@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BaseLib.Abstracts;
 using KnifeHero.KnifeHeroCode.CreatureHero.Powers;
+using KnifeHero.KnifeHeroCode.Extensions;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -20,6 +21,11 @@ namespace KnifeHero.KnifeHeroCode.CreatureHero.Cards;
 // ---- basics ----------------------------------------------------------------------------------
 public sealed class Recite() : CreatureCard(1, CardType.Attack, CardRarity.Basic, TargetType.AnyEnemy)
 {
+    // Art: the Creature itself, cut from the von Holst 1831 frontispiece — the body propped on one arm,
+    // hand to its own head, looking down at what it has woken into. The Creature's weapon is its voice.
+    public override string PortraitPath => "recite.png".CardImagePath();
+    public override string CustomPortraitPath => "recite.png".BigCardImagePath();
+
     // Tag as Strike so the engine reads it as the Creature's basic attack (deck identity, Strike-matters
     // effects, reward filtering) — fixes "no Strikes in deck." Mirrors GayBladeStrike.
     protected override HashSet<CardTag> CanonicalTags => new() { CardTag.Strike };
@@ -39,6 +45,12 @@ public sealed class Recite() : CreatureCard(1, CardType.Attack, CardRarity.Basic
 
 public sealed class Annotate() : CreatureCard(1, CardType.Skill, CardRarity.Basic, TargetType.Self)
 {
+    // Art: the open book lying on the floor of the von Holst frontispiece — the book the Creature will
+    // teach itself from. The engraver's own signature ("Holst, del.") sits beneath it, which is a happy
+    // accident on the card about marking a text.
+    public override string PortraitPath => "annotate.png".CardImagePath();
+    public override string CustomPortraitPath => "annotate.png".BigCardImagePath();
+
     public override bool GainsBlock => true;
 
     // Tag as Defend so the engine reads it as the Creature's basic block — fixes "no Defends in deck."
@@ -68,7 +80,7 @@ public sealed class OpenBook() : CreatureCard(1, CardType.Skill, CardRarity.Comm
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
-        await PowerCmd.Apply<Lesson>(Owner.Creature, 2m, Owner.Creature, this, false);
+        await PowerCmd.Apply<Lesson>(choiceContext, Owner.Creature, 2m, Owner.Creature, this, false);
     }
 
     protected override void OnUpgrade() => DynamicVars.Block.UpgradeValueBy(3m);
@@ -79,9 +91,9 @@ public sealed class Marginalia() : CreatureCard(1, CardType.Power, CardRarity.Co
     private decimal _lessonsNow; // upgrade: also gain 1 Lesson immediately when played
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<MarginaliaPower>(Owner.Creature, 1m, Owner.Creature, this, false);
+        await PowerCmd.Apply<MarginaliaPower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
         if (_lessonsNow > 0m)
-            await PowerCmd.Apply<Lesson>(Owner.Creature, _lessonsNow, Owner.Creature, this, false);
+            await PowerCmd.Apply<Lesson>(choiceContext, Owner.Creature, _lessonsNow, Owner.Creature, this, false);
     }
     protected override void OnUpgrade() => _lessonsNow = 1m;
 }
@@ -91,7 +103,7 @@ public sealed class Polymath() : CreatureCard(2, CardType.Power, CardRarity.Unco
     private decimal _stacks = 1m; // upgrade: 2 stacks → 2 Lessons per turn
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<PolymathPower>(Owner.Creature, _stacks, Owner.Creature, this, false);
+        await PowerCmd.Apply<PolymathPower>(choiceContext, Owner.Creature, _stacks, Owner.Creature, this, false);
     }
     protected override void OnUpgrade() => _stacks = 2m;
 }
@@ -104,8 +116,8 @@ public sealed class Galvanism() : CreatureCard(1, CardType.Skill, CardRarity.Com
     public override IEnumerable<CardKeyword> CanonicalKeywords => new List<CardKeyword> { CardKeyword.Exhaust };
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<Lesson>(Owner.Creature, 1m, Owner.Creature, this, false);
-        await PowerCmd.Apply<StrengthPower>(Owner.Creature, _str, Owner.Creature, this);
+        await PowerCmd.Apply<Lesson>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
+        await PowerCmd.Apply<StrengthPower>(choiceContext, Owner.Creature, _str, Owner.Creature, this);
     }
     protected override void OnUpgrade() => _str += 1m;
 }
@@ -116,8 +128,8 @@ public sealed class Solitude() : CreatureCard(1, CardType.Skill, CardRarity.Comm
     public override IEnumerable<CardKeyword> CanonicalKeywords => new List<CardKeyword> { CardKeyword.Exhaust };
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<Lesson>(Owner.Creature, 1m, Owner.Creature, this, false);
-        await PowerCmd.Apply<DexterityPower>(Owner.Creature, _dex, Owner.Creature, this);
+        await PowerCmd.Apply<Lesson>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
+        await PowerCmd.Apply<DexterityPower>(choiceContext, Owner.Creature, _dex, Owner.Creature, this);
     }
     protected override void OnUpgrade() => _dex += 1m;
 }
@@ -128,8 +140,8 @@ public sealed class Wretchedness() : CreatureCard(1, CardType.Skill, CardRarity.
     public override IEnumerable<CardKeyword> CanonicalKeywords => new List<CardKeyword> { CardKeyword.Exhaust };
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<Lesson>(Owner.Creature, 1m, Owner.Creature, this, false);
-        await PowerCmd.Apply<ThornsPower>(Owner.Creature, _thorns, Owner.Creature, this);
+        await PowerCmd.Apply<Lesson>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
+        await PowerCmd.Apply<ThornsPower>(choiceContext, Owner.Creature, _thorns, Owner.Creature, this);
     }
     protected override void OnUpgrade() => _thorns += 1m;
 }
@@ -140,8 +152,8 @@ public sealed class FireStolen() : CreatureCard(1, CardType.Skill, CardRarity.Co
     public override IEnumerable<CardKeyword> CanonicalKeywords => new List<CardKeyword> { CardKeyword.Exhaust };
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<Lesson>(Owner.Creature, 1m, Owner.Creature, this, false);
-        await PowerCmd.Apply<RegenPower>(Owner.Creature, _regen, Owner.Creature, this);
+        await PowerCmd.Apply<Lesson>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
+        await PowerCmd.Apply<RegenPower>(choiceContext, Owner.Creature, _regen, Owner.Creature, this);
     }
     protected override void OnUpgrade() => _regen += 1m;
 }
@@ -199,7 +211,7 @@ public sealed class BecomeWhoYouAre() : CreatureCard(3, CardType.Power, CardRari
     private decimal _strBonus; // upgrade: +1 flat Strength per turn on top of the distinct-power count
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<BecomeWhoYouArePower>(Owner.Creature, 1m + _strBonus, Owner.Creature, this, false);
+        await PowerCmd.Apply<BecomeWhoYouArePower>(choiceContext, Owner.Creature, 1m + _strBonus, Owner.Creature, this, false);
     }
     protected override void OnUpgrade() => _strBonus = 1m;
 }
@@ -247,6 +259,9 @@ public sealed class ReadTheRemainder() : CreatureCard(1, CardType.Skill, CardRar
    Status-rarity (generated, never a reward); extends CreatureCard for the required [Pool]. */
 public sealed class VexingMemory() : CreatureCard(-1, CardType.Status, CardRarity.Status, TargetType.None)
 {
+    public override string PortraitPath => "vexing_memory.png".CardImagePath();
+    public override string CustomPortraitPath => "vexing_memory.png".BigCardImagePath();
+
     // Ethereal: it festers once (end of turn) then vanishes, instead of piling up forever — fixes
     // "vexing memories stack up too quick." One pulse of grief per wound drawn, not permanent clutter.
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
@@ -254,9 +269,9 @@ public sealed class VexingMemory() : CreatureCard(-1, CardType.Status, CardRarit
 
     public override bool HasTurnEndInHandEffect => true;
 
-    public override async Task OnTurnEndInHand(PlayerChoiceContext choiceContext)
+    protected override async Task OnTurnEndInHand(PlayerChoiceContext choiceContext)
     {
-        await PowerCmd.Apply<Grief>(Owner.Creature, 1m, Owner.Creature, this, false);
+        await PowerCmd.Apply<Grief>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
         int grief = (int)(Owner.Creature.Powers.FirstOrDefault(p => p is Grief)?.Amount ?? 0m);
         await TakeGriefDamage(choiceContext, grief);
     }
@@ -294,7 +309,7 @@ public sealed class Keening() : CreatureCard(2, CardType.Attack, CardRarity.Unco
         foreach (var c in toExhaust)
             await CardCmd.Exhaust(choiceContext, c, causedByEthereal: false);
         if (toExhaust.Count > 0)
-            await PowerCmd.Apply<Grief>(Owner.Creature, toExhaust.Count, Owner.Creature, this, false);
+            await PowerCmd.Apply<Grief>(choiceContext, Owner.Creature, toExhaust.Count, Owner.Creature, this, false);
 
         int grief = (int)(Owner.Creature.Powers.FirstOrDefault(p => p is Grief)?.Amount ?? 0m);
         if (grief <= 0) return;

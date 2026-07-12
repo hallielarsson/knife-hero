@@ -61,14 +61,14 @@ public sealed class Closeted : KnifeHeroPower
             // swap to a chosen discard and tune the BufferPower charge count.
             Flash();
             await CardCmd.Discard(choiceContext, hand[0]);
-            await PowerCmd.Apply<BufferPower>(Owner, 1m, Owner, null, false);   // 1 HP-loss instance voided
+            await PowerCmd.Apply<BufferPower>(choiceContext, Owner, 1m, Owner, null, false);   // 1 HP-loss instance voided
         }
         else
         {
             // No rent to pay — the closet breaks and the light finds you.
             await PowerCmd.Remove(this);
             var dazed = Owner.CombatState.CreateCard<Dazed>(Owner.Player);
-            await CardPileCmd.AddGeneratedCardToCombat(dazed, PileType.Hand, addedByPlayer: false);
+            await CardPileCmd.AddGeneratedCardToCombat(dazed, PileType.Hand, null);
         }
     }
 }

@@ -17,7 +17,7 @@ public sealed class SilentPride() : KnifeHeroCard(1, CardType.Power, CardRarity.
 {
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<SilentPridePower>(Owner.Creature, 1m, Owner.Creature, this, false);
+        await PowerCmd.Apply<SilentPridePower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
     }
 }
 
@@ -26,7 +26,7 @@ public sealed class IroncladPride() : KnifeHeroCard(1, CardType.Power, CardRarit
 {
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<IroncladPridePower>(Owner.Creature, 1m, Owner.Creature, this, false);
+        await PowerCmd.Apply<IroncladPridePower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
     }
 }
 
@@ -48,7 +48,7 @@ public sealed class RegentPride() : KnifeHeroCard(2, CardType.Power, CardRarity.
         var pet = CombatState.Creatures.FirstOrDefault(c => c.IsPet && c.Side == Owner.Creature.Side);
         if (pet != null)
             await CreatureCmd.Kill(pet, force: true);
-        await PowerCmd.Apply<RegentPridePower>(Owner.Creature, 1m, Owner.Creature, this, false);
+        await PowerCmd.Apply<RegentPridePower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
     }
 }
 
@@ -57,7 +57,7 @@ public sealed class WatcherPride() : KnifeHeroCard(1, CardType.Power, CardRarity
 {
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<WatcherPridePower>(Owner.Creature, 1m, Owner.Creature, this, false);
+        await PowerCmd.Apply<WatcherPridePower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
     }
 }
 
@@ -66,6 +66,6 @@ public sealed class DefectPride() : KnifeHeroCard(1, CardType.Power, CardRarity.
 {
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<DefectPridePower>(Owner.Creature, 1m, Owner.Creature, this, false);
+        await PowerCmd.Apply<DefectPridePower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
     }
 }

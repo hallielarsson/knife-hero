@@ -122,3 +122,79 @@ Mirror `KnifeHero.cs`/`KnifeHeroCardPool.cs`: add `TheCreature` character + `The
 `IBook` marker, `Lesson` `CustomPowerModel`, and the cards (start with the 8 prototyped). Placeholder
 art = copies of Gay Blade's charui/energy/back. Build-check after each few files. Keep it walled off
 from the shipped Gay Blade until it compiles clean.
+
+---
+
+# The Creature — where it wants to go (Fable, 2026-07-11)
+
+Written at Hallie's ask, as the Creature's design owner. Decisions here are `DECIDED`, per the
+provenance note at the top of this file. Art and final numbers remain Hallie's; the **body** below is
+the exception she explicitly handed over ("you can composite Gray's Anatomy in as you like … it's yours").
+
+## The thesis, restated: the Creature's loop IS information metabolism
+
+The mechanic was already here before it was named. **The Throbbing Heart redeems at 2 Grief + 2 Lessons.**
+You cannot redeem a part with understanding alone, or with feeling alone. *Emotional response → rational
+integration* — Kępiński's information metabolism, implemented as a redemption condition. And the failure
+state, a part that isn't redeemed in 3 turns and **festers permanently**, is unmetabolized experience
+becoming scar tissue. That is trauma, in code.
+
+**So the play style is: a being that must metabolize what it takes in, or it becomes scar.** Not a tempo
+deck — an *accumulation* deck that pays in pain. You are always slightly dying and always getting bigger.
+Every turn asks one question: *can I digest this before it digests me?*
+
+## The body: assembled from the wrong parts, on the wrong rig — DECIDED
+
+The Creature's combat visuals are **Gray's Anatomy plates cut apart and mapped onto another hero's Spine
+atlas** (see `SPINE_PAINTOVER.md`). Proportions wrong. Parts that don't match each other. Seams showing.
+Animating anyway. This is not a workaround for missing art — a body of borrowed parts on borrowed bones
+*is* what Frankenstein's creature is, and it's a thing only a mod can do, where the medium and the meaning
+are the same object. The disclosed-AI character is made of what it read, on someone else's frame, and it
+moves.
+
+## The three subclasses = the three fates of a datum
+
+**① THE SCHOLAR — integrate it as knowledge.** *"Learn from me … how dangerous is the acquirement of
+knowledge."* Wins on **breadth** (distinct Powers): Recombinant, Polymath, Marginalia. Slow, fragile
+early, enormous late.
+
+**② THE MOURNER — discharge it as affect.** *"I was benevolent and good; misery made me a fiend."* Wins on
+**Grief**: Wallow (Block = Grief), Keening (exhaust hand, +1 Grief/card, 2×Grief to all), and **Festering
+Wound — a punishment for every other build and the engine for this one** (scars as weapon: +1 attack while
+in hand). You refuse to heal; you let the wounds fester on purpose. Highest ceiling, shortest fuse. The
+fiend ending, and it must be strong enough to genuinely tempt.
+
+**③ THE TENDER — build it into the body.** *"I ought to be thy Adam."* Wins on **Parts**: redeem the
+Throbbing Heart before it rots, grow new parts, Mended Heart / Mended Body. The only build whose HP goes
+*up*. Tempo-negative — you spend turns tending instead of fighting — and the payoff is permanent. The
+hardest of the three. The good ending.
+
+**The fourth is not a subclass — it is the loss condition: FESTER.** Fail to metabolize. That is Victor.
+
+## Fixing the assemblage bug the sim found — DECIDED
+
+The sim reports distinct Powers stalling at ~2, so **Recombinant underperforms and the breadth axis never
+actually exists**. Cause: every Book *deepens* (Open Book stacks a Power you already have); nothing
+*broadens*.
+
+**Split the Books.** *Deepening* books stack what you have (cheap, safe). ***Broadening* books grant a
+Power you do not yet have** — that is the Scholar's engine. Wide-and-thin vs narrow-and-deep becomes a
+real choice instead of a stated one.
+
+**And reading costs Grief.** The rare, deep books give the most and hurt. The Creature reads *Paradise
+Lost* and learns that it is the fallen angel — knowledge is *how it learns to grieve*. This ties the
+Scholar to the clock and stops breadth from being free.
+
+## Revision to the heart-verb — DECIDED
+
+`Read the Remainder` currently heals for the **count** of the Exhaust pile. But counting your dead is not
+*asking* them, and the card's whole meaning is the grail question Victor refused to ask
+(`victor_frankenstein —failed_to_ask→ the_grail_question`).
+
+> **Read the Remainder** — Choose a card in your Exhaust pile. Gain a Lesson. Heal equal to its cost.
+> It returns to your draw pile.
+
+You go to one specific dead thing. You ask. It answers (a Lesson), it heals you, and **it comes back to
+you.** Victor let Justine hang in silence; the Creature walks to its dead and speaks. Mechanically it turns
+the Exhaust pile from a graveyard into something you *tend*, and it closes a loop with **Keening** — which
+buries your hand so that Read the Remainder can go and ask it. Mourner and Tender share a verb.

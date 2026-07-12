@@ -16,7 +16,7 @@ public static class FlagExtensions
     /* One copy per flag-blade. Forging a blade you already carry (in hand, draw, or discard) doesn't
        stack a duplicate — it UPGRADES the copy you have. So getting that flag again sharpens it.
        Used by Fancy Footwork when it generates Butch Blade / Femme Flechette. */
-    public static async Task AddOrUpgradeFlagBlade<T>(this CombatState combat, Player owner) where T : CardModel
+    public static async Task AddOrUpgradeFlagBlade<T>(this ICombatState combat, Player owner) where T : CardModel
     {
         var existing = CardPile.GetCards(owner, PileType.Hand, PileType.Draw, PileType.Discard)
             .FirstOrDefault(c => c is T);
@@ -26,7 +26,7 @@ public static class FlagExtensions
             return;
         }
         var card = combat.CreateCard<T>(owner);
-        await CardPileCmd.AddGeneratedCardToCombat(card, PileType.Hand, addedByPlayer: true);
+        await CardPileCmd.AddGeneratedCardToCombat(card, PileType.Hand, owner);
     }
 
     /* The Gay Blade's Flag count — one place, so "the flags are pets/swords" stays true everywhere.
