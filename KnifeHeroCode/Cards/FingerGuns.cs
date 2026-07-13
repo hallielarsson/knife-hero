@@ -9,6 +9,8 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 
+using MegaCrit.Sts2.Core.Models;
+
 namespace KnifeHero.KnifeHeroCode.Cards;
 
 /* FINGER GUNS — Bisexual Pride. Hallie, 2026-07-12.
@@ -33,9 +35,25 @@ public sealed class FingerGuns() : PrideCard(1, CardType.Skill, CardRarity.Uncom
     public override string CustomPortraitPath => "finger_guns.png".BigCardImagePath();
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
-        new List<DynamicVar> { new DamageVar(4m, ValueProp.Move) };
+        new List<DynamicVar> { new DamageVar(2m, ValueProp.Move) };
 
-    protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(2m);
+    protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(1m);
+
+    /* THE REAL COST OF LEAVING IT OUT (Hallie, post-playtest 2026-07-12).
+       Every card you play costs 1 more while Finger Guns is in your hand. Not a hand slot — an ENERGY
+       TAX, on everything, every turn. You are standing there with both hands up, and both hands are busy.
+
+       That's the honest price for a free engine, and it's better than the Heat I gave it: Heat only
+       punished you eventually. This punishes you NOW, on every single card, for as long as you're doing
+       the bit. */
+    public override bool TryModifyEnergyCostInCombat(CardModel card, decimal originalCost, out decimal modifiedCost)
+    {
+        modifiedCost = originalCost;
+        if (Pile?.Type != PileType.Hand) return false;
+        if (card == this || card.Owner != Owner) return false;
+        modifiedCost = originalCost + 1m;
+        return true;
+    }
 
     /* HELD — it goes off twice, every turn. And it makes NOISE: +1 Heat each time it fires.
        (Hallie, 2026-07-12: "Finger Guns maybe should just increase Heat when it fires. It's not subtle.")
@@ -54,8 +72,6 @@ public sealed class FingerGuns() : PrideCard(1, CardType.Skill, CardRarity.Uncom
         if (enemy == null) return;
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue).WithHitCount(2).FromCard(this)
             .Targeting(enemy).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
-
-        await PowerCmd.Apply<Heat>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
     }
 
     // SWUNG — you point at the next thing you were going to do anyway, and it happens twice.

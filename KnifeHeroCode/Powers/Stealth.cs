@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
@@ -5,6 +6,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 
@@ -68,7 +70,22 @@ public sealed class Stealth : KnifeHeroPower
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
 
-    private int HeatAmount => (int)(Owner.GetPower<Heat>()?.Amount ?? 0m);
+    private int HeatAmount => (int)(Owner?.GetPower<Heat>()?.Amount ?? 0m);
+
+    /* The cap is shown as a LIVE NUMBER on the card, not as "1 plus your Heat" (Hallie, 2026-07-12).
+       So Heat's own description doesn't have to explain the damage half at all — you can just read the
+       number, and watch it climb. */
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new List<DynamicVar> { new IntVar("Cap", 1m) };
+
+    /* No preview hook exists on PowerModel, so keep the shown number in sync at the three moments Heat
+       can actually change: turn start, being hit, and playing a card (Fire gains Heat on play). */
+    private void SyncCap()
+    {
+        var cap = DynamicVars["Cap"];
+        decimal want = 1m + HeatAmount;
+        if (cap.BaseValue != want) cap.UpgradeValueBy(want - cap.BaseValue);
+    }
 
     /* Cap the DAMAGE at 1 + Heat — not the HP loss. (IntangiblePower clamps both; we deliberately only
        clamp damage, because Block mattering is the entire point.) Fires before Block is subtracted. */
@@ -77,6 +94,7 @@ public sealed class Stealth : KnifeHeroPower
     {
         if (!CombatManager.Instance.IsInProgress) return decimal.MaxValue;
         if (target != Owner) return decimal.MaxValue;
+        SyncCap();
         return 1m + HeatAmount;
     }
 
@@ -87,6 +105,7 @@ public sealed class Stealth : KnifeHeroPower
        it buys you one turn of being a ghost with a knife. */
     public override async Task AfterCardPlayed(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        SyncCap();
         if (cardPlay.Card.Owner != Owner.Player) return;
         if (cardPlay.Card.Type != CardType.Attack) return;
         if (Owner.GetPower<Unseen>() != null) return;   // Day of Invisibility
@@ -97,6 +116,7 @@ public sealed class Stealth : KnifeHeroPower
         DamageResult result, ValueProp props, Creature? dealer, CardModel? cardSource)
     {
         if (target != Owner) return;
+        SyncCap();
 
         // FOUND. You bled, so they've seen you: the whole bank goes, and they know where to look next
         // time. (Heat is permanent for the fight.)
