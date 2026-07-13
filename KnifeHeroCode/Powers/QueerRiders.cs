@@ -8,6 +8,8 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
+using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
@@ -48,7 +50,9 @@ public enum QueerKind
     Exposed,    // 1 Vulnerable
     Generous,   // draw a card
     Guarded,    // 4 Block
-    Fade,       // 1 Stealth — filthy on an attack, since attacking normally BREAKS your Stealth
+    Fade,       // 1 Stealth, granted AFTER the card resolves — so an Attack breaks your cover and Fade
+                // hands it straight back. See AfterCardPlayedLate. Attacking from Fade still costs Heat:
+                // they heard the knife, they just can't find you.
     Sly,        // keyword: it plays itself when discarded
     Clingy,     // keyword: Retain
     Early,      // keyword: Innate
@@ -122,6 +126,37 @@ public sealed class QueerMod : CardModifier
         description += $"\nQueer: {string.Join(", ", _riders)}.";
     }
 
+    /* ── THE GLOSS ──────────────────────────────────────────────────────────────────────────────
+       (Hallie, 2026-07-13: "Is there a way to get a gloss on the Queer in the side like other keywords?")
+
+       Yes. `CardModel.HoverTips` is what fills the side panel, and it is a plain public getter — so
+       QueerHoverTipPatch (KnifeHeroCode/Patches/QueerHoverTips.cs) postfixes it and appends whatever we
+       return here. Two tips: the umbrella (**what queering IS**, including that a new one replaces the
+       old) and the specific rider currently riding.
+
+       The three keyword riders — Sly, Clingy, Early — get a *second* tip for free, because they really
+       do add the engine's own keyword, and the engine already glosses every keyword on a card. So
+       "Clingy" tells you it grants Retain, and Retain tells you what Retain does. The rider names stay
+       ours; the rules stay the game's. */
+    private static readonly LocString Umbrella = new("static_hover_tips", "queer.description");
+    private static readonly LocString UmbrellaTitle = new("static_hover_tips", "queer.title");
+
+    public static IReadOnlyList<IHoverTip> TipsFor(CardModel card)
+    {
+        var mod = DirectModifiers(card).OfType<QueerMod>().FirstOrDefault();
+        if (mod == null || mod._riders.Count == 0) return Array.Empty<IHoverTip>();
+
+        var tips = new List<IHoverTip> { new HoverTip(UmbrellaTitle, Umbrella) };
+        foreach (var kind in mod._riders)
+        {
+            string slug = kind.ToString().ToLowerInvariant();
+            tips.Add(new HoverTip(
+                new LocString("static_hover_tips", $"queer.{slug}.title"),
+                new LocString("static_hover_tips", $"queer.{slug}.description")));
+        }
+        return tips;
+    }
+
     public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         var me = Owner?.Owner?.Creature;
@@ -159,12 +194,41 @@ public sealed class QueerMod : CardModifier
                     await CreatureCmd.GainBlock(me, new BlockVar(4m, ValueProp.Move), null);
                     break;
 
-                case QueerKind.Fade:
-                    await PowerCmd.Apply<Stealth>(choiceContext, me, 1m, me, null, false);
-                    break;
+                // FADE is not here. It has to land after the attack breaks your cover — see below.
 
                 // Sly / Clingy / Early are keywords. They already did their work when they landed.
             }
         }
+    }
+
+    /* ── FADE LANDS LAST ────────────────────────────────────────────────────────────────────────
+       (Hallie, 2026-07-13: "The stealth queer should proc AFTER damage.")
+
+       She's right, and it was worse than mistimed — **Fade did literally nothing on an Attack**, which
+       is the only place it was interesting. Here is the sequence the engine actually runs (CardModel
+       ~line 1931):
+
+           OnPlay            → the card deals its damage; modifiers fire; Fade grants 1 Stealth
+           AfterCardPlayed   → Stealth.AfterCardPlayed sees an Attack was played and removes ALL Stealth
+
+       So Fade handed you a point of cover and then the very same swing threw it away. My comment in the
+       enum called it "filthy on an attack" and it had never once worked. I reasoned about the interaction
+       instead of following the call order, which is the same mistake as the float bug wearing a new hat.
+
+       The fix is a hook, not a workaround. `Hook.AfterCardPlayed` dispatches TWO full passes over every
+       listener — `AfterCardPlayed`, then `AfterCardPlayedLate` (Hook.cs:278). Stealth's break is in the
+       first pass. Granting Fade's Stealth in the second pass therefore lands strictly after it, for
+       every listener, with **no dependence on listener order**. Not a race we win; a race we're not in.
+
+       And now the rider means what its name means: you strike, they see the knife, and by the time they
+       look up **you are already gone.** */
+    public override async Task AfterCardPlayedLate(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        if (cardPlay.Card != Owner) return;
+        if (!_riders.Contains(QueerKind.Fade)) return;
+
+        var me = Owner?.Owner?.Creature;
+        if (me == null) return;
+        await PowerCmd.Apply<Stealth>(choiceContext, me, 1m, me, null, false);
     }
 }

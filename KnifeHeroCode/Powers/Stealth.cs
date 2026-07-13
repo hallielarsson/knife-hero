@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
@@ -149,5 +150,34 @@ public sealed class Stealth : KnifeHeroPower
         int heat = HeatAmount;
         if (heat > 0)
             await PowerCmd.ModifyAmount(choiceContext, this, -heat, Owner, null);
+    }
+
+    /* ── STEALTH FADES ──────────────────────────────────────────────────────────────────────────
+       (Hallie, 2026-07-13: "Also Stealth should maybe decrement at end of turn?")
+
+       Yes. Lose 1 at the end of your turn.
+
+       The bank had no leak in it. Every other way to lose Stealth requires the FIGHT to do something to
+       you — you attack, or you bleed — so a turn spent playing Defends was a turn of pure deposit, and
+       the optimal line was always the same: sit in the dark, stack cover for four turns, then cash the
+       whole pile into one enormous Backstab. Hallie liked that cash-out ("getting a bunch of stealth and
+       cashing it in for shivs is fantastic") and it should stay possible. It just shouldn't be *free*.
+
+       One point a turn is a small, honest tax that changes the shape of the decision: cover is now a
+       thing that is quietly draining, so hoarding costs you and hoarding forever costs you everything.
+       You still bank. You just can't bank indefinitely — **hiding has a half-life.**
+
+       And it makes the word mean what the word means. Nobody stays hidden by doing nothing; you stay
+       hidden by *keeping* hidden, and the moment you stop working at it the shadows give you up. Which
+       is why the rider that gives it back is called Fade.
+
+       AfterSideTurnEnd + participants.Contains(Owner) is the engine's own idiom for this (see
+       FlankingPower). Hitting 0 removes the power on its own — ModifyAmount calls
+       ShouldRemoveDueToAmount — so there's no dead "Stealth 0" icon to clean up. */
+    public override async Task AfterSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side,
+        IEnumerable<Creature> participants)
+    {
+        if (!participants.Contains(Owner)) return;
+        await PowerCmd.ModifyAmount(choiceContext, this, -1m, Owner, null);
     }
 }

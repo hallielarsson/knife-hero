@@ -1,7 +1,7 @@
 {
   "KNIFEHERO-STEALTH.title": "Stealth",
-  "KNIFEHERO-STEALTH.description": "Attacks against you are reduced to {Cap} damage. If you lose HP, lose all Stealth.",
-  "KNIFEHERO-STEALTH.smartDescription": "Attacks against you are reduced to {Cap} damage. If you lose HP, lose all Stealth.",
+  "KNIFEHERO-STEALTH.description": "Attacks against you are reduced to {Cap} damage. If you lose HP, lose all Stealth. Lose 1 Stealth at the end of your turn.",
+  "KNIFEHERO-STEALTH.smartDescription": "Attacks against you are reduced to {Cap} damage. If you lose HP, lose all Stealth. Lose 1 Stealth at the end of your turn.",
   "KNIFEHERO-CLOSETED.title": "Closeted",
   "KNIFEHERO-CLOSETED.description": "At the start of your turn, discard a card to prevent the next damage you would take. If you can't, lose Closeted and add a Dazed to your hand. Playing an Attack removes all your Stealth and Closeted.",
   "KNIFEHERO-CLOSETED.smartDescription": "At the start of your turn, discard a card to prevent the next damage you would take. If you can't, lose Closeted and add a Dazed to your hand. Playing an Attack removes all your Stealth and Closeted.",
