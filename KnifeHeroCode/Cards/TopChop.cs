@@ -31,8 +31,11 @@ public sealed class TopChop() : PrideCard(1, CardType.Attack, CardRarity.Token, 
 {
     public override int MaxUpgradeLevel => 99;
 
+    /* NO EXHAUST (Hallie, 2026-07-13). The blade doesn't die when you swing it — it goes to your
+       discard, and you draw it again, and it's still as sharp as you forged it. A blade is a thing you
+       KEEP. Re-forge it to make it heavier; swing it as often as you like. */
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
-        new List<CardKeyword> { CardKeyword.Retain, CardKeyword.Exhaust };
+        new List<CardKeyword> { CardKeyword.Retain };
 
     public const decimal OnForge = 4m;   // read by FancyFootwork at the forge site
 

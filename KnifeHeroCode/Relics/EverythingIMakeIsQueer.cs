@@ -90,8 +90,6 @@ public sealed class EverythingIMakeIsQueer : KnifeHeroRelic
     {
         if (card.Owner != Owner) return;
 
-        await PrideDied(card);
-
         if (!card.Tags.Contains(CardTag.Strike) && !card.Tags.Contains(CardTag.Defend)) return;
 
         await CardPileCmd.Add(card, PileType.Draw);
@@ -99,20 +97,6 @@ public sealed class EverythingIMakeIsQueer : KnifeHeroRelic
         Flash();
     }
 
-    /* AND WHEN A PRIDE DIES, A SPENT BASIC COMES BACK AS A SWITCH BLADE.
-       Swing a Top Chop, it exhausts, and a Strike you already used becomes a new Switch Blade. Your
-       prides die and your basics come back sharpened. */
-    private async Task PrideDied(CardModel card)
-    {
-        if (card.Owner != Owner || card is not Cards.IPride) return;
-
-        var basic = CardPile.GetCards(Owner, PileType.Discard)
-            .FirstOrDefault(c => c.Tags.Contains(CardTag.Strike) || c.Tags.Contains(CardTag.Defend));
-        if (basic == null) return;
-
-        await CardCmd.Transform(basic, basic.CombatState.CreateCard<Cards.FancyFootwork>(Owner));
-        Flash();
-    }
 
     /* WHEN A PRIDE IS EXHAUSTED, A SPENT BASIC COMES BACK AS A SWITCH BLADE.
        (Hallie, post-playtest, 2026-07-12.)

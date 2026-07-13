@@ -16,30 +16,29 @@ using MegaCrit.Sts2.Core.ValueProps;
 namespace KnifeHero.KnifeHeroCode.Powers;
 
 /* ═══════════════════════════════════════════════════════════════════════════════════════════════
-   THE QUEER ENGINE — chassis + rider. Queering never REPLACES a card; it keeps its identity and bolts
-   something on. Divergence by what is *added*, not by substitution.
+   THE QUEER ENGINE — chassis + rider. Queering never replaces the CARD; it keeps its identity (a Strike
+   is still a Strike) and bolts something on. Divergence by what is added, not by substitution.
 
-   ── REBUILT 2026-07-12, post-playtest. Hallie:
-      *"Queer in the base card text isn't getting it. I almost want it to be a card modifier like Sharp
-      that has the number of queered effects on it — like **Queer 3** — and you can see all the ways it's
-      queered."*
+   ── A QUEERING REPLACES THE LAST QUEERING ──────────────────────────────────────────────────────
+   (Hallie, 2026-07-13: "a Queer on a card replaces the other queers on a card unless otherwise
+   specified.")
 
-   She's right, and the old shape couldn't do it. Every rider used to be its OWN CardModifier, so a card
-   queered three times grew three separate sentences stapled onto the end of it:
+   I had them accumulate, and that was wrong. Stacked riders meant a card that went through the wash
+   enough times became an unreadable pile of every effect in the game at once —
+   "Queer 5: Sharp, Loud, Guarded, Poisoned, Generous" — which is not divergence. It's just *more*, and
+   everything converges on the same maximal card. Accumulation makes everything the same in the end.
 
-       "Deal 6 damage. Queer: Sharp. Queer: Loud. Queer: Fade."
+   Replacement keeps the thing that actually matters: **each queering makes the card something ELSE.**
+   The Strike you exhaust today comes back Sly. Exhaust it again and it comes back Guarded instead. It is
+   never the same card twice, and it is never all of the cards at once.
 
-   That doesn't read as *thrice queer*. It reads as clutter. And the whole thesis is that queerness
-   ACCUMULATES and DIVERGES.
+   **You don't collect queerness. You keep becoming.**
 
-   So now there is exactly ONE modifier — QueerMod — and it *holds* the riders:
-
+   ── AND IT READS IN ONE LINE ───────────────────────────────────────────────────────────────────
        "Deal 6 damage.
-        Queer 3: Sharp, Loud, Fade."
+        Queer: Sharp."
 
-   One line. A number you can read at a glance. And the list tells you what THIS card became, which is
-   different from what every other queered card became. **Divergence by source IS the diversity** — and
-   now you can see it.
+   One modifier, holding the current rider. Not N modifiers each stapling on their own sentence.
    ═══════════════════════════════════════════════════════════════════════════════════════════════ */
 public enum QueerKind
 {
@@ -61,10 +60,25 @@ public sealed class QueerMod : CardModifier
 
     public int Count => _riders.Count;
 
-    /* Queer a card: find its existing QueerMod (or make one) and append a random rider.
+    // Take back any keyword the previous rider granted, so replacing really replaces.
+    private void ClearKeywords(CardModel card)
+    {
+        foreach (var old in _riders)
+        {
+            switch (old)
+            {
+                case QueerKind.Sly:    card.RemoveKeyword(CardKeyword.Sly); break;
+                case QueerKind.Clingy: card.RemoveKeyword(CardKeyword.Retain); break;
+                case QueerKind.Early:  card.RemoveKeyword(CardKeyword.Innate); break;
+            }
+        }
+    }
 
-       This is the ONLY entry point. The relic (what you MAKE) and the Queer curse (what the world CASTS
-       OUT) both call it — so both come back other in exactly the same way, and never the same way twice. */
+    /* Queer a card: find its QueerMod (or make one), and REPLACE whatever it was with something new.
+
+       The single entry point. The relic calls it for both halves of the thesis — what you MAKE (the first
+       Attack you create each turn) and what is CAST OUT (the Strike or Defend you exhaust, which comes
+       back to your draw pile other). Same door, so they're the same kind of becoming. */
     public static void Queer(CardModel card, Player player)
     {
         var mod = DirectModifiers(card).OfType<QueerMod>().FirstOrDefault();
@@ -76,6 +90,21 @@ public sealed class QueerMod : CardModifier
 
         var rng = player.RunState.Rng.CombatCardGeneration;
         var kind = rng.NextItem(Enum.GetValues<QueerKind>().ToList());
+
+        /* A QUEERING REPLACES THE LAST ONE (Hallie, 2026-07-13: "a Queer on a card replaces the other
+           queers on a card unless otherwise specified").
+
+           Accumulation was the wrong shape and I should have seen it. Stacked riders meant a card that
+           went through the wash enough times turned into an unreadable pile of every effect in the game
+           at once — Queer 5: Sharp, Loud, Guarded, Poisoned, Generous — which is not divergence, it's
+           just *more*. Everything converges on the same maximal card.
+
+           Replacing keeps the thing that actually matters: **each queering makes the card something
+           ELSE.** The Strike you exhaust today comes back Sly; exhaust it again and it comes back
+           Guarded instead. It is never the same card twice, and it is never all of the cards at once.
+           You don't collect queerness. You keep becoming. */
+        mod.ClearKeywords(card);
+        mod._riders.Clear();
         mod._riders.Add(kind);
 
         // Keyword riders change what the card IS, so they land the moment they're applied.
@@ -90,7 +119,7 @@ public sealed class QueerMod : CardModifier
     public override void ModifyDescription(Creature? target, ref string description)
     {
         if (_riders.Count == 0) return;
-        description += $"\nQueer {_riders.Count}: {string.Join(", ", _riders)}.";
+        description += $"\nQueer: {string.Join(", ", _riders)}.";
     }
 
     public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

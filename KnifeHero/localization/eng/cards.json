@@ -10,7 +10,7 @@
   "KNIFEHERO-GAY_BLADE_DEFEND.title": "Defend",
   "KNIFEHERO-GAY_BLADE_DEFEND.description": "Gain {Block} Block.",
   "KNIFEHERO-FANCY_FOOTWORK.title": "Switch Blade",
-  "KNIFEHERO-FANCY_FOOTWORK.description": "Deal {Damage} damage. Forge a Top Chop and gain 4 Vigor.\nEnd of turn in hand: forge a Bottom Blade and gain 4 Block.",
+  "KNIFEHERO-FANCY_FOOTWORK.description": "Deal {Damage} damage. Exhaust a Strike or Defend in your hand and forge a Pride Blade.",
   "KNIFEHERO-LABRYS.title": "Labrys",
   "KNIFEHERO-LABRYS.description": "While this is in your hand, block the next instance of damage you would take, gain that much attack, then discard this. Deal {Damage} damage.",
   "KNIFEHERO-RAINBOW_STRIKE.title": "Rainbow Strike",
