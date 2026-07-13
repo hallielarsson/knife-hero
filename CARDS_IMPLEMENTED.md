@@ -7,12 +7,13 @@
 > **For design — intent, open threads, cards not yet built — edit [`CARDS.md`](CARDS.md).**
 > That's the human doc. This one is the mirror.
 
-## THE GAY BLADE  (33 cards)
+## THE GAY BLADE  (36 cards)
 
 ### Basic
 
 | card | ⟨cost⟩ | rarity | text | keywords | tags |
 |---|---|---|---|---|---|
+| **Feint** | 0 | Basic | Apply 1 Weak. Gain 1 Stealth. | — | — |
 | **Defend** | 1 | Basic | Gain 5 Block. | — | — |
 | **Strike** | 1 | Basic | Deal 6 damage. | — | IBlade |
 
@@ -20,17 +21,19 @@
 
 | card | ⟨cost⟩ | rarity | text | keywords | tags |
 |---|---|---|---|---|---|
-| **Butch Blade** | 1 | Token | Retain. While this is in your hand, your attacks deal 1 more damage. Deal 8 damage. | Retain | IBlade, IFlagBlade |
+| **Backstab** | 1 | Common | Gain 1 Stealth, then deal {Damage} damage. | — | — |
+| **Chill Touch** | 1 | Common | Deal {Damage} damage. Lose 1 Heat. | — | — |
 | **Faith** | 1 | Common | Deal 1 damage. The next time you draw Faith, it deals 10 damage. | — | — |
-| **Fancy Footwork** | 1 | Common | Deal 6 damage and add a Top to your hand. If this is in your hand at the end of your turn, gain 3 Block and add a Bottom to your hand. | Exhaust | — |
-| **Femme Flechette** | 1 | Token | Retain. While this is in your hand, deal 3 damage back to any enemy that attacks you. Deal 5 damage. | Retain | IBlade, IFlagBlade |
-| **Knife Whip** | 1 | Common | Deal 8 damage. Put a Shiv in your discard pile and reduce this card's damage by 1. | — | IBlade |
+| **Switch Blade** | 1 | Common | Deal {Damage} damage and forge a Top Chop. If this is in your hand at the end of your turn, gain {Block} Block and forge a Bottom Blade instead. Either way, a Strike or Defend in your discard pile becomes a Switch Blade. Exhaust. | Exhaust | — |
+| **Fire** | 1 | Common | Deal {Damage} damage, plus your Heat. Gain 1 Heat. | — | — |
+| **Head Empty, No Thoughts** | 1 | Common | Deal {Damage} damage. Discard a card. | — | — |
+| **Knife Whip** | 1 | Common | Deal {Damage} damage. Each point of damage dealt to Block becomes a Shiv in your discard pile, and reduces this card's damage by that much. | — | IBlade |
 | **Throwing Shiv** | 0 | Common | Deal 1 damage. If this is in your hand at the end of your turn, deal 3 damage to ALL enemies and Exhaust. | — | IBlade |
 | **Labrys** | 1 | Token | Retain. While this is in your hand, block the next instance of damage you would take, gain that much attack, then discard this. Deal 6 damage. | Retain | IBlade, IFlagBlade |
 | **Pin** | 1 | Uncommon | Deal 4 damage. If this damages the enemy, apply 2 Weak and 2 Vulnerable. | — | IBlade |
 | **Pride was a Riot** | 1 | Common | Remove all of the target's Block, then deal 5 damage. | — | — |
 | **Rainbow Strike** | 1 | Uncommon | Deal 2 damage for every Flag you have. | — | — |
-| **Stonewall** | 2 | Uncommon | Gain {0} Block. Deal {1} damage for each Pride card you have played this combat. | — | — |
+| **Stonewall** | 2 | Uncommon | Gain {Block} Block. Deal {Damage} damage for each Pride card you have played this combat. | — | — |
 | **Superfan of Knives** | 2 | Rare | Deal 4 damage to ALL enemies. Add a Shiv to your hand for each enemy. Your Shivs hit all enemies this turn. Exhaust. | Exhaust | — |
 | **Throwing Knife** | 1 | Common | Deal 6 damage. If this deals HP damage, Exhaust it. If it doesn't, return it to your hand. | — | IBlade |
 
@@ -39,12 +42,13 @@
 | card | ⟨cost⟩ | rarity | text | keywords | tags |
 |---|---|---|---|---|---|
 | **All You Can Eat** | 1 | Uncommon | Exhaust all knives and shivs in your hand. Gain 3 HP for each. Any healing beyond your max HP becomes Block instead. Exhaust. | Exhaust | — |
-| **Corporate Sponsored Pride** | 0 | Uncommon | Remove a Flag. If you did, gain 2 Energy. | — | — |
+| **Day of Invisibility** | 1 | Uncommon | Your attacks do not break your Stealth this turn. Exhaust. | Exhaust | — |
 | **Explosive Tip** | 1 | Uncommon | This turn, the Shivs you play hit ALL enemies and Exhaust. | — | — |
-| **Labrys Axe** | 1 | Common | Summon a Labrys with 8 HP. While it lives, enemy attacks against you hit the Labrys instead. | — | — |
-| **Necrobinder Pride** | 1 | Uncommon | Summon an Osty. | — | — |
+| **Go to Ground** | 1 | Common | Gain {Block} Block. Gain 1 Stealth. | — | — |
+| **Look What I Found Down Here** | 1 | Common | Gain {Block} Block. Turn all of your Stealth into Shivs. | Exhaust | — |
 | **Poison Coating** | 1 | Uncommon | This turn, the Shivs you play apply 3 Poison. | — | — |
-| **Pride Golem** | 2 | Rare | Destroy all your Flags and other Pets. Summon a Pet with twice that much HP. Whenever it takes damage, it deals that much damage back to the attacker. | — | — |
+| **Shadow Dodge** | 1 | Common | Gain {Block} Block. Lose 1 Heat. | — | — |
+| **Smoke Bomb** | 2 | Uncommon | Lose all Heat. Exhaust. | Exhaust | — |
 | **The Closet** | 1 | Uncommon | Gain 3 Stealth and become Closeted: each turn, discard a card to prevent the next damage you take (an empty hand breaks the closet for a Dazed). Playing an Attack blows your cover — lose all Stealth. | — | — |
 | **Vanish** | 1 | Common | Gain 2 Stealth. | — | — |
 
@@ -52,13 +56,12 @@
 
 | card | ⟨cost⟩ | rarity | text | keywords | tags |
 |---|---|---|---|---|---|
-| **Defect Pride** | 1 | Uncommon | Powers cost 1 less. Whenever you play a Power, draw a card. | — | — |
+| **Both Is Good** | 2 | Rare | The first Pride card you play each turn also triggers its end-of-turn effect. | — | — |
+| **Dead Name** | 2 | Rare | Whenever you would gain Heat, add a Dazed to your discard pile instead. | — | — |
 | **Extremely Online** | 0 | Uncommon | Gain 2 energy. Gain 2 energy at the start of each turn. Shuffle a Discourse into your draw pile. | — | — |
-| **Ironclad Pride** | 1 | Uncommon | At the end of combat, heal 5 HP. | — | — |
+| **Honeypot** | 2 | Uncommon | Gain Thorns equal to your Heat, plus 2. | Exhaust | — |
+| **Pickpocket** | 1 | Uncommon | The first time you deal damage each turn, gain a Shiv. | — | — |
 | **Portal to the Knife Dimension** | 3 | Rare | At the start of each turn, put a copy of a Blade from your deck into your hand. It gains Exhaust and Ethereal. | — | — |
-| **Regent Pride** | 2 | Rare | Sacrifice another Pride. At the start of each turn, deal 6 damage to an enemy and gain 6 Block. | — | — |
-| **Silent Pride** | 1 | Uncommon | At the start of each turn, put a Shiv in your discard pile. | — | — |
-| **Watcher Pride** | 1 | Uncommon | At the start of each turn, add Retain to a random card in your hand. | — | — |
 
 ### Status
 
@@ -128,6 +131,6 @@
 
 ## Integrity
 
-- **55 card classes** in source (33 Gay Blade, 20 Creature).
+- **64 card classes** in source (36 Gay Blade, 20 Creature).
 - Cards in source with **no localization**: none ✅
 - Localization keys with **no card class**: none ✅

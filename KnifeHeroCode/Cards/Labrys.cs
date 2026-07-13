@@ -13,7 +13,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 
 namespace KnifeHero.KnifeHeroCode.Cards;
-
+//Hallie: I feel like Old Labrys is sitll in the mix?
 /* Labrys — the parry-weapon forged by Dyke Pride (FLAGS_AS_WEAPONS_SPEC.md). A Retain IFlagBlade
    that drinks a blow and grows heavier.
 

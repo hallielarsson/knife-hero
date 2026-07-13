@@ -12,8 +12,12 @@ namespace KnifeHero.KnifeHeroCode.Cards;
    Placeholder; flags will come from many cards later. */
 public sealed class Vanish() : KnifeHeroCard(1, CardType.Skill, CardRarity.Common, TargetType.Self)
 {
+    // UPGRADE: 3 Stealth instead of 2.
+    public override int MaxUpgradeLevel => 1;
+    private decimal StealthGain => IsUpgraded ? 3m : 2m;
+
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<Stealth>(choiceContext, Owner.Creature, 2m, Owner.Creature, this, false);
+        await PowerCmd.Apply<Stealth>(choiceContext, Owner.Creature, StealthGain, Owner.Creature, this, false);
     }
 }

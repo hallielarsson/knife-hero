@@ -10,6 +10,9 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 
+using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Cards;
 namespace KnifeHero.KnifeHeroCode.Cards;
 
 /* Knife Whip — Hallie's design: a card that spends itself down the more you swing it.
@@ -26,20 +29,34 @@ public sealed class KnifeWhip() : KnifeHeroCard(1, CardType.Attack, CardRarity.C
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new List<DynamicVar> { new DamageVar(8m, ValueProp.Move) };
 
+    protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(3m);
+
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+    }
 
-        // drop a standard Shiv into the discard pile
-        var shiv = CombatState.CreateCard<MegaCrit.Sts2.Core.Models.Cards.Shiv>(Owner);
-        CardCmd.PreviewCardPileAdd(await CardPileCmd.AddGeneratedCardToCombat(shiv, PileType.Discard, Owner));
+    /* THE WHIP SHATTERS ON ARMOUR, AND THE SHARDS ARE KNIVES.
+       Every point of this card's damage that lands on BLOCK becomes a Shiv in your discard — and this
+       card loses that much damage, permanently, for the rest of the fight.
 
+       So the whip only wears out when it hits something hard. Against bare flesh it never decays at all.
+       Against a shielded enemy it comes apart in your hands and you're left holding a fistful of knives.
+       Armour doesn't stop you; it ARMS you. */
+    public override async Task AfterDamageGiven(PlayerChoiceContext choiceContext, Creature? dealer,
+        DamageResult result, ValueProp props, Creature target, CardModel? cardSource)
+    {
+        if (cardSource != this || dealer != Owner.Creature) return;
+        int shards = result.BlockedDamage;
+        if (shards <= 0) return;
 
-
-	//CLAUDE: (this is hallie) I'm thinking that WHAT IF, it does direct damage to flesh and shatters for each point of damage to armor?
-        // the whip wears down: this card permanently does 1 less for the rest of combat
-        DynamicVars.Damage.UpgradeValueBy(-1m);
+        for (int i = 0; i < shards; i++)
+        {
+            var shiv = CombatState.CreateCard<Shiv>(Owner);
+            await CardPileCmd.AddGeneratedCardToCombat(shiv, PileType.Discard, Owner);
+        }
+        DynamicVars.Damage.UpgradeValueBy(-shards);
     }
 }

@@ -16,6 +16,8 @@ public sealed class Discoursed : KnifeHeroPower
     public override PowerType Type => PowerType.Debuff;
     public override PowerStackType StackType => PowerStackType.Counter;
 
+    //Hallie: Honestly thinking of making this add Dazed when you play a skill card instead.
+
     public override async Task AfterEnergyReset(Player player)
     {
         if (player != Owner.Player) return;

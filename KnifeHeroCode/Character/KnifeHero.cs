@@ -8,8 +8,6 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Relics;
 
-using KnifeHero.KnifeHeroCode.Relics;
-
 namespace KnifeHero.KnifeHeroCode.Character;
 
 public class KnifeHero : PlaceholderCharacterModel
@@ -23,27 +21,25 @@ public class KnifeHero : PlaceholderCharacterModel
     public override int StartingHp => 70;
     
     public override IEnumerable<CardModel> StartingDeck => [
+        /* 2026-07-12 (Hallie): ONE Switch Blade, not four. The engine now feeds itself — playing or
+           holding a Switch Blade recruits another one out of your DISCARD — so you don't need a fistful
+           to start. One seed, and the deck grows its own. That's the deck control she was after: you can
+           see the loop turning instead of drowning in it.
+           Plus one Feint: free, gives Weak and a Stealth, and teaches the hidden build in fight one. */
+        ModelDb.Card<FancyFootwork>(),
+        ModelDb.Card<Feint>(),
+        ModelDb.Card<GayBladeStrike>(),
         ModelDb.Card<GayBladeStrike>(),
         ModelDb.Card<GayBladeStrike>(),
         ModelDb.Card<GayBladeStrike>(),
         ModelDb.Card<GayBladeDefend>(),
-       ModelDb.Card<GayBladeDefend>(),
         ModelDb.Card<GayBladeDefend>(),
-        ModelDb.Card<FancyFootwork>(),
-        ModelDb.Card<FancyFootwork>(),
-        ModelDb.Card<FancyFootwork>(),
-        ModelDb.Card<FancyFootwork>(),
-        // The core engine, as a starting Curse: Innate · Eternal · Unplayable. Casting out the
-        // normative (exhaust a Strike/Defend) queers it — it comes back as a throwing shiv.
-        // QUEER_ENGINE_SPEC.md. v1 — felt-first, tune by playtest.
+        ModelDb.Card<GayBladeDefend>(),
+        ModelDb.Card<GayBladeDefend>(),
         ModelDb.Card<Queer>()
     ];
-
-    /* THE WASH is the signature starting relic — the whole engine hangs off it. Without it, Switch
-       Blades never enter the deck and the forge → bank → cash → recycle loop never turns at all. */
     public override IReadOnlyList<RelicModel> StartingRelics =>
     [
-        ModelDb.Relic<TheWash>(),
         ModelDb.Relic<BurningBlood>()
     ];
     

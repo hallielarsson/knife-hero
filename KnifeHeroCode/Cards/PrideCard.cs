@@ -67,6 +67,12 @@ public abstract class PrideCard(int cost, CardType type, CardRarity rarity, Targ
        OnTurnEndInHand. See the warning above; it is not stylistic. */
     protected virtual Task WhileFlown(PlayerChoiceContext choiceContext) => Task.CompletedTask;
 
+    /* BOTH IS GOOD (the power) reaches in here. The whole Pride mechanic is "fly it OR swing it, never
+       both" — so the one card that lets you do both has to be able to fire the held clause on demand,
+       from outside, on a card that has just been played. This is that door, and it exists for exactly
+       one caller. */
+    internal Task FlyItAnyway(PlayerChoiceContext choiceContext) => WhileFlown(choiceContext);
+
     public sealed override async Task BeforeSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side,
         IEnumerable<Creature> participants)
     {
@@ -86,46 +92,46 @@ public abstract class PrideCard(int cost, CardType type, CardRarity rarity, Targ
         await OnSwung(choiceContext, cardPlay);
         // Your pride, put into the world. It only ever goes up. (Stonewall / Pride Parade read this.)
         await PowerCmd.Apply<PridesPlayed>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, true);
+        await CashOut();   // put the basic(s) back in the deck. ADD, never transform. See below.
     }
 
-    /* ── THE RETURN STROKE — what this card BECOMES when you swing it ────────────────────────────────
-       Override `Becomes()` to declare it. Null (default) = the card just leaves.
+    /* ── THE CASH-OUT — what swinging this puts back into your deck ─────────────────────────────────
+       Override `Begets()` to declare it. Null (default) = nothing.
 
-       WHY IT LIVES HERE AND NOT ON THE RELIC (Hallie, 2026-07-11): "otherwise if we have other cards like
-       this we have to put it ALL in the relic." Exactly — a relic holding every transform becomes a
-       god-object switch statement that every new card must be registered in, and it grows forever. So the
-       CARD declares its own becoming, and the base class only handles the TIMING. The relic keeps the one
-       job that is genuinely its own: turning Strikes and Defends into Switch Blades, because the *basics*
-       must not know that the Gay Blade's relic exists.
+       ⚠⚠ WE DO NOT TRANSFORM THE PLAYED CARD. WE **ADD** A NEW ONE. ⚠⚠
 
-       ⚠ TIMING IS LOAD-BEARING: this fires in AfterCardPlayed, NEVER in OnPlay. Transforming a card while
-       it is still resolving is the "Rapier stuck floating after play" bug — the engine cannot dispose a
-       card mid-resolution. See FOOTWORK_SPEC.md, which called this exact shot and left the recipe.
+       This looks like a small distinction and it is the whole ballgame. Adding a card to the Discard
+       pile is always safe. TRANSFORMING a card that is currently being played is not, and it broke this
+       project twice in one evening:
+         1. Transform in `OnPlay`          → "Rapier stuck floating after play" (FOOTWORK_SPEC.md).
+         2. Transform in `AfterCardPlayed` → STILL FLOATS. A glowing card hung frozen in the middle of
+            Hallie's screen mid-playtest. That hook fires while the card is still in PileType.Play and
+            still mid-animation.
+         3. And `OnPlayWrapper`'s cleanup is scoped to the ORIGINAL card, so the replacement is stranded
+            in Play and **silently deleted from the deck** on every single trigger.
+       There is no later hook to escape to: a played card reaches Discard via `CardPileCmd.Add`, which
+       does not fire `Hook.AfterCardDiscarded`.
 
-       THE EXTRA COPIES are the entropy pump. Re-forging a held blade raises its CurrentUpgradeLevel (the
-       "retain level"), and swinging it spawns one EXTRA basic per level into your discard. So banking a
-       blade doesn't just grow its passive — it grows the *payout*, and the payout is deck bloat. That's the
-       wash: cash out big and you flood your own deck with basics. Queering is what makes the bloat good. */
-    protected virtual CardModel? Becomes() => null;
+       So the played card just resolves and leaves, exactly like every other card in the game, and we
+       put a NEW basic in the discard pile beside it. Same outcome for the player. Zero engine risk.
+       (The relic does its transform on a card sitting quietly in your HAND at turn start — see
+       TheWash.cs. That is the only safe place to transform anything.)
+
+       THE EXTRA COPIES are the entropy pump: re-forging a held blade raises its CurrentUpgradeLevel
+       (the "retain level"), and swinging it begets one EXTRA basic per level. Banking a blade grows its
+       passive AND grows the payout — and the payout is deck bloat. That's the wash. Cash out big and you
+       flood your own deck with basics. Queering is what makes the bloat good. */
+    protected virtual CardModel? Begets() => null;
 
     protected virtual int ExtraCopiesOnSwing => CurrentUpgradeLevel;
 
-    public override async Task AfterCardPlayed(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    private async Task CashOut()
     {
-        if (cardPlay.Card != this) return;
-        var becoming = Becomes();
-        if (becoming == null) return;
-
-        for (int i = 0; i < ExtraCopiesOnSwing; i++)
+        for (int i = 0; i <= ExtraCopiesOnSwing; i++)
         {
-            var extra = Becomes();
-            if (extra != null)
-                await CardPileCmd.AddGeneratedCardToCombat(extra, PileType.Discard, Owner);
+            var basic = Begets();
+            if (basic != null)
+                await CardPileCmd.AddGeneratedCardToCombat(basic, PileType.Discard, Owner);
         }
-
-        // See CardTransformExtensions.TransformAndSettle: transforming a just-played card (this is
-        // always called from AfterCardPlayed, never OnPlay - see the TIMING note above) leaves the
-        // replacement stranded in the Play pile unless we move it ourselves.
-        await choiceContext.TransformAndSettle(this, becoming);
     }
 }

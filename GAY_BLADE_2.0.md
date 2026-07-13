@@ -187,3 +187,30 @@ bothered to improve actually worth drawing.
 - **Dyke Pride / Labrys parry** — mechanism solved (BufferPower hooks); the A-vs-B design question is open.
 - **Two Labryses** (the pet vs the in-hand parry) — keep both, or fold?
 - **The relic's conversion rate** — the single most important number in the character.
+
+---
+
+## ⚑ Hallie's original margin notes (rescued from `PridePowers.cs` before it was deleted, 2026-07-11)
+
+These were written fast, in the code, in the middle of thinking — the typo is still in one of them.
+They are the design that became the Prides→Blades reflow. Preserved verbatim, because a half-formed
+thought belongs to the person who is still forming it:
+
+> We need to revisit these.
+> **Each one of these should be a Retained Blade instead of a power, even if it's a power that PRODUCES the blane.**
+>
+> Silent — on retain, gain 3 block when you discard a card and Inflicts Weak what it hits
+>
+> **Flags for cards then, instead, count Pride cards in hand or deck.**
+>
+> IronClad pride inflicts (level) vulnerable. On retain, deals 3 damage when you exhaust a card.
+>
+> Regent works as is as long as it applies to Pride Blades instead of Pets
+>
+> Watcher Pride — draw two cards and discard one at the beginning of your turn.
+>
+> *(and, on PrideGolemThorns.cs:)* We should remove pride golem, not there yert.
+
+The Power versions of the Prides — Silent, Ironclad, Watcher, Regent, Defect, Necrobinder — and Pride
+Golem were **deleted** on 2026-07-11 because they were polluting the draft pool with a design that had
+been superseded. They are in git (`8248f33`) if any of them is wanted back.

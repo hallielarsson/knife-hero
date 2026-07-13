@@ -25,6 +25,9 @@ public sealed class Faith() : KnifeHeroCard(1, CardType.Attack, CardRarity.Commo
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new List<DynamicVar> { new DamageVar(1m, ValueProp.Move) };
 
+    // UPGRADE: faith is rewarded more. The payoff climbs from 10 to 15.
+    protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(5m);
+
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");

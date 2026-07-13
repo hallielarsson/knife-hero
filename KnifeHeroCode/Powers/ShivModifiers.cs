@@ -11,6 +11,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Powers;
 
+using MegaCrit.Sts2.Core.ValueProps;
 namespace KnifeHero.KnifeHeroCode.Powers;
 
 /* Shiv Modifier Engine — playable first cut (SHIV_MODIFIER_ENGINE_SPEC.md).
@@ -24,8 +25,13 @@ namespace KnifeHero.KnifeHeroCode.Powers;
 
    All numbers below are // PROPOSAL — set to be *playable*, not final. Tune by feel. */
 
-/* Poison Coating — this turn, every shiv you play also lays Poison on its target.
-   // PROPOSAL: 3 Poison per shiv. Hallie tunes by feel. */
+/* Poison Coating — every shiv you play lays Poison on its target. PERMANENT.
+
+   BUG (Hallie, 2026-07-12: "poison coating was doing nothing") — and she's right, it was structurally
+   dead. It used to strip itself at end of turn ("this turn, every shiv..."), but every shiv generator in
+   the deck puts shivs in your DISCARD, not your hand. So the turn you played Poison Coating there was
+   almost never a shiv available to coat, and by the time you drew one the buff was gone.
+   Fixed by making it a real Power: coat the knives once, and they stay coated. */
 public sealed class PoisonCoatingPower : KnifeHeroPower
 {
     // ART NOTE for the Art Mapper: no poison_coating_power.png yet — fall back to the generic
@@ -36,19 +42,22 @@ public sealed class PoisonCoatingPower : KnifeHeroPower
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;   // stacks = Poison per shiv
 
-    public override async Task AfterCardPlayed(PlayerChoiceContext context, CardPlay cardPlay)
-    {
-        if (cardPlay.Card.Owner != Owner.Player) return;
-        if (!cardPlay.Card.Tags.Contains(CardTag.Shiv)) return;
-        if (cardPlay.Target == null) return;
+    /* THE REAL BUG (Hallie, 2026-07-12: "it's done it with fan of knives and they still didn't poison")
+       This used to hook AfterCardPlayed and read `cardPlay.Target`. But Superfan of Knives makes your
+       Shivs hit ALL enemies — and an all-enemies card has **no single Target**, so `cardPlay.Target` was
+       null and the power bailed out before doing anything. Poison Coating was silently dead in exactly
+       the deck that wants it most.
 
-        await PowerCmd.Apply<PoisonPower>(context, cardPlay.Target, Amount, Owner, null, false);
+       Fixed by hooking the DAMAGE instead of the play. AfterDamageGiven fires once per creature actually
+       hit, so it poisons whatever the shiv landed on — one enemy or five, we don't care and don't have to. */
+    public override async Task AfterDamageGiven(PlayerChoiceContext choiceContext, Creature? dealer,
+        DamageResult result, ValueProp props, Creature target, CardModel? cardSource)
+    {
+        if (dealer != Owner) return;
+        if (cardSource == null || !cardSource.Tags.Contains(CardTag.Shiv)) return;
+        await PowerCmd.Apply<PoisonPower>(choiceContext, target, Amount, Owner, null, false);
     }
 
-    public override async Task AfterSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side, System.Collections.Generic.IEnumerable<MegaCrit.Sts2.Core.Entities.Creatures.Creature> participants)
-    {
-        await PowerCmd.Remove(this);
-    }
 }
 
 /* Explosive Tip — this turn, the shivs you play hit ALL enemies and Exhaust.

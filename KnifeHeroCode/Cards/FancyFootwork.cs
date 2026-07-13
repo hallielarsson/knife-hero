@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using BaseLib.Abstracts;
 using KnifeHero.KnifeHeroCode.Character;
@@ -30,7 +31,7 @@ public sealed class FancyFootwork() : KnifeHeroCard(1, CardType.Attack, CardRari
     public override bool HasTurnEndInHandEffect => true;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
-        new List<DynamicVar> { new DamageVar(6m, ValueProp.Move), new BlockVar(2m, ValueProp.Move) };
+        new List<DynamicVar> { new DamageVar(6m, ValueProp.Move), new BlockVar(4m, ValueProp.Move) };
     
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
         new List<CardKeyword> { CardKeyword.Exhaust };
@@ -40,15 +41,36 @@ public sealed class FancyFootwork() : KnifeHeroCard(1, CardType.Attack, CardRari
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
-        // Attack use forges a Butch Blade — or sharpens the one you already carry (one copy per flag).
+        // Play it → it's a TOP. Forge a Top Chop, or sharpen the one you're already carrying.
         await CombatState.AddOrUpgradeFlagBlade<TopChop>(Owner);
+        await RecruitFromDiscard();
+    }
+
+    /* THE ENGINE FEEDS ITSELF (Hallie, 2026-07-12).
+       Whichever way you use a Switch Blade, it reaches into your DISCARD and turns a Strike or a Defend
+       there into another Switch Blade. So the loop no longer depends on the relic to keep turning — the
+       relic seeds it, and then the blades recruit their own replacements out of the pile of spent basics.
+
+       Your discard is not a graveyard. It's the raw stock.
+
+       ⚠ The transform happens to a card in the DISCARD, which is quiet and settled — NOT to a card being
+       played. Transforming a card mid-play is what stranded a glowing card on Hallie's screen and, worse,
+       silently deleted cards from the deck. See TheWash.cs for the full autopsy. Do not move this. */
+    private async Task RecruitFromDiscard()
+    {
+        var basic = CardPile.GetCards(Owner, PileType.Discard)
+            .FirstOrDefault(c => c.Tags.Contains(CardTag.Strike) || c.Tags.Contains(CardTag.Defend));
+        if (basic == null) return;
+        await CardCmd.Transform(basic, CombatState.CreateCard<FancyFootwork>(Owner));
     }
 
     protected override async Task OnTurnEndInHand(PlayerChoiceContext choiceContext)
     {
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, null);
-        // Defend use forges a Femme Flechette — or sharpens the one you already carry.
-        await CombatState.AddOrUpgradeFlagBlade<PrincessPin>(Owner);
+
+        // Hold it → it's a BOTTOM. Forge a Bottom Blade, or sharpen the one you're carrying.
+        await CombatState.AddOrUpgradeFlagBlade<BottomBlade>(Owner);
+        await RecruitFromDiscard();
         await CardCmd.Exhaust(choiceContext, this, causedByEthereal: false);
     }
 
