@@ -53,7 +53,12 @@ public abstract class QueerRider : CardModifier
             () => (QueerRider)CardModifier.Get<Exposed>().MutableClone(),
             () => (QueerRider)CardModifier.Get<Generous>().MutableClone(),
             () => (QueerRider)CardModifier.Get<Guarded>().MutableClone(),
-            () => (QueerRider)CardModifier.Get<Sly>().MutableClone(),
+            () => (QueerRider)CardModifier.Get<Shadowed>().MutableClone(),
+            // Keyword riders — the "existing card qualities" from Hallie's original note. These don't
+            // *do* something on play; they change what the card IS.
+            () => (QueerRider)CardModifier.Get<SlyRider>().MutableClone(),
+            () => (QueerRider)CardModifier.Get<Clingy>().MutableClone(),
+            () => (QueerRider)CardModifier.Get<Early>().MutableClone(),
         };
         var rng = player.RunState.Rng.CombatCardGeneration;
         return rng.NextItem(pool.ToList())();
@@ -140,16 +145,49 @@ public sealed class Guarded : QueerRider
     }
 }
 
-/* SLY — it hides you. Which is filthy on an attack, because attacking is the thing that normally BREAKS
-   your Stealth (see Stealth.cs) — so a Sly queered attack hands the cover straight back to you.
-   The only card in the game that lets you swing and stay hidden without Day of Invisibility. */
-public sealed class Sly : QueerRider
+/* SHADOWED — it hides you. Filthy on an attack, because attacking is the thing that normally BREAKS your
+   Stealth (see Stealth.cs) — so a Shadowed queered attack hands the cover straight back to you. The only
+   card in the game that lets you swing and stay hidden without Day of Invisibility.
+   (Renamed from "Sly" — that's a real base-game keyword, see SlyRider below. Hallie caught the collision.) */
+public sealed class Shadowed : QueerRider
 {
-    protected override string Tag => "Sly";
+    protected override string Tag => "Shadowed";
 
     public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (Me == null) return;
         await PowerCmd.Apply<Stealth>(choiceContext, Me, 1m, Me, null, false);
     }
+}
+
+
+/* ── KEYWORD RIDERS ─────────────────────────────────────────────────────────────────────────────────
+   Hallie's original note said a queered card should gain "one existing card quality at random — Sharp 3,
+   Sly, Clone, Swap." Those are KEYWORDS. The engine only ships eight of them (None, Exhaust, Ethereal,
+   Innate, Unplayable, Retain, Sly, Eternal) and half are punishments, so the three that read as gifts are
+   the three below. They don't add an effect on play; they change what the card *is*. */
+
+/* SLY — the real one. It plays itself when you discard it.
+   Which turns the whole discard engine inside out: Head Empty, No Thoughts makes you throw a card away;
+   Watcher Pride makes you throw a card away every turn; Silent Pride *pays* you for it. Land Sly on an
+   attack and all of that becomes free damage. */
+public sealed class SlyRider : QueerRider
+{
+    protected override string Tag => "Sly";
+    public override void OnInitialApplication() => Owner?.AddKeyword(CardKeyword.Sly);
+}
+
+/* CLINGY — it Retains. In a deck where hand space is the only real currency, a card that refuses to
+   leave is a mixed blessing, and that ambivalence is correct. */
+public sealed class Clingy : QueerRider
+{
+    protected override string Tag => "Clingy";
+    public override void OnInitialApplication() => Owner?.AddKeyword(CardKeyword.Retain);
+}
+
+/* EARLY — it's Innate. It shows up in your opening hand, every fight, from now on. */
+public sealed class Early : QueerRider
+{
+    protected override string Tag => "Early";
+    public override void OnInitialApplication() => Owner?.AddKeyword(CardKeyword.Innate);
 }
