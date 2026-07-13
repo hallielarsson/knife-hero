@@ -132,8 +132,17 @@ public sealed class PolymathPower : KnifeHeroPower
 }
 
 
-/* THE APPETITE — at the start of your turn, if you carry no broken Part, take one.
-   You can never be done. See TheAppetite in Organs.cs. */
+/* THE APPETITE — at the start of your turn, take a Part. Whether or not you are carrying one.
+
+   The "if you carry nothing broken, take one" job moved to the starting relic, because that is who the
+   Creature IS and it should not depend on being offered a card (see MendedBody.TheAppetiteReturns).
+
+   Which frees this to be what a Rare ought to be: **the accelerator, with no brakes.** A part EVERY
+   turn, on top of the one your body was already going to hand you. Grief climbs faster than any Lesson
+   economy can answer — you will not mend your way out of this, and you are not supposed to. It is the
+   Mourner's card: let them rot, let the grief stack, and let Wallow and Keening eat.
+
+   Take it when you have decided you would rather be a weapon than a person. */
 public sealed class AppetitePower : KnifeHeroPower
 {
     public override PowerType Type => PowerType.Buff;
@@ -143,20 +152,9 @@ public sealed class AppetitePower : KnifeHeroPower
     {
         if (player != Owner.Player) return;
 
-        bool carrying = CardPile.GetCards(Owner.Player, PileType.Hand)
-            .Any(c => c is Cards.PartCard);
-        if (carrying) return;
-
         Flash();
-        var rng = Owner.Player.RunState.Rng.CombatCardGeneration;
-        var organs = new System.Func<MegaCrit.Sts2.Core.Models.CardModel>[]
-        {
-            () => Owner.CombatState.CreateCard<Cards.TheThroat>(Owner.Player),
-            () => Owner.CombatState.CreateCard<Cards.TheLeg>(Owner.Player),
-            () => Owner.CombatState.CreateCard<Cards.TheGut>(Owner.Player),
-            () => Owner.CombatState.CreateCard<Cards.ThrobbingHeart>(Owner.Player),
-        };
-        var part = rng.NextItem(organs.ToList())();
-        await CardPileCmd.AddGeneratedCardToCombat(part, PileType.Hand, Owner.Player);
+        for (int i = 0; i < (int)Amount; i++)
+            await CardPileCmd.AddGeneratedCardToCombat(
+                Cards.Parts.Random(Owner.Player), PileType.Hand, Owner.Player);
     }
 }

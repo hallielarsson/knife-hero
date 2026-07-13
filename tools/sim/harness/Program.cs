@@ -38,6 +38,9 @@ switch (mode)
         int cagn = args.Length > 1 && int.TryParse(args[1], out var cagparsed) ? cagparsed : 300;
         await KnifeHero.Sim.CreatureInstrument.Run(cagn, assemblageVariant: false, aggressive: true);
         break;
+    case "part-diag":
+        await KnifeHero.Sim.PartDiag.Run();
+        break;
     case "creature-assemblage":
         int can = args.Length > 1 && int.TryParse(args[1], out var caparsed) ? caparsed : 300;
         await KnifeHero.Sim.CreatureInstrument.Run(can, assemblageVariant: true);

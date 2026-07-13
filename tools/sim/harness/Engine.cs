@@ -176,6 +176,39 @@ public static class Engine
     {
         var unlockState = MegaCrit.Sts2.Core.Unlocks.UnlockState.all;
         var player = Player.CreateForNewRun<TCharacter>(unlockState, netId);
+
+        /* ⚠ FIDELITY FIX (Fable, 2026-07-13) — THE HARNESS WAS DEAF TO EVERY TURN-END HOOK.
+           This one line was worth ~300 fights of wrong answers, so here is the whole story.
+
+           `Hook.BeforeTurnEnd` and `Hook.AfterTurnEnd` both open with:
+
+               ulong? netId = LocalContext.NetId;
+               if (!netId.HasValue) return;          // <-- silent. no log, no throw.
+
+           We created players with a NetId but never told LocalContext which player is "me". So both of
+           those hooks returned immediately, every turn, in every sim ever run from this harness — and
+           they are the ONLY dispatchers of:
+
+               BeforeSideTurnEndVeryEarly / BeforeSideTurnEndEarly / BeforeSideTurnEnd
+               AfterSideTurnEnd / AfterSideTurnEndLate
+
+           Which quietly deleted, from the simulation only:
+             • **The Creature's entire mend.** PartCard defers its transform to BeforeSideTurnEnd (that
+               deferral IS the float-bug fix). No hook, no transform. The batch reported a 92% fester
+               rate and ZERO redemptions across 300 fights and I nearly "fixed" a design that was fine.
+             • **Every Pride's held effect.** PrideCard.WhileFlown fires in BeforeSideTurnEnd. Every
+               measurement of the Gay Blade's flag engine was taken with half the engine switched off.
+             • Stealth's end-of-turn decay, and anything else that ends a turn.
+
+           The bitter part: the harness's whole selling point is "it isn't a model of sts2.dll, it IS
+           sts2.dll." That's true, and it's exactly why a gap like this is so dangerous — the fidelity
+           is real everywhere else, so you trust the number. A hook that returns silently is worse than
+           one that throws, because a throw would have found this in June.
+
+           So: measurement finds THAT something is broken. It cannot tell you the measuring instrument
+           is the broken thing. Only reading the engine can do that. */
+        MegaCrit.Sts2.Core.Context.LocalContext.NetId = netId;
+
         foreach (var card in player.Deck.Cards)
             card.Owner = player;
         foreach (var relic in player.Relics)

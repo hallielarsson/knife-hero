@@ -196,16 +196,7 @@ public sealed class TheCharnelHouse() : CreatureCard(1, CardType.Skill, CardRari
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        var rng = Owner.RunState.Rng.CombatCardGeneration;
-        var organs = new System.Func<CardModel>[]
-        {
-            () => CombatState.CreateCard<TheThroat>(Owner),
-            () => CombatState.CreateCard<TheLeg>(Owner),
-            () => CombatState.CreateCard<TheGut>(Owner),
-            () => CombatState.CreateCard<ThrobbingHeart>(Owner),
-        };
-        var part = rng.NextItem(organs.ToList())();
-        await CardPileCmd.AddGeneratedCardToCombat(part, PileType.Hand, Owner);
+        await CardPileCmd.AddGeneratedCardToCombat(Parts.Random(Owner), PileType.Hand, Owner);
     }
 }
 

@@ -90,6 +90,7 @@ public sealed class MendedBody : CustomRelicModel
     {
         if (player != Owner || Owner.Creature == null) return;
 
+        await TheAppetiteReturns(choiceContext);
         await Recount(choiceContext);
 
         int grief = BrokenCount();
@@ -98,6 +99,43 @@ public sealed class MendedBody : CustomRelicModel
         Flash();
         await CreatureCmd.Damage(choiceContext, Owner.Creature, grief, ValueProp.Unpowered,
             Owner.Creature, null);
+    }
+
+    /* ── YOU ARE NEVER FINISHED ─────────────────────────────────────────────────────────────────
+       If no part of you is still broken, your body takes another one.
+
+       (Hallie, post-playtest: *"Lessons are stacking up with nowhere to go."* / *"I feel like I'm not
+       making a ton of interesting decisions mid-fight by the first or second boss."* / *"Charnel House
+       only way to get parts?"* — three complaints, one cause.)
+
+       She was describing a character that RUNS OUT. Here is what the fixed harness measured on the
+       shipped build, over 300 fights: the Heart mends on turn 3, Grief goes to 0 and stays there, and
+       Lessons climb to a peak of **32** with literally nothing to spend them on. After turn 3 the
+       Creature is a pile of cards with no question attached. The fork — *mend it, or let it rot* — is
+       the entire character, and it was being asked **once**, and it was easy.
+
+       So the body asks again. The moment nothing in you is broken, it goes and gets something broken.
+       Grief never reaches zero for long, the bleed never fully stops, the Lessons always have somewhere
+       to go, and every few turns you are asked the only question this character knows how to ask.
+
+       ── WHY THIS IS THE RELIC AND NOT A RARE POWER ─────────────────────────────────────────────
+       It *was* a Rare Power (The Appetite), which meant the character only became itself if you happened
+       to be offered a specific card. An identity you might not be dealt is not an identity. This is who
+       the Creature is, so it starts in your hands.
+
+       And it is Victor's appetite, exactly — he could have stopped at one, and the whole novel is what
+       it cost that he could not. The Creature does not get to be innocent of its maker: it wants to be
+       more, and it will rob a grave to do it. **Every part is a bet you did not have to take.**
+
+       (The Appetite card still exists, and now does the thing a Rare should: it takes a part EVERY turn,
+       whether or not you are already carrying one. That's the Mourner's accelerator — grief stacks
+       faster than any Lesson economy can answer, and Wallow and Keening eat well.) */
+    private async Task TheAppetiteReturns(PlayerChoiceContext choiceContext)
+    {
+        if (Parts.AnyBroken(Owner)) return;
+
+        Flash();
+        await CardPileCmd.AddGeneratedCardToCombat(Parts.Random(Owner), PileType.Hand, Owner);
     }
 
     // Set both powers to exactly what the deck says. Not add — SET. These are readouts, not resources.

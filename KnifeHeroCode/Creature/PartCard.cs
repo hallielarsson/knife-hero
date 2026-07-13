@@ -137,13 +137,30 @@ public abstract class PartCard(int cost, CardType type, CardRarity rarity, Targe
        two-stage version), and the card itself transforms at end of turn — by which point it has resolved
        into your discard pile and is quiet, settled, and safe to replace. The Mended organ lands in your
        discard, and you draw it. */
+    /* ⚠ THE MEND NO LONGER RAISES YOUR MAX HP. (Fable, 2026-07-13.)
+
+       It used to grant +2 max HP, permanently, every time — which was correct when a part was mended
+       ONCE, per organ, per run. Then the body started asking again (MendedBody.TheAppetiteReturns), and
+       "+2 max HP, permanently, every time" met "you will mend four or five times a fight."
+
+       Measured, immediately, on 300 fights: **net +9.5 HP per fight, up to +34.** An unbounded max-HP
+       ratchet, growing with fight length. In this game max HP is one of the most precious things there
+       is — a whole relic buys you +8 for an act — and I was minting it by the dozen.
+
+       The reward for mending a part is **the part**. A working throat that speaks, a leg that stands, a
+       gut that digests, a heart you can swing — each one better for every other one you've made whole
+       (they all scale on Wholeness). That is a real, compounding, sufficient payoff, and it does not
+       need a stat ratchet stapled to it.
+
+       The heal stays. It is small (2) and it is the only thing answering the bleed, so it's what keeps
+       the Tender treading water instead of drowning: mend fast enough and you roughly break even on HP
+       while assembling a body. Fall behind and the grief outpaces you. **That's the game.** */
     protected sealed override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         foreach (var lesson in Owner.Creature.Powers.Where(p => p is Lesson).ToList())
             await PowerCmd.ModifyAmount(choiceContext, lesson, -LessonsToMend, Owner.Creature, this);
 
         await PowerCmd.Apply<Wholeness>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
-        await CreatureCmd.SetMaxHp(Owner.Creature, Owner.Creature.MaxHp + 2);
         await CreatureCmd.Heal(Owner.Creature, 2m, false);
 
         await OnMended(choiceContext);
@@ -170,6 +187,37 @@ public abstract class PartCard(int cost, CardType type, CardRarity rarity, Targe
 
     protected int LessonAmount() =>
         (int)(Owner.Creature.Powers.FirstOrDefault(p => p is Lesson)?.Amount ?? 0m);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════════════════════
+   THE CHARNEL HOUSE — the one list of organs a body can be built from.
+
+   This list was copy-pasted in three places (The Charnel House card, The Appetite power, and now the
+   relic). Three copies of a list means the day someone adds a fifth organ, two of the three ways to
+   receive a part will silently never hand it to you — and nothing would fail, and nothing would warn.
+   That is the exact shape of every bug in this repo's history. One list. */
+public static class Parts
+{
+    public static CardModel Random(Player owner)
+    {
+        var rng = owner.RunState.Rng.CombatCardGeneration;
+        var combat = owner.Creature.CombatState;
+        var organs = new List<System.Func<CardModel>>
+        {
+            () => combat.CreateCard<ThrobbingHeart>(owner),
+            () => combat.CreateCard<TheThroat>(owner),
+            () => combat.CreateCard<TheLeg>(owner),
+            () => combat.CreateCard<TheGut>(owner),
+        };
+        return rng.NextItem(organs)();
+    }
+
+    /* Is any piece of you still MENDABLE? Scars deliberately do not count: a scar is a part of you and
+       it keeps its grief, but it can never be made whole, so a Creature made entirely of scars is not
+       "finished" — it is failed. If scars counted here, letting everything rot would switch the
+       character off, which is precisely backwards. */
+    public static bool AnyBroken(Player owner) =>
+        CardPile.GetCards(owner, PileType.Draw, PileType.Hand, PileType.Discard).Any(c => c is PartCard);
 }
 
 /* IPart — anything that is a piece of you that is not yet whole. Read by Grief, which counts them.

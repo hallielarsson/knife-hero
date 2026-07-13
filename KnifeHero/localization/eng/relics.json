@@ -1,7 +1,7 @@
 {
   "KNIFEHERO-MENDED_BODY.title": "Your Body",
-  "KNIFEHERO-MENDED_BODY.description": "Counts what you are made of. Grief is the number of your parts that are not whole; you lose that much HP at the start of each turn. Wholeness is the number that are.",
-  "KNIFEHERO-MENDED_BODY.flavor": "You are the sum of the parts you were given, and the ones you made your own.",
+  "KNIFEHERO-MENDED_BODY.description": "Counts what you are made of. Grief is the number of your parts that are not whole; you lose that much HP at the start of each turn. Wholeness is the number that are. If no part of you is broken, your body takes another one.",
+  "KNIFEHERO-MENDED_BODY.flavor": "You are never finished.",
   "KNIFEHERO-EVERYTHING_I_MAKE_IS_QUEER.title": "Everything I Make Is Queer",
   "KNIFEHERO-EVERYTHING_I_MAKE_IS_QUEER.description": "The first Attack you create each turn becomes Queer. Whenever a Strike or Defend you own is Exhausted, return it to your draw pile, Queer.",
   "KNIFEHERO-EVERYTHING_I_MAKE_IS_QUEER.flavor": "You didn't have to be thrown away to come out other."
