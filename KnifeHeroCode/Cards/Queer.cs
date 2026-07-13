@@ -62,6 +62,8 @@ public sealed class Queer() : KnifeHeroCard(-1, CardType.Curse, CardRarity.Curse
         bool alreadyQueer = CardModifier.DirectModifiers(card).Any(m => m is QueerRiderMod);
         await CardPileCmd.Add(card, PileType.Draw);
         if (!alreadyQueer)
-            CardModifier.AddModifier(card, (QueerRiderMod)CardModifier.Get<QueerRiderMod>().MutableClone());
+            // Draw from the SAME rider pool the relic uses (QueerRiders.cs) — so what the world casts out
+            // and what you make yourself both come back genuinely other, and never the same way twice.
+            CardModifier.AddModifier(card, QueerRider.Random(Owner));
     }
 }

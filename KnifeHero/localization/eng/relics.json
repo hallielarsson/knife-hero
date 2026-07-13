@@ -1,5 +1,8 @@
 {
   "KNIFEHERO-MENDED_BODY.title": "Mended Body",
   "KNIFEHERO-MENDED_BODY.description": "At the start of each combat, gain Wholeness equal to your number of Mended Hearts. \"The body you refused to abandon.\"",
-  "KNIFEHERO-MENDED_BODY.flavor": "Every part you made whole is still a part of you."
+  "KNIFEHERO-MENDED_BODY.flavor": "Every part you made whole is still a part of you.",
+  "KNIFEHERO-EVERYTHING_I_MAKE_IS_QUEER.title": "Everything I Make Is Queer",
+  "KNIFEHERO-EVERYTHING_I_MAKE_IS_QUEER.description": "The first Attack you create each turn becomes Queer.",
+  "KNIFEHERO-EVERYTHING_I_MAKE_IS_QUEER.flavor": "You didn't have to be thrown away to come out other."
 }

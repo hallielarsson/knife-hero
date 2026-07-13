@@ -8,6 +8,8 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Relics;
 
+using KnifeHero.KnifeHeroCode.Relics;
+
 namespace KnifeHero.KnifeHeroCode.Character;
 
 public class KnifeHero : PlaceholderCharacterModel
@@ -38,8 +40,11 @@ public class KnifeHero : PlaceholderCharacterModel
         ModelDb.Card<GayBladeDefend>(),
         ModelDb.Card<Queer>()
     ];
+    /* The Gay Blade's signature relic. The Queer curse handles what the world casts OUT; this handles
+       what you MAKE — and this deck makes a lot of knives. */
     public override IReadOnlyList<RelicModel> StartingRelics =>
     [
+        ModelDb.Relic<EverythingIMakeIsQueer>(),
         ModelDb.Relic<BurningBlood>()
     ];
     
