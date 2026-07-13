@@ -72,3 +72,33 @@ public sealed class Closeted : KnifeHeroPower
         }
     }
 }
+
+
+/* IN THE CLOSET — this turn, your Attacks deal no damage.
+
+   The price of the deepest cover in the deck. You are completely safe and completely useless: you can
+   swing all you like, and you will not hit anyone.
+
+   (There is no hook that lets a Power forbid a card from being PLAYED — only CardModel.IsPlayable, which
+   is per-card. So we zero the damage instead. Same outcome, and it reads better on the card.) */
+public sealed class InTheCloset : KnifeHeroPower
+{
+    public override PowerType Type => PowerType.Debuff;
+    public override PowerStackType StackType => PowerStackType.Single;
+
+    public override decimal ModifyDamageMultiplicative(MegaCrit.Sts2.Core.Entities.Creatures.Creature? target,
+        decimal amount, MegaCrit.Sts2.Core.ValueProps.ValueProp props,
+        MegaCrit.Sts2.Core.Entities.Creatures.Creature? dealer,
+        MegaCrit.Sts2.Core.Models.CardModel? cardSource)
+    {
+        if (dealer == Owner && target != Owner) return 0m;
+        return 1m;
+    }
+
+    public override async Task AfterSideTurnEnd(PlayerChoiceContext choiceContext,
+        MegaCrit.Sts2.Core.Combat.CombatSide side,
+        System.Collections.Generic.IEnumerable<MegaCrit.Sts2.Core.Entities.Creatures.Creature> participants)
+    {
+        if (side == MegaCrit.Sts2.Core.Combat.CombatSide.Player) await PowerCmd.Remove(this);
+    }
+}

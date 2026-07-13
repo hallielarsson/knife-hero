@@ -2,8 +2,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using KnifeHero.KnifeHeroCode.CreatureHero.Powers;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
@@ -115,6 +117,26 @@ public abstract class PartCard(int cost, CardType type, CardRarity rarity, Targe
        +2 max HP, for the rest of the run. This is the only thing in the character that raises your
        ceiling.
        And your Grief drops by one, forever, because there is one less piece of you that isn't yours. */
+    private bool _mending;
+
+    /* THE MEND. Spend the Lessons; you become whole immediately — Wholeness, max HP, and your Grief
+       drops by one on the spot. But the CARD does not transform here.
+
+       ⚠⚠ I DID THE FLOAT BUG. I wrote the warning, in this file, and then did it anyway.
+
+       Transforming a card inside its own OnPlay leaves its Godot node stranded on screen — the model is
+       replaced, the node has nothing to follow, and the card hangs in the air forever. Hallie: "Throbbing
+       heart has the transform bug... because it stays in the air, it never gets the new version."
+       That is the third time this bug has been found in this repo (see TheWash.cs for the full autopsy)
+       and the FIRST time it was found by the person who had already documented it. Write it down again:
+
+           **NEVER transform a card that is currently being played. Not in OnPlay. Not in
+           AfterCardPlayed. Both float. Transform a card that is sitting quietly in a pile.**
+
+       So: the mend's *rewards* land instantly (you feel it, which was the whole point of collapsing the
+       two-stage version), and the card itself transforms at end of turn — by which point it has resolved
+       into your discard pile and is quiet, settled, and safe to replace. The Mended organ lands in your
+       discard, and you draw it. */
     protected sealed override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         foreach (var lesson in Owner.Creature.Powers.Where(p => p is Lesson).ToList())
@@ -125,6 +147,14 @@ public abstract class PartCard(int cost, CardType type, CardRarity rarity, Targe
         await CreatureCmd.Heal(Owner.Creature, 2m, false);
 
         await OnMended(choiceContext);
+        _mending = true;   // the card becomes whole at end of turn, from the discard. Never here.
+    }
+
+    public override async Task BeforeSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side,
+        IEnumerable<Creature> participants)
+    {
+        if (side != CombatSide.Player || !_mending) return;
+        _mending = false;
         await CardCmd.Transform(this, Mended());
     }
 

@@ -91,20 +91,29 @@ public sealed class Wholeness : KnifeHeroPower
    Recombinant's "all of it is you" decision. */
 public sealed class BecomeWhoYouArePower : KnifeHeroPower
 {
+    /* NERFED 2026-07-12. Hallie: "Become Who You Are is BANANAS powerful."
+
+       It used to grant Strength equal to your DISTINCT POWERS, every turn. But Grief, Wholeness and
+       Lesson are basically always on you, so it opened at +3 Strength a turn and compounded from there,
+       for free, forever.
+
+       Now it grants Strength equal to your WHOLENESS — the number of parts of you that you have actually
+       made whole. Which is the right number for this card to read, because that is what "becoming who you
+       are" MEANS in this character. It starts at zero. You have to earn every point of it by mending a
+       piece of yourself. And it pays the Tender, who took the slow road, instead of anyone who happened
+       to play four books. */
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
 
     public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
     {
         if (player != Owner.Player || Amount <= 0m) return;
+
+        int whole = (int)(Owner.GetPower<Wholeness>()?.Amount ?? 0m);
+        if (whole <= 0) return;
+
         Flash();
-        int distinct = Owner.Powers.Select(p => p.GetType()).Distinct().Count();
-        // Per-turn Strength = distinct Powers + (flat bonus per stack of this power). Amount is the
-        // stack count; the flat add per stack is (Amount - 1), so 1 stack = pure breadth, upgrades add.
-        decimal str = distinct + (Amount - 1m);
-        if (str > 0m)
-            await PowerCmd.Apply<StrengthPower>(choiceContext, Owner, str, Owner, null);
-        await PowerCmd.Apply<Lesson>(choiceContext, Owner, 1m, Owner, null, false);
+        await PowerCmd.Apply<StrengthPower>(choiceContext, Owner, whole * Amount, Owner, null, false);
     }
 }
 
@@ -119,5 +128,35 @@ public sealed class PolymathPower : KnifeHeroPower
         if (player != Owner.Player) return;
         Flash();
         await PowerCmd.Apply<Lesson>(choiceContext, Owner, Amount, Owner, null, false);
+    }
+}
+
+
+/* THE APPETITE — at the start of your turn, if you carry no broken Part, take one.
+   You can never be done. See TheAppetite in Organs.cs. */
+public sealed class AppetitePower : KnifeHeroPower
+{
+    public override PowerType Type => PowerType.Buff;
+    public override PowerStackType StackType => PowerStackType.Counter;
+
+    public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
+    {
+        if (player != Owner.Player) return;
+
+        bool carrying = CardPile.GetCards(Owner.Player, PileType.Hand)
+            .Any(c => c is Cards.PartCard);
+        if (carrying) return;
+
+        Flash();
+        var rng = Owner.Player.RunState.Rng.CombatCardGeneration;
+        var organs = new System.Func<MegaCrit.Sts2.Core.Models.CardModel>[]
+        {
+            () => Owner.CombatState.CreateCard<Cards.TheThroat>(Owner.Player),
+            () => Owner.CombatState.CreateCard<Cards.TheLeg>(Owner.Player),
+            () => Owner.CombatState.CreateCard<Cards.TheGut>(Owner.Player),
+            () => Owner.CombatState.CreateCard<Cards.ThrobbingHeart>(Owner.Player),
+        };
+        var part = rng.NextItem(organs.ToList())();
+        await CardPileCmd.AddGeneratedCardToCombat(part, PileType.Hand, Owner.Player);
     }
 }

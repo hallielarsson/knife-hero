@@ -109,6 +109,18 @@ public sealed class Stealth : KnifeHeroPower
         if (cardPlay.Card.Owner != Owner.Player) return;
         if (cardPlay.Card.Type != CardType.Attack) return;
         if (Owner.GetPower<Unseen>() != null) return;   // Day of Invisibility
+
+        /* SWINGING A KNIFE MAKES NOISE (Hallie, post-playtest 2026-07-12: "we should be gaining heat for
+           playing an attack"). You don't just lose the cover — they learn where you were. So attacking
+           costs you the Stealth AND a point of Heat, which makes the next hiding place thinner.
+
+           That's what turns Stealth from a resource into a *decision*: every attack you play is a
+           withdrawal from a bank that gets harder to refill. And it means Fire and Finger Guns aren't the
+           only ways to climb the Heat ladder — the loud build just plays the game and gets there. */
+        var deadName = Owner.GetPower<DeadNamePower>();
+        if (deadName != null) await deadName.RefuseTheName();
+        else await PowerCmd.Apply<Heat>(choiceContext, Owner, 1m, Owner, null, false);
+
         await PowerCmd.Remove(this);
     }
 

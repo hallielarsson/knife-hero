@@ -39,8 +39,8 @@
   "KNIFEHERO-WHOLENESS.description": "The number of parts of you that are whole. Your mended parts grow stronger with it.",
   "KNIFEHERO-WHOLENESS.smartDescription": "The number of parts of you that are whole. Your mended parts grow stronger with it.",
   "KNIFEHERO-BECOME_WHO_YOU_ARE_POWER.title": "Become Who You Are",
-  "KNIFEHERO-BECOME_WHO_YOU_ARE_POWER.description": "At the start of each turn, gain Strength equal to your number of Powers, then gain 1 Lesson.",
-  "KNIFEHERO-BECOME_WHO_YOU_ARE_POWER.smartDescription": "At the start of each turn, gain Strength equal to your Powers, then gain 1 Lesson.",
+  "KNIFEHERO-BECOME_WHO_YOU_ARE_POWER.description": "At the start of each turn, gain Strength equal to your Wholeness.",
+  "KNIFEHERO-BECOME_WHO_YOU_ARE_POWER.smartDescription": "At the start of each turn, gain Strength equal to your Wholeness.",
   "KNIFEHERO-PRIDES_PLAYED.title": "Prides Played",
   "KNIFEHERO-PRIDES_PLAYED.description": "Pride cards played this combat.",
   "KNIFEHERO-PRIDES_PLAYED.smartDescription": "Pride cards played this combat.",
@@ -64,5 +64,11 @@
   "KNIFEHERO-DOUBLE_SHOT.smartDescription": "The next Attack you play is played twice.",
   "KNIFEHERO-BOTH_IS_GOOD_POWER.title": "Both Is Good",
   "KNIFEHERO-BOTH_IS_GOOD_POWER.description": "The first Pride card you play each turn also triggers its end-of-turn effect.",
-  "KNIFEHERO-BOTH_IS_GOOD_POWER.smartDescription": "The first Pride card you play each turn also triggers its end-of-turn effect."
+  "KNIFEHERO-BOTH_IS_GOOD_POWER.smartDescription": "The first Pride card you play each turn also triggers its end-of-turn effect.",
+  "KNIFEHERO-APPETITE_POWER.title": "The Appetite",
+  "KNIFEHERO-APPETITE_POWER.description": "At the start of your turn, if you have no Part in hand, add a random Part to your hand.",
+  "KNIFEHERO-APPETITE_POWER.smartDescription": "At the start of your turn, if you have no Part in hand, add a random Part to your hand.",
+  "KNIFEHERO-IN_THE_CLOSET.title": "In the Closet",
+  "KNIFEHERO-IN_THE_CLOSET.description": "Your Attacks deal no damage this turn.",
+  "KNIFEHERO-IN_THE_CLOSET.smartDescription": "Your Attacks deal no damage this turn."
 }

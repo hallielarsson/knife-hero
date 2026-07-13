@@ -53,10 +53,8 @@ public sealed class EverythingIMakeIsQueer : KnifeHeroRelic
     public override async Task AfterCardGeneratedForCombat(CardModel card, Player? creator)
     {
         if (_mintedThisTurn || creator != Owner || card.Type != CardType.Attack) return;
-        if (CardModifier.DirectModifiers(card).Any(m => m is QueerRider or QueerRiderMod)) return;
-
         _mintedThisTurn = true;
-        CardModifier.AddModifier(card, QueerRider.Random(Owner));
+        QueerMod.Queer(card, Owner);
         Flash();
         await Task.CompletedTask;
     }

@@ -58,13 +58,30 @@ public sealed class IroncladPride() : PrideCard(1, CardType.Attack, CardRarity.U
     private decimal BurnDamage => DynamicVars["Burn"].BaseValue;
     private decimal VulnerableAmount => DynamicVars["Vuln"].BaseValue;
 
-    // HELD — the flag burns. Every card you exhaust, something bleeds for it.
-    public override async Task AfterCardExhausted(PlayerChoiceContext choiceContext, CardModel card, bool causedByEthereal)
+    /* HELD — the flag BANKS the burn and lets it all go at once, at the end of your turn.
+       (Hallie, post-playtest 2026-07-12: "Ironclad Pride should bank the exhaust attacks for the end of
+       turn.") She's right: it used to fire a separate little 3-damage hit for every single card you
+       exhausted, which in a deck that exhausts constantly meant a stuttering machine-gun of tiny attacks
+       that you couldn't read and couldn't plan around.
+
+       Banking it makes it ONE number you watch climb — you can see the pyre building — and it lands as a
+       single hit you can actually aim your turn around. Same damage, legible. */
+    private int _banked;
+
+    public override Task AfterCardExhausted(PlayerChoiceContext choiceContext, CardModel card, bool causedByEthereal)
     {
-        if (Pile?.Type != PileType.Hand || card.Owner != Owner) return;
+        if (Pile?.Type == PileType.Hand && card.Owner == Owner) _banked++;
+        return Task.CompletedTask;
+    }
+
+    protected override async Task WhileFlown(PlayerChoiceContext choiceContext)
+    {
+        if (_banked <= 0) return;
+        int burn = _banked; _banked = 0;
+
         var enemy = CombatState.HittableEnemies.FirstOrDefault();
         if (enemy == null) return;
-        await DamageCmd.Attack(BurnDamage).FromCard(this).Targeting(enemy)
+        await DamageCmd.Attack(BurnDamage * burn).FromCard(this).Targeting(enemy)
             .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
     }
 

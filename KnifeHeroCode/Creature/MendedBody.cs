@@ -55,8 +55,12 @@ public sealed class MendedBody : CustomRelicModel
 
     public override RelicRarity Rarity => RelicRarity.Starter;
 
+    /* Show GRIEF, not Wholeness. (Hallie: "The body relic has a 0 on it — is that intentional?")
+       It was, and it was wrong: Wholeness starts at 0 and stays there until your first mend, so the
+       relic sat on the bar reading "0" like a broken thing. Grief is the number that is actually DOING
+       something to you every turn — it's what you're bleeding for. Show the wound, not the healing. */
     public override bool ShowCounter => true;
-    public override int DisplayAmount => WholeCount();
+    public override int DisplayAmount => BrokenCount();
 
     /* ⚠ COUNT THE COMBAT PILES *OR* THE RUN DECK — NEVER BOTH.
 

@@ -74,18 +74,22 @@ public sealed class OpenBook() : CreatureCard(1, CardType.Skill, CardRarity.Comm
 {
     public override bool GainsBlock => true;
 
+    // Upgrade gives you LESSONS, not Block. Lessons are what mend you; Block is just Block.
     protected override IEnumerable<DynamicVar> CanonicalVars =>
-        new List<DynamicVar> { new BlockVar(5m, ValueProp.Move) };
+        new List<DynamicVar> { new BlockVar(5m, ValueProp.Move), new IntVar("Lessons", 2m) };
 
-    // A book you read for protection AND learning — lessons and defense. Recurs (no Exhaust) so it's
-    // the deck's reliable defend-and-learn engine.
+    protected override void OnUpgrade()
+    {
+        DynamicVars.Block.UpgradeValueBy(2m);
+        DynamicVars["Lessons"].UpgradeValueBy(1m);
+    }
+
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
-        await PowerCmd.Apply<Lesson>(choiceContext, Owner.Creature, 2m, Owner.Creature, this, false);
+        await PowerCmd.Apply<Lesson>(choiceContext, Owner.Creature, DynamicVars["Lessons"].BaseValue,
+            Owner.Creature, this, false);
     }
-
-    protected override void OnUpgrade() => DynamicVars.Block.UpgradeValueBy(3m);
 }
 
 public sealed class Marginalia() : CreatureCard(1, CardType.Power, CardRarity.Common, TargetType.Self), IBook
@@ -208,6 +212,8 @@ public sealed class QuoteAtLength() : CreatureCard(1, CardType.Attack, CardRarit
    process threshold). Rare-worthy: snowballs hard in attrition fights, the long-road payoff that
    matches the healing axis's late-game vindication. Frankenstein: "I was benevolent and good; misery
    made me a fiend." — you become what you were assembled into. */
+// NERFED 2026-07-12 (Hallie: "BANANAS powerful"). Cost 3, and it now scales on WHOLENESS, not on
+// distinct Powers — so it pays the Tender, who earned it, instead of anyone who played four books.
 public sealed class BecomeWhoYouAre() : CreatureCard(3, CardType.Power, CardRarity.Rare, TargetType.Self), IBook
 {
     private decimal _strBonus; // upgrade: +1 flat Strength per turn on top of the distinct-power count
@@ -329,21 +335,31 @@ public sealed class Wallow() : CreatureCard(1, CardType.Skill, CardRarity.Common
    so they stay.) */
 public sealed class Keening() : CreatureCard(2, CardType.Attack, CardRarity.Uncommon, TargetType.AllEnemies)
 {
-    private int _mult = 2; // upgrade: the wail cuts deeper — 3× Grief instead of 2×
+    /* THE WAIL. Exhaust your hand; the cry is as big as your grief, and as big as what you just buried.
+
+       REWRITTEN 2026-07-12: it used to GAIN you Grief per card exhausted. It can't any more — Grief is
+       now a readout of how many parts of you are broken, not a counter you can add to. You cannot decide
+       to be sadder; you can only be un-whole. So Keening now reads the grief you already have and pays
+       you for what you threw away on top of it.
+
+       And it feeds Read the Remainder: Keening buries your hand, and Read the Remainder is how you go
+       back and ask the dead. The Mourner and the Tender share a verb. */
+    private decimal _mult = 2m;   // upgrade: the wail cuts deeper
+
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        var toExhaust = CardPile.GetCards(Owner, PileType.Hand)
-            .Where(c => c != this && !c.Keywords.Contains(CardKeyword.Eternal)).ToList();
-        foreach (var c in toExhaust)
-            await CardCmd.Exhaust(choiceContext, c, causedByEthereal: false);
-        if (toExhaust.Count > 0)
-            await PowerCmd.Apply<Grief>(choiceContext, Owner.Creature, toExhaust.Count, Owner.Creature, this, false);
+        var hand = CardPile.GetCards(Owner, PileType.Hand).Where(c => c != this).ToList();
+        foreach (var card in hand)
+            await CardCmd.Exhaust(choiceContext, card, causedByEthereal: false);
 
         int grief = (int)(Owner.Creature.Powers.FirstOrDefault(p => p is Grief)?.Amount ?? 0m);
-        if (grief <= 0) return;
-        await DamageCmd.Attack(grief * _mult).FromCard(this).TargetingAllOpponents(CombatState)
+        decimal damage = grief * _mult + hand.Count * 2m;
+        if (damage <= 0) return;
+
+        await DamageCmd.Attack(damage).FromCard(this).TargetingAllOpponents(CombatState)
             .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
     }
-    protected override void OnUpgrade() => _mult = 3;
+
+    protected override void OnUpgrade() => _mult = 3m;
 }
 

@@ -59,11 +59,13 @@ public sealed class Queer() : KnifeHeroCard(-1, CardType.Curse, CardRarity.Curse
         // Refuse erasure: return the ORIGINAL card to the deck (draw pile) with a queer rider bolted
         // on. Chassis + rider (the Tinker model) — it stays a Strike/Defend but comes back OUT. You
         // can't cast the normative away; it returns to your deck, queer, to be drawn again.
-        bool alreadyQueer = CardModifier.DirectModifiers(card).Any(m => m is QueerRiderMod);
+        
         await CardPileCmd.Add(card, PileType.Draw);
-        if (!alreadyQueer)
-            // Draw from the SAME rider pool the relic uses (QueerRiders.cs) — so what the world casts out
-            // and what you make yourself both come back genuinely other, and never the same way twice.
-            CardModifier.AddModifier(card, QueerRider.Random(Owner));
+
+        /* Queer it AGAIN, even if it already is. QueerMod accumulates now (see QueerRiders.cs), so a card
+           that keeps getting cast out keeps coming back MORE other: Queer 1, then Queer 2, then Queer 3.
+           The old code refused to queer an already-queer card, which meant the world could only fail to
+           erase you once. It can fail as many times as it likes. */
+        QueerMod.Queer(card, Owner);
     }
 }

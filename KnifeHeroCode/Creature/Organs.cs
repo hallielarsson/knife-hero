@@ -189,7 +189,7 @@ public sealed class LetItRot() : CreatureCard(0, CardType.Skill, CardRarity.Unco
    the same one. It wants to be more, and it will rob a grave to do it.
 
    Take it when you have Lessons in the bank. Take it when you don't and you are choosing the scar. */
-public sealed class TheCharnelHouse() : CreatureCard(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
+public sealed class TheCharnelHouse() : CreatureCard(1, CardType.Skill, CardRarity.Common, TargetType.Self)
 {
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
         new List<CardKeyword> { CardKeyword.Exhaust };
@@ -206,5 +206,32 @@ public sealed class TheCharnelHouse() : CreatureCard(1, CardType.Skill, CardRari
         };
         var part = rng.NextItem(organs.ToList())();
         await CardPileCmd.AddGeneratedCardToCombat(part, PileType.Hand, Owner);
+    }
+}
+
+
+/* ── THE APPETITE ───────────────────────────────────────────────────────────────────────────────
+   ⟨2⟩ Power, Rare. At the start of your turn, if you are carrying no broken Part, take one.
+
+   **You can never be done.** (Hallie, post-playtest: "I feel like I'm not making a ton of interesting
+   decisions mid-fight by the first or second boss.")
+
+   She's right, and the reason is that the Creature's whole game is the fork — mend it or let it rot —
+   and once you've mended your heart there is nothing left to decide. You just play cards. A body with
+   nothing broken in it is not this character; it's a deck.
+
+   So this is the build-around for BOTH archetypes, and it's the same card for both, which is exactly
+   right: the Tender takes it because every new organ is another +2 max HP and another point of Wholeness
+   compounding into all the others. The Mourner takes it because every new organ is another scar waiting
+   to happen, and scars are what they're built out of.
+
+   Either way, the deal is the same: **the appetite never stops, and you have to keep answering it.**
+
+   It is Victor's appetite. He could have stopped at one. */
+public sealed class TheAppetite() : CreatureCard(2, CardType.Power, CardRarity.Rare, TargetType.Self)
+{
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        await PowerCmd.Apply<AppetitePower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
     }
 }
