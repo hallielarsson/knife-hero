@@ -23,7 +23,7 @@ namespace KnifeHero.KnifeHeroCode.CreatureHero.Cards;
    unpumpable once-per-turn-start trickle. Mended Heart is now just the good, dependable strike.
    Final numbers are Hallie's to mint. */
 // Token rarity: only ever created by transforming a mended Throbbing Heart, never offered as a reward.
-public sealed class MendedHeart() : CreatureCard(1, CardType.Attack, CardRarity.Token, TargetType.AnyEnemy)
+public sealed class MendedHeart() : CreatureCard(1, CardType.Attack, CardRarity.Token, TargetType.AnyEnemy), IMendedPart
 {
     // Art: Gray490 — the heart IN SITU, between the lungs, trachea and pericardium intact. Deliberately
     // paired against the Throbbing Heart's Gray505, which is the same organ EXCISED, its vagus nerves

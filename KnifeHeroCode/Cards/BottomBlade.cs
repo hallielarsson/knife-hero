@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
@@ -8,35 +9,44 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace KnifeHero.KnifeHeroCode.Cards;
 
-/* BOTTOM BLADE — Hallie's design, 2026-07-12. Forged by HOLDING a Switch Blade to end of turn.
-   (Was "Princess Pin" / "Pillow Princess". Renamed 2026-07-12.)
+/* BOTTOM BLADE — forged by HOLDING a Switch Blade to end of turn. The mirror of Top Chop.
 
-     Retain. Gain (2 × forge level) Block.
+     ON FORGE:  +4 Block immediately (applied at the forge site in FancyFootwork).
+     KEPT:      +2 Block at the end of every turn you hold it. **Flat — never scales.**
+     SWUNG:     Deal damage AND gain 2 Block per forge level. Exhaust.
 
-   The mirror of Top Chop. The Top gives you ATTACK; the Bottom gives you BLOCK. Play the Switch Blade
-   and you get a Top; hold it and you get a Bottom. **The card is a switch.**
-
-   Retain, same as the Top: carry it until the turn you need the wall. Re-forging raises its level, and
-   the level is the payout.
-
-   ⁉ FLAGGED — same ambiguity as Top Chop: built as **2 × (forgeLevel + 1)**, so a fresh Bottom gives
-   2 Block, a once-re-forged one 4. One line to change. */
-public sealed class BottomBlade() : PrideCard(1, CardType.Skill, CardRarity.Token, TargetType.Self)
+   The Top sharpens your next attack; the Bottom puts up the wall. Same shape, same split: holding is a
+   flat trickle that never improves, swinging is where the forging pays. Carry it until it's heavy, then
+   swing it — and when it exhausts, the relic turns a spent Defend in your discard back into a Switch
+   Blade. */
+public sealed class BottomBlade() : PrideCard(1, CardType.Attack, CardRarity.Token, TargetType.AnyEnemy)
 {
     public override bool GainsBlock => true;
-
     public override int MaxUpgradeLevel => 99;
 
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
         new List<CardKeyword> { CardKeyword.Retain, CardKeyword.Exhaust };
 
-    protected override IEnumerable<DynamicVar> CanonicalVars =>
-        new List<DynamicVar> { new BlockVar(2m, ValueProp.Move) };
+    public const decimal OnForge = 4m;
 
-    protected override void OnUpgrade() => DynamicVars.Block.UpgradeValueBy(2m);
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new List<DynamicVar> { new DamageVar(6m, ValueProp.Move), new BlockVar(2m, ValueProp.Move) };
+
+    protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(2m);
+
+    private decimal Swung => 2m * (CurrentUpgradeLevel + 1);
+
+    // KEPT — the flat Block trickle. Never scales.
+    protected override async Task WhileFlown(PlayerChoiceContext choiceContext)
+    {
+        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, null);
+    }
 
     protected override async Task OnSwung(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
+        ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
+        await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
+            .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+        await CreatureCmd.GainBlock(Owner.Creature, new BlockVar(Swung, ValueProp.Move), cardPlay);
     }
 }

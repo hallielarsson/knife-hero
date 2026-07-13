@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using KnifeHero.KnifeHeroCode.Powers;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Relics;
@@ -64,5 +65,30 @@ public sealed class EverythingIMakeIsQueer : KnifeHeroRelic
     {
         if (player == Owner) _mintedThisTurn = false;
         return Task.CompletedTask;
+    }
+
+    /* WHEN A PRIDE IS EXHAUSTED, A SPENT BASIC COMES BACK AS A SWITCH BLADE.
+       (Hallie, post-playtest, 2026-07-12.)
+
+       This is the loop's engine, and moving it here is what let the Switch Blade stop being a novel.
+       Before, the Switch Blade itself had to recruit from the discard — so the card had to say four
+       things. Now it says one thing per path, and the RELIC closes the circle:
+
+           swing a Top Chop  →  it exhausts  →  a spent Strike in your discard becomes a Switch Blade
+           swing a Bottom    →  it exhausts  →  a spent Defend does the same
+
+       Your prides die and your basics come back sharpened. Nothing is wasted, and the deck feeds itself
+       out of the pile of things it already used. */
+    public override async Task AfterCardExhausted(PlayerChoiceContext choiceContext, CardModel card,
+        bool causedByEthereal)
+    {
+        if (card.Owner != Owner || card is not Cards.IPride) return;
+
+        var basic = CardPile.GetCards(Owner, PileType.Discard)
+            .FirstOrDefault(c => c.Tags.Contains(CardTag.Strike) || c.Tags.Contains(CardTag.Defend));
+        if (basic == null) return;
+
+        await CardCmd.Transform(basic, basic.CombatState.CreateCard<Cards.FancyFootwork>(Owner));
+        Flash();
     }
 }

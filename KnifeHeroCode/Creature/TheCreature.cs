@@ -32,6 +32,16 @@ public class TheCreature : PlaceholderCharacterModel
     // grows you more parts. The backbone is wider (4 Strikes / 4 Defends) so the deck has plenty of
     // real Strikes and Defends to read and play.
     public override IEnumerable<CardModel> StartingDeck => [
+        /* ONE broken organ, and the tools to understand it. (Fable, 2026-07-12.)
+
+           You start with a Throbbing Heart you did not ask for, bleeding you 1 HP a turn, on a 4-turn
+           clock. Two Open Books get you the Lessons to mend it — if you draw them in time. That first
+           fight IS the tutorial: you will either make a part of yourself whole, or you will watch it
+           rot and carry the scar for the rest of the run. Nothing explains this to you. It just happens,
+           and then it is permanent.
+
+           The Charnel House is in the pool, not the deck. Wanting more of yourself has to be a choice
+           you make, not a thing you were born with. */
         ModelDb.Card<ThrobbingHeart>(),
         ModelDb.Card<Recite>(),
         ModelDb.Card<Recite>(),
@@ -42,7 +52,7 @@ public class TheCreature : PlaceholderCharacterModel
         ModelDb.Card<Annotate>(),
         ModelDb.Card<Annotate>(),
         ModelDb.Card<OpenBook>(),
-        ModelDb.Card<Marginalia>()
+        ModelDb.Card<OpenBook>()
     ];
 
     // Start with Mended Body — the run-persistent, visible Wholeness counter (re-derives Wholeness

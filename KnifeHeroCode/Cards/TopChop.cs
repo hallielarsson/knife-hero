@@ -1,40 +1,62 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Powers;
+using MegaCrit.Sts2.Core.ValueProps;
 
 namespace KnifeHero.KnifeHeroCode.Cards;
 
-/* TOP CHOP — Hallie's design, simplified 2026-07-12. Forged by PLAYING a Switch Blade.
+/* TOP CHOP — forged by PLAYING a Switch Blade. (Hallie, post-playtest with Lori, 2026-07-12.)
 
-     Retain. Gain (2 × forge level) Vigor.
+     ON FORGE:  +4 Vigor immediately (applied at the forge site in FancyFootwork).
+     KEPT:      +2 Vigor at the end of every turn you hold it. **Flat — never scales.**
+     SWUNG:     Deal damage, THEN gain 2 Vigor per forge level. Exhaust.
 
-   The Top gives you ATTACK, the Bottom gives you BLOCK. That's the whole pair, and it's the cleanest
-   this engine has been: a Switch Blade becomes a **Top** if you *play* it and a **Bottom** if you *hold*
-   it. The card is a switch.
+   ⚠ THE ORDER MATTERS AND IT IS DELIBERATE: the damage lands FIRST, then the Vigor. Base-game Vigor only
+   buffs the **next** attack and is consumed by it — so granting it after the swing means the Top Chop
+   does NOT buff its own hit. It buffs whatever you swing next. The blade sharpens the one after it.
 
-   RETAIN IS THE POINT (Hallie, 2026-07-12: "Both gain Retain — you were right"). You carry the blade
-   until the turn you actually want the power, because Vigor is worth most on the turn you spend it. And
-   re-forging a blade you're holding raises its level — and the level IS the payout. So it's the deck's
-   question again: bank it, or cash it?
+   THE KEPT/SWUNG SPLIT IS THE DESIGN. Holding it is a flat, honest trickle that never improves, so there
+   is no reward for hoarding. Swinging it is where the forging pays. The blade doesn't want to be carried
+   forever — it wants to be carried until it's heavy, and then swung.
 
-   ⁉ FLAGGED — "U x 2 vigor" is ambiguous about the base. Built as **2 × (forgeLevel + 1)**, so a fresh
-   Top gives 2 Vigor, a once-re-forged one gives 4, twice 6. (A literal level × 2 would give 0 on the
-   first forge.) One line to change if that's wrong. */
-public sealed class TopChop() : PrideCard(1, CardType.Skill, CardRarity.Token, TargetType.Self)
+   And swinging Exhausts it, which is a **Pride dying**, which is what the relic watches for: a spent
+   Strike in your discard comes back as a Switch Blade. Your prides die and your basics come back
+   sharpened. */
+public sealed class TopChop() : PrideCard(1, CardType.Attack, CardRarity.Token, TargetType.AnyEnemy)
 {
-    // "Upgrade ∞" — re-forging a held blade raises its level, and the level is the payout.
     public override int MaxUpgradeLevel => 99;
 
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
         new List<CardKeyword> { CardKeyword.Retain, CardKeyword.Exhaust };
 
-    private decimal Payout => 2m * (CurrentUpgradeLevel + 1);
+    public const decimal OnForge = 4m;   // read by FancyFootwork at the forge site
+
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new List<DynamicVar> { new DamageVar(6m, ValueProp.Move) };
+
+    protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(2m);
+
+    private const decimal Kept = 2m;                          // flat, forever
+    private decimal Swung => 2m * (CurrentUpgradeLevel + 1);  // this is the half that scales
+
+    protected override async Task WhileFlown(PlayerChoiceContext choiceContext)
+    {
+        await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, Kept, Owner.Creature, this, false);
+    }
 
     protected override async Task OnSwung(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, Payout, Owner.Creature, this, false);
+        ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
+
+        // Damage FIRST — so the Vigor below lands on your NEXT attack, not this one.
+        await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
+            .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+
+        await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, Swung, Owner.Creature, this, false);
     }
 }

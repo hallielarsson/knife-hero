@@ -11,6 +11,8 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 
+using MegaCrit.Sts2.Core.Models.Powers;
+
 namespace KnifeHero.KnifeHeroCode.Cards;
 
 /* Fancy Footwork — the flex, and the engine that makes your blades. How you USE it decides which
@@ -22,61 +24,36 @@ namespace KnifeHero.KnifeHeroCode.Cards;
    game. Human-sourced mechanic (Hallie). */
 public sealed class FancyFootwork() : KnifeHeroCard(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
 {
-    // Art slug is switch_blade.png — per ART_MAPPING this card is slated to become "Switch Blade"
-    // (Hallie's rename, still gated). The drawing is ready, so wire it now; the rename rides her pass.
-    public override string PortraitPath => "switch_blade.png".CardImagePath();
-    public override string CustomPortraitPath => "switch_blade.png".BigCardImagePath();
-
-    public override bool GainsBlock => true;
     public override bool HasTurnEndInHandEffect => true;
 
-    protected override IEnumerable<DynamicVar> CanonicalVars =>
-        new List<DynamicVar> { new DamageVar(6m, ValueProp.Move), new BlockVar(4m, ValueProp.Move) };
-    
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
         new List<CardKeyword> { CardKeyword.Exhaust };
-    
+
+    // It's a knife. It cuts. (Damage grows with every campfire upgrade, same as the blades it forges.)
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new List<DynamicVar> { new DamageVar(6m, ValueProp.Move) };
+
+    protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(3m);
+
+    /* PLAY IT → it's a TOP. Cut, forge a Top Chop (or sharpen the one you carry), take 4 Vigor, Exhaust. */
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
-        // Play it → it's a TOP. Forge a Top Chop, or sharpen the one you're already carrying.
+
         await CombatState.AddOrUpgradeFlagBlade<TopChop>(Owner);
-        await RecruitFromDiscard();
+        await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, TopChop.OnForge,
+            Owner.Creature, this, false);
     }
 
-    /* THE ENGINE FEEDS ITSELF (Hallie, 2026-07-12).
-       Whichever way you use a Switch Blade, it reaches into your DISCARD and turns a Strike or a Defend
-       there into another Switch Blade. So the loop no longer depends on the relic to keep turning — the
-       relic seeds it, and then the blades recruit their own replacements out of the pile of spent basics.
-
-       Your discard is not a graveyard. It's the raw stock.
-
-       ⚠ The transform happens to a card in the DISCARD, which is quiet and settled — NOT to a card being
-       played. Transforming a card mid-play is what stranded a glowing card on Hallie's screen and, worse,
-       silently deleted cards from the deck. See TheWash.cs for the full autopsy. Do not move this. */
-    private async Task RecruitFromDiscard()
-    {
-        var basic = CardPile.GetCards(Owner, PileType.Discard)
-            .FirstOrDefault(c => c.Tags.Contains(CardTag.Strike) || c.Tags.Contains(CardTag.Defend));
-        if (basic == null) return;
-        await CardCmd.Transform(basic, CombatState.CreateCard<FancyFootwork>(Owner));
-    }
-
+    /* HOLD IT → it's a BOTTOM. Forge a Bottom Blade, take 4 Block now, Exhaust.
+       (Post-playtest with Lori: the old end-of-turn Block gain is GONE. The forge itself pays you —
+       that's how the card stops being a novel. It says one thing per path and nothing else.) */
     protected override async Task OnTurnEndInHand(PlayerChoiceContext choiceContext)
     {
-        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, null);
-
-        // Hold it → it's a BOTTOM. Forge a Bottom Blade, or sharpen the one you're carrying.
         await CombatState.AddOrUpgradeFlagBlade<BottomBlade>(Owner);
-        await RecruitFromDiscard();
+        await CreatureCmd.GainBlock(Owner.Creature, new BlockVar(BottomBlade.OnForge, ValueProp.Move), null);
         await CardCmd.Exhaust(choiceContext, this, causedByEthereal: false);
-    }
-
-    protected override void OnUpgrade()
-    {
-        DynamicVars.Damage.UpgradeValueBy(3m);
-        DynamicVars.Block.UpgradeValueBy(2m);
     }
 }

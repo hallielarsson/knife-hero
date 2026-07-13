@@ -16,7 +16,7 @@ namespace KnifeHero.KnifeHeroCode.CreatureHero.Cards;
    But the rot is also a weapon. While it's in your hand, your attacks deal +1 damage — and because
    every Wound in hand is its own hook listener, the bonus stacks: carry your wounds and you grow
    deadlier as you fall apart. The tragic build-around. Hold them for the edge, or let them go. */
-public sealed class FesteringWound() : CreatureCard(-1, CardType.Curse, CardRarity.Curse, TargetType.None)
+public sealed class FesteringWound() : CreatureCard(-1, CardType.Curse, CardRarity.Curse, TargetType.None), IScar
 {
     public override string PortraitPath => "festering_wound.png".CardImagePath();
     public override string CustomPortraitPath => "festering_wound.png".BigCardImagePath();
@@ -32,10 +32,12 @@ public sealed class FesteringWound() : CreatureCard(-1, CardType.Curse, CardRari
         return 0m;
     }
 
-    public override bool HasTurnEndInHandEffect => true;
 
-    protected override async Task OnTurnEndInHand(PlayerChoiceContext choiceContext)
-    {
-        await TakeGriefDamage(choiceContext, 2);
-    }
+
+    /* NO SELF-BLEED ANY MORE (2026-07-12). Your Grief does all the bleeding, once a turn, on one
+       number — and a Scar counts toward Grief forever (IScar : IPart). So the scar still costs you
+       every turn for the rest of the run; it just costs you through the one honest number instead of
+       quietly stacking a second drain nobody can see.
+
+       What it gives you: your attacks hurt more. What it takes: it never stops being grief. */
 }

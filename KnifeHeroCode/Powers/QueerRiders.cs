@@ -53,7 +53,7 @@ public abstract class QueerRider : CardModifier
             () => (QueerRider)CardModifier.Get<Exposed>().MutableClone(),
             () => (QueerRider)CardModifier.Get<Generous>().MutableClone(),
             () => (QueerRider)CardModifier.Get<Guarded>().MutableClone(),
-            () => (QueerRider)CardModifier.Get<Shadowed>().MutableClone(),
+            () => (QueerRider)CardModifier.Get<Fade>().MutableClone(),
             // Keyword riders — the "existing card qualities" from Hallie's original note. These don't
             // *do* something on play; they change what the card IS.
             () => (QueerRider)CardModifier.Get<SlyRider>().MutableClone(),
@@ -145,13 +145,13 @@ public sealed class Guarded : QueerRider
     }
 }
 
-/* SHADOWED — it hides you. Filthy on an attack, because attacking is the thing that normally BREAKS your
-   Stealth (see Stealth.cs) — so a Shadowed queered attack hands the cover straight back to you. The only
+/* FADE — it hides you. Filthy on an attack, because attacking is the thing that normally BREAKS your
+   Stealth (see Stealth.cs) — so a Faded queered attack hands the cover straight back to you. The only
    card in the game that lets you swing and stay hidden without Day of Invisibility.
-   (Renamed from "Sly" — that's a real base-game keyword, see SlyRider below. Hallie caught the collision.) */
-public sealed class Shadowed : QueerRider
+   (Named by Hallie. It was briefly "Sly", which collides with the real base-game keyword — see SlyRider.) */
+public sealed class Fade : QueerRider
 {
-    protected override string Tag => "Shadowed";
+    protected override string Tag => "Fade";
 
     public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

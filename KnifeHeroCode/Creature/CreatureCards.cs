@@ -13,6 +13,8 @@ using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Random;
 using MegaCrit.Sts2.Core.ValueProps;
 
+using MegaCrit.Sts2.Core.CardSelection;
+using MegaCrit.Sts2.Core.Localization;
 namespace KnifeHero.KnifeHeroCode.CreatureHero.Cards;
 
 /* The Creature's cards — design authored by Claude (THE_CREATURE/DESIGN.md). Flavor quotes
@@ -243,39 +245,65 @@ public sealed class DontLookAway() : CreatureCard(1, CardType.Skill, CardRarity.
    are willing to look at, the more it mends. */
 public sealed class ReadTheRemainder() : CreatureCard(1, CardType.Skill, CardRarity.Common, TargetType.Self)
 {
-    private decimal _heal = 1m; // upgrade: the grail question answers louder — heal 2 per dead card
+    /* ── THE HEART-VERB. The grail question, finally asked. ─────────────────────────────────────
+       Choose a card in your Exhaust pile. Gain a Lesson. Heal HP equal to its cost. It returns to
+       your draw pile.
+
+       WHY IT CHANGED (Fable, 2026-07-12). It used to heal for the COUNT of your Exhaust pile — heal
+       for however many of your dead there happened to be. But **counting your dead is not asking
+       them.** And asking is the entire point of this card and arguably of this character.
+
+       In bro's graph: `victor_frankenstein —failed_to_ask→ the_grail_question`. Victor never asks the
+       Creature what it wants. He never asks Justine why she's about to hang. He looks at his dead and
+       he says nothing, and everyone he loves dies of that silence.
+
+       So the Creature does the opposite, and it does it one at a time:
+         you GO to a specific dead thing,
+         you ASK it,
+         it ANSWERS you  (a Lesson — the only thing that can mend you),
+         it HEALS you    (equal to what it cost you to lose),
+         and it COMES BACK.
+
+       That last part is the whole revision. The dead are not a resource pile you count. They are cards
+       you can speak to, and speaking to them brings them back into the deck — so they can be lost
+       again, and asked again. Your exhaust pile stops being a graveyard and becomes something you tend.
+
+       It also closes a loop with KEENING, which exhausts your entire hand: Keening buries your dead,
+       and Read the Remainder is how you go and talk to them. The Mourner and the Tender share a verb. */
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        int dead = CardPile.GetCards(Owner, PileType.Exhaust).Count();
-        if (dead <= 0) return;
-        await CreatureCmd.Heal(Owner.Creature, dead * _heal, false);
+        var dead = CardPile.GetCards(Owner, PileType.Exhaust).ToList();
+        if (dead.Count == 0) return;
+
+        var prefs = new CardSelectorPrefs(new LocString("gameplay_ui", "CHOOSE_CARD_HEADER"), 1);
+        var chosen = (await CardSelectCmd.FromCombatPile(choiceContext, PileType.Exhaust.GetPile(Owner),
+            Owner, prefs)).FirstOrDefault();
+        if (chosen == null) return;
+
+        await PowerCmd.Apply<Lesson>(choiceContext, Owner.Creature, LessonsGiven, Owner.Creature, this, false);
+        await CreatureCmd.Heal(Owner.Creature, chosen.EnergyCost.GetAmountToSpend(), false);
+        await CardPileCmd.Add(chosen, PileType.Draw);
     }
-    protected override void OnUpgrade() => _heal = 2m;
+
+    private decimal LessonsGiven => IsUpgraded ? 2m : 1m;   // upgrade: it answers you at greater length
+    protected override void OnUpgrade() { }
 }
 
-/* Vexing Memory — Hallie's design. A Status: it festers in your hand. At the end of your turn it
-   gains you 1 Grief and you take grief damage equal to your Grief — so the longer it sits, the more
-   your accumulated grief bites. Lessons cancel the damage (you learn to live with it). Unplayable,
-   Status-rarity (generated, never a reward); extends CreatureCard for the required [Pool]. */
-public sealed class VexingMemory() : CreatureCard(-1, CardType.Status, CardRarity.Status, TargetType.None)
-{
-    public override string PortraitPath => "vexing_memory.png".CardImagePath();
-    public override string CustomPortraitPath => "vexing_memory.png".BigCardImagePath();
+/* VEXING MEMORY — DELETED 2026-07-12 (Fable).
 
-    // Ethereal: it festers once (end of turn) then vanishes, instead of piling up forever — fixes
-    // "vexing memories stack up too quick." One pulse of grief per wound drawn, not permanent clutter.
-    public override IEnumerable<CardKeyword> CanonicalKeywords =>
-        new List<CardKeyword> { CardKeyword.Unplayable, CardKeyword.Ethereal };
+   It was a proxy: a status card that stood in for "you are carrying something unintegrated." But in the
+   new design **the part IS the grief** — it's right there in your hand, bleeding you, with a name and a
+   picture and a clock on it. You do not need a token to represent the thing you are holding.
 
-    public override bool HasTurnEndInHandEffect => true;
+   Deleting it collapsed three mechanisms into one and made the character SIMPLER. Grief stopped being a
+   counter that ticks up and became a readout of how much of you is broken. That's the whole redesign in
+   one deletion.
 
-    protected override async Task OnTurnEndInHand(PlayerChoiceContext choiceContext)
-    {
-        await PowerCmd.Apply<Grief>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
-        int grief = (int)(Owner.Creature.Powers.FirstOrDefault(p => p is Grief)?.Amount ?? 0m);
-        await TakeGriefDamage(choiceContext, grief);
-    }
-}
+   (And there's a bug's ghost here worth remembering: the Vexing Memory was made Ethereal in an earlier
+   session to stop it cluttering the hand, which silently severed the Heart's redemption path — the gate
+   needed 2 Grief and the proxy could only ever produce 1. 900 measured fights, zero redemptions, and
+   nobody noticed. The proxy wasn't just unnecessary. It was where the bug lived.) */
+
 
 /* Wallow — Hallie's design. Wallowing in despair: gain Block equal to your Grief. Grief hurts you
    (Vexing Memory cashes it as damage), but here you can also curl up inside it and let it armor you.

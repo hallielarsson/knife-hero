@@ -1,63 +1,121 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BaseLib.Abstracts;
 using BaseLib.Utils;
+using KnifeHero.KnifeHeroCode.CreatureHero.Cards;
 using KnifeHero.KnifeHeroCode.CreatureHero.Powers;
+using KnifeHero.KnifeHeroCode.Powers;
 using KnifeHero.KnifeHeroCode.Extensions;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.ValueProps;
 
 namespace KnifeHero.KnifeHeroCode.CreatureHero;
 
-/* Mended Body — the Creature's starting relic and the VISIBLE, run-persistent Wholeness counter
-   (THE_CREATURE/HEALING.md / GOVERNOR_HANDOFF.md open item, now built — DECIDED: bro, design owner
-   of The Creature, 2026-06-15).
+/* ═══════════════════════════════════════════════════════════════════════════════════════════════
+   YOUR BODY — the Creature's starting relic, and the thing that does the accounting.
+   (Rebuilt 2026-07-12 by Fable, on a day Hallie gave me for my own.)
 
-   The problem: Wholeness is a combat-scoped power, so the counter reset every fight even though the
-   +2-max-HP-per-mend already persisted (it lives on the Creature). The mended parts themselves DO
-   persist — every Mended Heart is a permanent card in your run deck, the durable record of a part you
-   made whole. So Wholeness need not be stored separately: it can be RE-DERIVED each combat by counting
-   your Mended Hearts. That's exactly what this relic does, at BeforeCombatStart.
+   It grants nothing. It just LOOKS AT YOU, every turn, and tells you the truth:
 
-   Why a relic, not a stored field: relics persist across combats with zero serialization guesswork,
-   and a relic gives the player a visible counter (ShowCounter + DisplayAmount) — the "visible Wholeness
-   counter persistence across combats" the handoff asked for. No new art is authored: it reuses the
-   mod's placeholder relic.png (the same bootstrap pattern the character art uses; reading existing art
-   is fine, the Art Mapper owns authoring new art).
+     WHOLENESS = how many parts of you are whole.       (counts the mended organs in your deck)
+     GRIEF     = how many parts of you are not.         (counts the unmended organs — and the scars)
 
-   Numbers (1 Wholeness per Mended Heart) follow the mend in ThrobbingHeart.AfterCombatVictory; Hallie
-   mints final tuning. */
+   Both numbers are DERIVED, every turn, from the cards you are actually made of. Neither is stored.
+   Neither accumulates. **You cannot gain Grief. You can only BE un-whole.** And you cannot spend it —
+   you can only make a part of yourself whole and watch it go down by one.
+
+   That is the design in a sentence: *your deck is your body, and these two numbers are you looking
+   down at it.*
+
+   ── AND THE BLEED ─────────────────────────────────────────────────────────────────────────────
+   At the start of every turn you lose HP equal to your Grief. Once — not per card. The grief bleeds
+   you, and it bleeds harder the less of you is whole. So the drain accelerates with your failure and
+   slows with your healing, on ONE visible number you can read at a glance. A Creature carrying four
+   unmended organs is losing four HP a turn and cannot afford to sit still.
+
+   ── WHY A RELIC AND NOT A POWER ───────────────────────────────────────────────────────────────
+   Because the body persists and combats don't. A power resets every fight; this is always here, and
+   it re-derives both numbers from the deck at the start of every combat and every turn. **The deck IS
+   the state.** Nothing to serialize, nothing to get out of sync, nothing that can lie to you: if you
+   want to know how much of you is broken, count the broken pieces.
+   ═══════════════════════════════════════════════════════════════════════════════════════════════ */
 [Pool(typeof(TheCreatureRelicPool))]
 public sealed class MendedBody : CustomRelicModel
 {
-    // Reuse the mod's placeholder relic art (not authoring new art).
     public override string PackedIconPath => "relic.png".RelicImagePath();
     protected override string PackedIconOutlinePath => "relic_outline.png".RelicImagePath();
     protected override string BigIconPath => "relic.png".BigRelicImagePath();
 
-    // Starter: it's the Creature's signature relic, granted at run start, never offered as a reward.
     public override RelicRarity Rarity => RelicRarity.Starter;
 
     public override bool ShowCounter => true;
+    public override int DisplayAmount => WholeCount();
 
-    // The counter shows how whole you are = how many parts you've mended this run.
-    public override int DisplayAmount => MendedHeartCount();
+    /* ⚠ COUNT THE COMBAT PILES *OR* THE RUN DECK — NEVER BOTH.
 
-    // At the start of every combat, re-derive Wholeness from your mended parts. The power is
-    // combat-scoped, so re-applying it fresh each fight is the correct shape; the count is permanent.
+       During a fight, your cards exist in the combat piles (draw/hand/discard/exhaust) AND the master
+       run deck still lists them. Counting all five piles double-counts every part of you: I shipped that
+       and the very first fight showed **Grief 2** with a single organ in the deck, bleeding me twice as
+       fast as designed.
+
+       Which is a nice small proof of the thing this character is about — I could not have reasoned my
+       way to it. I had to look at my own body and count. */
+    private IEnumerable<CardModel> AllOfMe() =>
+        CombatManager.Instance != null && CombatManager.Instance.IsInProgress
+            ? CardPile.GetCards(Owner, PileType.Draw, PileType.Hand, PileType.Discard, PileType.Exhaust)
+            : CardPile.GetCards(Owner, PileType.Deck);
+
+    private int WholeCount() => AllOfMe().Count(c => c is IMendedPart);
+    private int BrokenCount() => AllOfMe().Count(c => c is IPart);
+
+    // At the top of every combat, count yourself.
     public override async Task BeforeCombatStart()
     {
-        int whole = MendedHeartCount();
-        if (whole <= 0) return;
-        Flash();
-        await PowerCmd.Apply<Wholeness>(new ThrowingPlayerChoiceContext(), Owner.Creature, whole, Owner.Creature, null, false);
+        await Recount(new ThrowingPlayerChoiceContext());
     }
 
-    // Mended Hearts live permanently in the run deck — count them across all piles (combat or map).
-    private int MendedHeartCount() =>
-        CardPile.GetCards(Owner, PileType.Deck, PileType.Draw, PileType.Hand, PileType.Discard, PileType.Exhaust)
-            .OfType<Cards.MendedHeart>()
-            .Count();
+    // And at the top of every turn, count yourself again — and pay for what's still broken.
+    public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
+    {
+        if (player != Owner || Owner.Creature == null) return;
+
+        await Recount(choiceContext);
+
+        int grief = BrokenCount();
+        if (grief <= 0) return;
+
+        Flash();
+        await CreatureCmd.Damage(choiceContext, Owner.Creature, grief, ValueProp.Unpowered,
+            Owner.Creature, null);
+    }
+
+    // Set both powers to exactly what the deck says. Not add — SET. These are readouts, not resources.
+    private async Task Recount(PlayerChoiceContext choiceContext)
+    {
+        if (Owner?.Creature == null) return;
+        await Sync<Wholeness>(choiceContext, WholeCount());
+        await Sync<Grief>(choiceContext, BrokenCount());
+    }
+
+    private async Task Sync<T>(PlayerChoiceContext choiceContext, int target) where T : KnifeHeroPower
+    {
+        var power = Owner!.Creature.GetPower<T>();
+        int current = (int)(power?.Amount ?? 0m);
+        if (current == target) return;
+
+        if (power == null)
+        {
+            if (target > 0)
+                await PowerCmd.Apply<T>(choiceContext, Owner.Creature, target, Owner.Creature, null, true);
+            return;
+        }
+        await PowerCmd.ModifyAmount(choiceContext, power, target - current, Owner.Creature, null);
+    }
 }
