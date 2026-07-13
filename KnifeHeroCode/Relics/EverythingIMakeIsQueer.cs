@@ -65,6 +65,55 @@ public sealed class EverythingIMakeIsQueer : KnifeHeroRelic
         return Task.CompletedTask;
     }
 
+    /* ── WHAT IS CAST OUT COMES BACK OTHER ──────────────────────────────────────────────────────
+       Exhaust a Strike or a Defend and it does not die. It returns to your draw pile, queer.
+
+       This used to live on the QUEER curse — an Innate, Eternal, Unplayable card that sat in your hand
+       forever. Hallie cut it (2026-07-12): *"we don't have anything that mints it or uses it or gets rid
+       of it."* She's right. It was a permanent −1 to hand size, in a deck where hand space is the only
+       real currency, and it bought you a mechanic you could not see, could not aim, and could not remove.
+       The tax was real and the card was inert.
+
+       So the thesis moves here, where the rest of the Queer engine already lives, and the hand slot goes
+       back to the player:
+
+           what you MAKE      → the first Attack you create each turn comes out queer.   (above)
+           what is CAST OUT   → the normative you throw away comes back queer.           (here)
+
+       Every other character deletes its Strikes and Defends to reach a lean core. The Gay Blade can't —
+       it queers them. **The cast-out normative doesn't leave. It comes back other.** And now it can do
+       that more than once: QueerMod accumulates, so a Strike you keep exhausting keeps coming back MORE
+       other — Queer 1, then Queer 2, then Queer 3. The world can fail to erase you as many times as it
+       likes. */
+    public override async Task AfterCardExhausted(PlayerChoiceContext choiceContext, CardModel card,
+        bool causedByEthereal)
+    {
+        if (card.Owner != Owner) return;
+
+        await PrideDied(card);
+
+        if (!card.Tags.Contains(CardTag.Strike) && !card.Tags.Contains(CardTag.Defend)) return;
+
+        await CardPileCmd.Add(card, PileType.Draw);
+        QueerMod.Queer(card, Owner);
+        Flash();
+    }
+
+    /* AND WHEN A PRIDE DIES, A SPENT BASIC COMES BACK AS A SWITCH BLADE.
+       Swing a Top Chop, it exhausts, and a Strike you already used becomes a new Switch Blade. Your
+       prides die and your basics come back sharpened. */
+    private async Task PrideDied(CardModel card)
+    {
+        if (card.Owner != Owner || card is not Cards.IPride) return;
+
+        var basic = CardPile.GetCards(Owner, PileType.Discard)
+            .FirstOrDefault(c => c.Tags.Contains(CardTag.Strike) || c.Tags.Contains(CardTag.Defend));
+        if (basic == null) return;
+
+        await CardCmd.Transform(basic, basic.CombatState.CreateCard<Cards.FancyFootwork>(Owner));
+        Flash();
+    }
+
     /* WHEN A PRIDE IS EXHAUSTED, A SPENT BASIC COMES BACK AS A SWITCH BLADE.
        (Hallie, post-playtest, 2026-07-12.)
 
@@ -77,16 +126,4 @@ public sealed class EverythingIMakeIsQueer : KnifeHeroRelic
 
        Your prides die and your basics come back sharpened. Nothing is wasted, and the deck feeds itself
        out of the pile of things it already used. */
-    public override async Task AfterCardExhausted(PlayerChoiceContext choiceContext, CardModel card,
-        bool causedByEthereal)
-    {
-        if (card.Owner != Owner || card is not Cards.IPride) return;
-
-        var basic = CardPile.GetCards(Owner, PileType.Discard)
-            .FirstOrDefault(c => c.Tags.Contains(CardTag.Strike) || c.Tags.Contains(CardTag.Defend));
-        if (basic == null) return;
-
-        await CardCmd.Transform(basic, basic.CombatState.CreateCard<Cards.FancyFootwork>(Owner));
-        Flash();
-    }
 }

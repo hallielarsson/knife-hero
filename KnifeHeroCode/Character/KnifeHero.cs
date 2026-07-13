@@ -37,8 +37,7 @@ public class KnifeHero : PlaceholderCharacterModel
         ModelDb.Card<GayBladeDefend>(),
         ModelDb.Card<GayBladeDefend>(),
         ModelDb.Card<GayBladeDefend>(),
-        ModelDb.Card<GayBladeDefend>(),
-        ModelDb.Card<Queer>()
+        ModelDb.Card<GayBladeDefend>()
     ];
     /* The Gay Blade's signature relic. The Queer curse handles what the world casts OUT; this handles
        what you MAKE — and this deck makes a lot of knives. */

@@ -3,8 +3,6 @@
   "KNIFEHERO-ALL_YOU_CAN_EAT.description": "Exhaust all knives and shivs in your hand. Gain 3 HP for each. Healing beyond max HP becomes Block.",
   "KNIFEHERO-FAITH.title": "Faith",
   "KNIFEHERO-FAITH.description": "Deal {Damage} damage. The next time you draw Faith, it deals 10 damage.",
-  "KNIFEHERO-QUEER.title": "Queer",
-  "KNIFEHERO-QUEER.description": "Whenever a Strike or Defend you own is Exhausted, Queer it instead: it returns to your deck with a queer rider (it lays Poison when played).",
   "KNIFEHERO-KUNAI.title": "Throwing Shiv",
   "KNIFEHERO-KUNAI.description": "Deal 1 damage. If this is in your hand at the end of your turn, deal 3 damage to ALL enemies and",
   "KNIFEHERO-GAY_BLADE_STRIKE.title": "Strike",
