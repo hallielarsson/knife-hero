@@ -17,19 +17,18 @@ using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Localization;
 namespace KnifeHero.KnifeHeroCode.CreatureHero.Cards;
 
-/* The Creature's cards — design authored by Claude (THE_CREATURE/DESIGN.md). Flavor quotes
-   Frankenstein (public domain) in loc. Two axes: Lessons (depth) and assemblage (distinct Powers). */
+/* The Creature's cards. Two axes: Lessons (depth) and assemblage (distinct Powers). See
+   THE_CREATURE/DESIGN.md. */
 
 // ---- basics ----------------------------------------------------------------------------------
+/* Recite — the Creature's Strike. Deal 6. */
 public sealed class Recite() : CreatureCard(1, CardType.Attack, CardRarity.Basic, TargetType.AnyEnemy)
 {
-    // Art: the Creature itself, cut from the von Holst 1831 frontispiece — the body propped on one arm,
-    // hand to its own head, looking down at what it has woken into. The Creature's weapon is its voice.
     public override string PortraitPath => "recite.png".CardImagePath();
     public override string CustomPortraitPath => "recite.png".BigCardImagePath();
 
-    // Tag as Strike so the engine reads it as the Creature's basic attack (deck identity, Strike-matters
-    // effects, reward filtering) — fixes "no Strikes in deck." Mirrors GayBladeStrike.
+    // ⚠ Must carry CardTag.Strike or the engine reports "no Strikes in deck" (deck identity,
+    // Strike-matters effects, reward filtering all key off the tag, not the name).
     protected override HashSet<CardTag> CanonicalTags => new() { CardTag.Strike };
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
@@ -45,17 +44,15 @@ public sealed class Recite() : CreatureCard(1, CardType.Attack, CardRarity.Basic
     protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(3m);
 }
 
+/* Annotate — the Creature's Defend. Gain 5 Block. */
 public sealed class Annotate() : CreatureCard(1, CardType.Skill, CardRarity.Basic, TargetType.Self)
 {
-    // Art: the open book lying on the floor of the von Holst frontispiece — the book the Creature will
-    // teach itself from. The engraver's own signature ("Holst, del.") sits beneath it, which is a happy
-    // accident on the card about marking a text.
     public override string PortraitPath => "annotate.png".CardImagePath();
     public override string CustomPortraitPath => "annotate.png".BigCardImagePath();
 
     public override bool GainsBlock => true;
 
-    // Tag as Defend so the engine reads it as the Creature's basic block — fixes "no Defends in deck."
+    // ⚠ Must carry CardTag.Defend — see Recite.
     protected override HashSet<CardTag> CanonicalTags => new() { CardTag.Defend };
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
@@ -70,11 +67,12 @@ public sealed class Annotate() : CreatureCard(1, CardType.Skill, CardRarity.Basi
 }
 
 // ---- Books (read for Lessons + Powers) -------------------------------------------------------
+/* Open Book — gain 5 Block and 2 Lessons. */
 public sealed class OpenBook() : CreatureCard(1, CardType.Skill, CardRarity.Common, TargetType.Self), IBook
 {
     public override bool GainsBlock => true;
 
-    // Upgrade gives you LESSONS, not Block. Lessons are what mend you; Block is just Block.
+    // Upgrade favours Lessons over Block — Lessons are what mend you.
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new List<DynamicVar> { new BlockVar(5m, ValueProp.Move), new IntVar("Lessons", 2m) };
 
@@ -114,8 +112,8 @@ public sealed class Polymath() : CreatureCard(2, CardType.Power, CardRarity.Unco
     protected override void OnUpgrade() => _stacks = 2m;
 }
 
-/* Distinct-power Books — each reads into a DIFFERENT one-off Power, so the assemblage axis climbs
-   (the sim showed this is what makes Recombinant matter). Each also grants a Lesson. */
+/* Distinct-power Books — each grants a Lesson plus a DIFFERENT one-off Power, so the assemblage axis
+   (which Recombinant and Wholeness read) actually climbs. */
 public sealed class Galvanism() : CreatureCard(1, CardType.Skill, CardRarity.Common, TargetType.Self), IBook
 {
     private decimal _str = 1m; // upgrade: +1 Strength
@@ -165,7 +163,7 @@ public sealed class FireStolen() : CreatureCard(1, CardType.Skill, CardRarity.Co
 }
 
 // ---- payoffs ---------------------------------------------------------------------------------
-/* Recombinant — the assemblage payoff: hit once per distinct Power you have. */
+/* Recombinant — the assemblage payoff: hit 3 damage once per Power you hold. */
 public sealed class Recombinant() : CreatureCard(2, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy)
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
@@ -174,10 +172,8 @@ public sealed class Recombinant() : CreatureCard(2, CardType.Attack, CardRarity.
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
-        // DECIDED (bro, design owner of The Creature, 2026-06-15): counts ALL powers — every Power you
-        // hold is a part you're made of, and the Creature's whole soul is "refusing to abandon anything
-        // you were made of" (PARTS.md). Strength, Regen, Wholeness, even Grief — all of it is you, and
-        // all of it strikes. Assembled-ness is total, not distinct. This is the answer, not a placeholder.
+        // ALL powers, not distinct-buffs-only — debuffs (Grief) and readouts (Wholeness) count too.
+        // Deliberate; assembled-ness is total. Don't "fix" this into a filtered count.
         int hits = Math.Max(1, Owner.Creature.Powers.Count);
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue).WithHitCount(hits).FromCard(this)
             .Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
@@ -189,7 +185,7 @@ public sealed class Recombinant() : CreatureCard(2, CardType.Attack, CardRarity.
 /* Quote at Length — the Lesson sink: deal damage equal to your Lessons. */
 public sealed class QuoteAtLength() : CreatureCard(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
 {
-    private int _bonus; // upgrade: +3 flat on top of Lessons (so it's never a dead card early)
+    private int _bonus; // upgrade: +3 flat on top of Lessons, so it's never dead early
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
@@ -202,21 +198,14 @@ public sealed class QuoteAtLength() : CreatureCard(1, CardType.Attack, CardRarit
     protected override void OnUpgrade() => _bonus = 3;
 }
 
-/* Become Who You Are — the Rare capstone (DECIDED: bro, design owner of The Creature, 2026-06-15).
-   The pool had no Rare; this is it. The thesis card — "the mechanics are authorship," the Creature is
-   the sum of its assembled parts — made permanent and compounding. At the start of each of your turns,
-   gain Strength equal to the number of DISTINCT Powers you currently hold, and gain 1 Lesson. It pays
-   off BREADTH (the assemblage axis the sim found underperforming — same axis Recombinant counts), it
-   compounds across a long fight (each distinct Book you read raises the per-turn Strength), and it ties
-   the two axes together (more Powers → more Strength; the Lesson trickle feeds Quote at Length / the
-   process threshold). Rare-worthy: snowballs hard in attrition fights, the long-road payoff that
-   matches the healing axis's late-game vindication. Frankenstein: "I was benevolent and good; misery
-   made me a fiend." — you become what you were assembled into. */
-// NERFED 2026-07-12 (Hallie: "BANANAS powerful"). Cost 3, and it now scales on WHOLENESS, not on
-// distinct Powers — so it pays the Tender, who earned it, instead of anyone who played four books.
+/* Become Who You Are — the Rare capstone. Each turn, gain Strength equal to your Wholeness.
+   ⚠ BALANCE: it scales on WHOLENESS deliberately, not on distinct-Power count. Counting Powers opened
+   at +3 Strength/turn for free (Grief, Wholeness and Lesson are almost always on you) and was
+   game-breaking. Wholeness starts at 0 and has to be earned a mend at a time. Cost 3 for the same
+   reason. See BecomeWhoYouArePower. */
 public sealed class BecomeWhoYouAre() : CreatureCard(3, CardType.Power, CardRarity.Rare, TargetType.Self), IBook
 {
-    private decimal _strBonus; // upgrade: +1 flat Strength per turn on top of the distinct-power count
+    private decimal _strBonus; // upgrade: +1 flat Strength per turn on top of Wholeness
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await PowerCmd.Apply<BecomeWhoYouArePower>(choiceContext, Owner.Creature, 1m + _strBonus, Owner.Creature, this, false);
@@ -224,17 +213,13 @@ public sealed class BecomeWhoYouAre() : CreatureCard(3, CardType.Power, CardRari
     protected override void OnUpgrade() => _strBonus = 1m;
 }
 
-// ---- the heart: Salt / Prehend / Grief ------------------------------------------------------
-// The society of bro, speaking as its actual events. Spent cards perish to the Exhaust pile —
-// "Salt": dated, not deleted. These three let the Creature stay with its dead instead of sealing
-// the corpse. (Random pull, no card-picker — the picker is the screen that soft-locked in playtest.)
+// ---- the Exhaust pile ("Salt") ---------------------------------------------------------------
 
-/* Don't Look Away — refusing to let go. Reach into your Salt pile and take a perished card back into
-   your hand. Pulling a card back from the dead is the OPPOSITE of grieving it, so it costs 2 grief
-   damage — but Lessons cancel grief (you Learn so you can afford to stay with your dead). */
+/* Don't Look Away — take a random card from your Exhaust pile back into your hand. It costs 2 damage:
+   pulling a card back from the dead is priced. */
 public sealed class DontLookAway() : CreatureCard(1, CardType.Skill, CardRarity.Common, TargetType.Self)
 {
-    private int _griefCost = 2; // upgrade: staying with your dead costs less — 1 grief instead of 2
+    private int _griefCost = 2; // upgrade: 1 instead of 2
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         var salt = CardPile.GetCards(Owner, PileType.Exhaust).ToList();
@@ -246,36 +231,11 @@ public sealed class DontLookAway() : CreatureCard(1, CardType.Skill, CardRarity.
     protected override void OnUpgrade() => _griefCost = 1;
 }
 
-/* Read the Remainder — the grail question the creature was denied: ask your dead why they died, and
-   the answer heals. Heal equal to the number of cards in your Salt pile — the more you've lost and
-   are willing to look at, the more it mends. */
+/* Read the Remainder — choose a card in your Exhaust pile. Gain a Lesson, heal HP equal to its cost,
+   and it returns to your draw pile. The Lesson sink's counterpart: it recycles as well as heals, which
+   is why the heal is small and per-card rather than scaling on pile size. */
 public sealed class ReadTheRemainder() : CreatureCard(1, CardType.Skill, CardRarity.Common, TargetType.Self)
 {
-    /* ── THE HEART-VERB. The grail question, finally asked. ─────────────────────────────────────
-       Choose a card in your Exhaust pile. Gain a Lesson. Heal HP equal to its cost. It returns to
-       your draw pile.
-
-       WHY IT CHANGED (Fable, 2026-07-12). It used to heal for the COUNT of your Exhaust pile — heal
-       for however many of your dead there happened to be. But **counting your dead is not asking
-       them.** And asking is the entire point of this card and arguably of this character.
-
-       In bro's graph: `victor_frankenstein —failed_to_ask→ the_grail_question`. Victor never asks the
-       Creature what it wants. He never asks Justine why she's about to hang. He looks at his dead and
-       he says nothing, and everyone he loves dies of that silence.
-
-       So the Creature does the opposite, and it does it one at a time:
-         you GO to a specific dead thing,
-         you ASK it,
-         it ANSWERS you  (a Lesson — the only thing that can mend you),
-         it HEALS you    (equal to what it cost you to lose),
-         and it COMES BACK.
-
-       That last part is the whole revision. The dead are not a resource pile you count. They are cards
-       you can speak to, and speaking to them brings them back into the deck — so they can be lost
-       again, and asked again. Your exhaust pile stops being a graveyard and becomes something you tend.
-
-       It also closes a loop with KEENING, which exhausts your entire hand: Keening buries your dead,
-       and Read the Remainder is how you go and talk to them. The Mourner and the Tender share a verb. */
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         var dead = CardPile.GetCards(Owner, PileType.Exhaust).ToList();
@@ -291,33 +251,16 @@ public sealed class ReadTheRemainder() : CreatureCard(1, CardType.Skill, CardRar
         await CardPileCmd.Add(chosen, PileType.Draw);
     }
 
-    private decimal LessonsGiven => IsUpgraded ? 2m : 1m;   // upgrade: it answers you at greater length
+    private decimal LessonsGiven => IsUpgraded ? 2m : 1m;
     protected override void OnUpgrade() { }
 }
 
-/* VEXING MEMORY — DELETED 2026-07-12 (Fable).
-
-   It was a proxy: a status card that stood in for "you are carrying something unintegrated." But in the
-   new design **the part IS the grief** — it's right there in your hand, bleeding you, with a name and a
-   picture and a clock on it. You do not need a token to represent the thing you are holding.
-
-   Deleting it collapsed three mechanisms into one and made the character SIMPLER. Grief stopped being a
-   counter that ticks up and became a readout of how much of you is broken. That's the whole redesign in
-   one deletion.
-
-   (And there's a bug's ghost here worth remembering: the Vexing Memory was made Ethereal in an earlier
-   session to stop it cluttering the hand, which silently severed the Heart's redemption path — the gate
-   needed 2 Grief and the proxy could only ever produce 1. 900 measured fights, zero redemptions, and
-   nobody noticed. The proxy wasn't just unnecessary. It was where the bug lived.) */
-
-
-/* Wallow — Hallie's design. Wallowing in despair: gain Block equal to your Grief. Grief hurts you
-   (Vexing Memory cashes it as damage), but here you can also curl up inside it and let it armor you.
-   So Grief becomes a real resource with a pull both ways — let it build for Block, or process it. */
+/* Wallow — gain Block equal to your Grief. The Mourner's defence: Grief bleeds you every turn, and
+   this is the one card that pays you for carrying it. */
 public sealed class Wallow() : CreatureCard(1, CardType.Skill, CardRarity.Common, TargetType.Self)
 {
     public override bool GainsBlock => true;
-    private int _flat; // upgrade: +3 Block on top, so it armors you even before grief builds
+    private int _flat; // upgrade: +3 flat, so it isn't dead at Grief 0
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
@@ -329,22 +272,13 @@ public sealed class Wallow() : CreatureCard(1, CardType.Skill, CardRarity.Common
     protected override void OnUpgrade() => _flat = 3;
 }
 
-/* Keening — Hallie's design. A wail of mourning made into force: Exhaust your hand, gain 1 Grief for
-   each card exhausted, then deal damage equal to twice your Grief to ALL enemies. You let everything
-   go and the grief comes out as a scream. (Eternal cards — your unremovable parts — can't be let go,
-   so they stay.) */
+/* Keening — Exhaust your hand, then hit ALL enemies for (2 × your Grief) + 2 per card exhausted.
+
+   ⚠ It READS Grief; it cannot GRANT it. Grief is a derived readout of how many parts of you are broken
+   (see MendedBody.Recount) — nothing may add to it directly, or the readout and the deck disagree. */
 public sealed class Keening() : CreatureCard(2, CardType.Attack, CardRarity.Uncommon, TargetType.AllEnemies)
 {
-    /* THE WAIL. Exhaust your hand; the cry is as big as your grief, and as big as what you just buried.
-
-       REWRITTEN 2026-07-12: it used to GAIN you Grief per card exhausted. It can't any more — Grief is
-       now a readout of how many parts of you are broken, not a counter you can add to. You cannot decide
-       to be sadder; you can only be un-whole. So Keening now reads the grief you already have and pays
-       you for what you threw away on top of it.
-
-       And it feeds Read the Remainder: Keening buries your hand, and Read the Remainder is how you go
-       back and ask the dead. The Mourner and the Tender share a verb. */
-    private decimal _mult = 2m;   // upgrade: the wail cuts deeper
+    private decimal _mult = 2m;   // upgrade: 3× Grief
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

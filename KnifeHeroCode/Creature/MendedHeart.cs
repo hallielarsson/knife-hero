@@ -11,25 +11,13 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace KnifeHero.KnifeHeroCode.CreatureHero.Cards;
 
-/* Mended Heart — what a redeemed Throbbing Heart grows into (THE_CREATURE/HEALING.md, the open
-   keystone). The part made whole: stable, no Vexing Memory, no festering, no Eternal weight. The
-   "solid Strike-equivalent that's yours" HEALING.md asked for — a clean, reliable attack. The body,
-   healed in one place.
+/* Mended Heart — a mended Throbbing Heart. A clean 8-damage attack. Token rarity: only ever created
+   by the mend, never offered as a reward.
 
-   PROPOSAL (Claude, Pathetic Governor 2026-06-15): the Wholeness HEALING is deliberately NOT here.
-   An earlier draft healed 1-per-Wholeness on play, but Mended Heart is re-playable (DontLookAway can
-   prehend it from Salt, etc.), so a free scaling heal stapled to a repeatable attack was a runaway
-   healing feedback loop. Fixed/grieved 2026-06-15: the healing moved to the Wholeness power as an
-   unpumpable once-per-turn-start trickle. Mended Heart is now just the good, dependable strike.
-   Final numbers are Hallie's to mint. */
-// Token rarity: only ever created by transforming a mended Throbbing Heart, never offered as a reward.
+   ⚠ It deliberately does NOT heal. It is replayable (Don't Look Away can pull it back from Exhaust), so
+   a heal stapled here is a runaway loop. All Creature sustain lives in MendedBody.AfterCombatVictory. */
 public sealed class MendedHeart() : CreatureCard(1, CardType.Attack, CardRarity.Token, TargetType.AnyEnemy), IMendedPart
 {
-    // Art: Gray490 — the heart IN SITU, between the lungs, trachea and pericardium intact. Deliberately
-    // paired against the Throbbing Heart's Gray505, which is the same organ EXCISED, its vagus nerves
-    // trailing as cut threads and the aorta severed clean. Excised → restored. And the page is quiet:
-    // the Throbbing Heart is printed over Milton's "Did I request thee, Maker, from my clay" — the
-    // Mended Heart is on a blank leaf. The argument is over.
     public override string PortraitPath => "mended_heart.png".CardImagePath();
     public override string CustomPortraitPath => "mended_heart.png".BigCardImagePath();
 

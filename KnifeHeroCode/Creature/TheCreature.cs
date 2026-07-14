@@ -10,10 +10,8 @@ using MegaCrit.Sts2.Core.Models.Relics;
 
 namespace KnifeHero.KnifeHeroCode.CreatureHero;
 
-/* The Creature — the disclosed-AI sibling to The Gay Blade. DESIGN AUTHORED BY CLAUDE (see
-   THE_CREATURE/DESIGN.md): a being assembled from many parts that reads books and learns things.
-   A power-based deck with two axes — Lessons (depth) and assemblage (breadth). Art, Gender/voice,
-   and final tuning remain Hallie's to mint; placeholder art reuses the Blade's for now. */
+/* The Creature — the second character. A power-based deck with two axes: Lessons (depth) and
+   assemblage (breadth). Design: THE_CREATURE/DESIGN.md. Placeholder art reuses the Blade's. */
 public class TheCreature : PlaceholderCharacterModel
 {
     public const string CharacterId = "TheCreature";
@@ -24,24 +22,12 @@ public class TheCreature : PlaceholderCharacterModel
     public override CharacterGender Gender => CharacterGender.Neutral; // Hallie's call
     public override int StartingHp => 72;
 
-    // You start with ONE part (a Throbbing Heart — the body that begins as a curse) plus a normal
-    // backbone: Recite IS your Strike (deal 6, tagged Strike), Annotate IS your Defend (gain 5, tagged
-    // Defend). DECIDED (bro, design owner of The Creature, 2026-06-15): one Heart, not two — two
-    // Eternal+Retain curses, each spawning a Vexing Memory, clog the hand and read as oppressive
-    // ("throbbing heart used three times"). One is enough to teach the grieve-and-learn loop; the run
-    // grows you more parts. The backbone is wider (4 Strikes / 4 Defends) so the deck has plenty of
-    // real Strikes and Defends to read and play.
+    /* ONE broken organ, and two Open Books — just enough Lessons to mend it if you draw them in time.
+       The first fight is the tutorial for the mend-or-rot fork. Exactly one Part: two Eternal+Retain
+       curses clog the hand and read as oppressive. Recite is the Strike and Annotate the Defend (4 each,
+       so the deck has real basics). The Charnel House is in the pool, not the deck — taking on more of
+       yourself should be a choice. */
     public override IEnumerable<CardModel> StartingDeck => [
-        /* ONE broken organ, and the tools to understand it. (Fable, 2026-07-12.)
-
-           You start with a Throbbing Heart you did not ask for, bleeding you 1 HP a turn, on a 4-turn
-           clock. Two Open Books get you the Lessons to mend it — if you draw them in time. That first
-           fight IS the tutorial: you will either make a part of yourself whole, or you will watch it
-           rot and carry the scar for the rest of the run. Nothing explains this to you. It just happens,
-           and then it is permanent.
-
-           The Charnel House is in the pool, not the deck. Wanting more of yourself has to be a choice
-           you make, not a thing you were born with. */
         ModelDb.Card<ThrobbingHeart>(),
         ModelDb.Card<Recite>(),
         ModelDb.Card<Recite>(),
@@ -55,9 +41,8 @@ public class TheCreature : PlaceholderCharacterModel
         ModelDb.Card<OpenBook>()
     ];
 
-    // Start with Mended Body — the run-persistent, visible Wholeness counter (re-derives Wholeness
-    // from your Mended Hearts at the start of each combat). DECIDED (bro, design owner, 2026-06-15):
-    // the Creature's healing axis needs a stable home that survives combat; the relic is it.
+    // Mended Body derives Grief/Wholeness from the deck and does all the bleeding and healing. The
+    // character does not work without it.
     public override IReadOnlyList<RelicModel> StartingRelics =>
     [
         ModelDb.Relic<MendedBody>()
@@ -67,8 +52,7 @@ public class TheCreature : PlaceholderCharacterModel
     public override RelicPoolModel RelicPool => ModelDb.RelicPool<TheCreatureRelicPool>();
     public override PotionPoolModel PotionPool => ModelDb.PotionPool<TheCreaturePotionPool>();
 
-    // Placeholder character art — reuses the same template assets as the Blade for now (Hallie draws
-    // the Creature's real look later). PlaceholderCharacterModel supplies a placeholder body.
+    // Placeholder character art — reuses the Blade's template assets for now.
     public override Control CustomIcon
     {
         get

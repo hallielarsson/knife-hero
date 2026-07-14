@@ -10,11 +10,8 @@ using MegaCrit.Sts2.Core.Models.Cards;
 
 namespace KnifeHero.KnifeHeroCode.Powers;
 
-/* UNSEEN — from Day of Invisibility. This turn, your attacks don't give away your position.
-
-   Normally striking someone SHOWS THEM WHERE YOU ARE (see Stealth.AfterCardPlayed) — that's the central
-   tension of the hidden build: you can be safe or you can be doing something, not both. Unseen is the
-   one turn you get to be a ghost with a knife. */
+/* UNSEEN — from Day of Invisibility. This turn, your Attacks don't break Stealth.
+   Read by Stealth.AfterCardPlayed, which is the only place that check lives. */
 public sealed class Unseen : KnifeHeroPower
 {
     public override PowerType Type => PowerType.Buff;
@@ -27,8 +24,7 @@ public sealed class Unseen : KnifeHeroPower
     }
 }
 
-/* PICKPOCKET — the first time you deal damage each turn, gain a Shiv.
-   You were in their pockets the whole time. */
+/* PICKPOCKET — the first time you deal damage each turn, gain `Amount` Shivs. */
 public sealed class PickpocketPower : KnifeHeroPower
 {
     public override PowerType Type => PowerType.Buff;

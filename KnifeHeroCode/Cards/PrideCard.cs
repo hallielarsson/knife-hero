@@ -11,66 +11,48 @@ using MegaCrit.Sts2.Core.Models;
 
 namespace KnifeHero.KnifeHeroCode.Cards;
 
-/* IPride — the marker. A Pride is a card you can FLY or SWING.
+/* IPride — marker so payoffs can count Prides on two deliberately different axes:
+     • PLAYED this combat (PridesPlayed power) → Stonewall, Pride Parade. Cumulative; only goes up.
+     • IN YOUR HAND (counted live)             → Knife Block. Tactical; swinging a Pride removes it.
+   So swinging a Pride feeds one payoff and starves the other. That tension is the flag economy.
 
-   This exists so the payoffs can count Prides, and they count them on TWO DIFFERENT AXES, deliberately
-   (Hallie, confirmed):
-     • PLAYED this combat  → Stonewall, Pride Parade.  Cumulative, stable, the wash can't threaten it.
-     • IN YOUR HAND        → Knife Block.              Tactical, and the wash DOES threaten it.
-
-   Why a marker interface and not a CardTag/CardKeyword: both of those are closed enums baked into the
-   game and a mod cannot add a value. Same reason IBlade and IFlag are interfaces. Cost: invisible to the
-   player unless we print it. To make any card a Pride, extend PrideCard below. */
+   Marker interface, not a CardTag/CardKeyword, because both are closed engine enums a mod cannot
+   extend. Cost: invisible to the player unless we print it. */
 public interface IPride { }
 
-/* PRIDE — the mechanic, not just a tag. (Hallie, 2026-07-11: "most of the things that have held vs play
-   are Prides — that's sort of the Pride mechanic.")
-
-   A Pride is a two-state object:
-     HELD  — it sits in your hand and does a passive thing. You are flying the flag.
-     PLAYED — it cashes out and leaves. You are swinging it.
-   You cannot do both with the same card at the same time, and **swinging it gives you your hand back.**
-   That's the character's central decision, and it is why hand space is the deck's real currency.
+/* PRIDE — a two-state card:
+     HELD (in hand at end of turn) — a passive effect. You're flying the flag; it costs a hand slot.
+     SWUNG (played)                — it cashes out and leaves, and you get the hand slot back.
+   Hand space is the deck's real currency: a held Pride is a deployed gadget, not an unspent card.
 
    ─────────────────────────────────────────────────────────────────────────────────────────────────
-   ⚠⚠ DO NOT IMPLEMENT THE HELD EFFECT WITH `HasTurnEndInHandEffect` / `OnTurnEndInHand`. ⚠⚠
+   ⚠⚠ DO NOT IMPLEMENT A HELD EFFECT WITH `HasTurnEndInHandEffect` / `OnTurnEndInHand`. ⚠⚠
 
-   `CardModel.OnTurnEndInHandWrapper` (see .decompiled/) does this, unconditionally, after your effect:
+   `CardModel.OnTurnEndInHandWrapper` does this unconditionally, after your effect, and NEVER checks
+   Retain:
 
        if (Keywords.Contains(Ethereal))  Exhaust(this);
        else                              CardPileCmd.Add(this, PileType.Discard);
 
-   It NEVER checks Retain. The engine treats turn-end-in-hand as a mechanism for cards that LEAVE (The
-   Discourse, Vexing Memory, Festering Wound). So a Retain card whose held-effect fires at turn end
-   **throws itself away every single turn**, and it does so SILENTLY — no error, the card just quietly
-   stops being in your hand. This cost us the Creature's entire central loop today; it went undetected
-   through 900 measured fights and was only caught by actually playing one and watching the card vanish.
+   The engine treats turn-end-in-hand as a mechanism for cards that LEAVE. So a Retain card with a
+   turn-end effect throws itself away every turn, SILENTLY — no error, it just stops being in hand.
+   This went undetected through 900 measured fights.
 
-   The correct hook is `BeforeSideTurnEnd`, which fires at end of turn and does NOT move the card. Cards
-   in hand are live hook listeners — Butch Blade's "while in hand, your attacks deal +1" already relies
-   on exactly this (it overrides ModifyDamageAdditive and gates on `Pile?.Type == PileType.Hand`).
-   ─────────────────────────────────────────────────────────────────────────────────────────────────
-
-   SENTINELS NOTE (the design's origin — Lori's ask): a Sentinels deck crossed between Unity and Wraith
-   — "things you have out and in play doing things", plus gadgets and stealth. Sentinels has a PLAY AREA.
-   Slay the Spire does not. So **the retained hand IS the play area**, and a held Pride is not a card you
-   haven't spent — it is a gadget you have DEPLOYED. Hand size is how many things you can have out. */
+   Use `BeforeSideTurnEnd`: it fires at end of turn and does NOT move the card. Cards in hand are live
+   hook listeners; gate on `Pile?.Type == PileType.Hand`.
+   ───────────────────────────────────────────────────────────────────────────────────────────────── */
 public abstract class PrideCard(int cost, CardType type, CardRarity rarity, TargetType targetType)
     : KnifeHeroCard(cost, type, rarity, targetType), IPride
 {
-    // A Pride you're flying stays flown. Subclasses may add more keywords by overriding and calling base.
+    /* ⚠ Retain is what makes a Pride flyable. A subclass that overrides CanonicalKeywords MUST re-add
+       it — dropping it silently makes that Pride the one card in the deck you cannot hold. */
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
         new List<CardKeyword> { CardKeyword.Retain };
 
-    /* THE HELD CLAUSE — "if this is in your hand at end of turn…"
-       Fires only while the card is in your hand, and does not discard it. Override this instead of
-       OnTurnEndInHand. See the warning above; it is not stylistic. */
+    // THE HELD CLAUSE. Override this, never OnTurnEndInHand — see the warning above.
     protected virtual Task WhileFlown(PlayerChoiceContext choiceContext) => Task.CompletedTask;
 
-    /* BOTH IS GOOD (the power) reaches in here. The whole Pride mechanic is "fly it OR swing it, never
-       both" — so the one card that lets you do both has to be able to fire the held clause on demand,
-       from outside, on a card that has just been played. This is that door, and it exists for exactly
-       one caller. */
+    // Door for BothIsGoodPower, its only caller: fire the held clause on a card that was just played.
     internal Task FlyItAnyway(PlayerChoiceContext choiceContext) => WhileFlown(choiceContext);
 
     public sealed override async Task BeforeSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side,
@@ -81,46 +63,31 @@ public abstract class PrideCard(int cost, CardType type, CardRarity rarity, Targ
         await WhileFlown(choiceContext);
     }
 
-    /* THE PLAYED CLAUSE — override this, not OnPlay.
-       OnPlay is sealed here so that EVERY Pride counts itself when swung. If a Pride had to remember to
-       tick the counter itself, one of them would eventually forget, and Stonewall would silently
-       under-count forever. The base class cannot forget. */
+    // THE PLAYED CLAUSE — override this, not OnPlay. OnPlay is sealed so no Pride can forget to tick
+    // PridesPlayed, which Stonewall and Pride Parade read.
     protected abstract Task OnSwung(PlayerChoiceContext choiceContext, CardPlay cardPlay);
 
     protected sealed override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await OnSwung(choiceContext, cardPlay);
-        // Your pride, put into the world. It only ever goes up. (Stonewall / Pride Parade read this.)
         await PowerCmd.Apply<PridesPlayed>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, true);
-        await CashOut();   // put the basic(s) back in the deck. ADD, never transform. See below.
+        await CashOut();
     }
 
-    /* ── THE CASH-OUT — what swinging this puts back into your deck ─────────────────────────────────
-       Override `Begets()` to declare it. Null (default) = nothing.
+    /* THE CASH-OUT — what swinging this puts back in your deck. Override Begets(); null = nothing.
+       Extra copies scale with CurrentUpgradeLevel, so a re-forged blade pays out more basics on swing —
+       deck bloat is the price of banking one.
 
-       ⚠⚠ WE DO NOT TRANSFORM THE PLAYED CARD. WE **ADD** A NEW ONE. ⚠⚠
+       ⚠⚠ WE **ADD** A NEW CARD. WE DO NOT TRANSFORM THE PLAYED ONE. ⚠⚠
 
-       This looks like a small distinction and it is the whole ballgame. Adding a card to the Discard
-       pile is always safe. TRANSFORMING a card that is currently being played is not, and it broke this
-       project twice in one evening:
-         1. Transform in `OnPlay`          → "Rapier stuck floating after play" (FOOTWORK_SPEC.md).
-         2. Transform in `AfterCardPlayed` → STILL FLOATS. A glowing card hung frozen in the middle of
-            Hallie's screen mid-playtest. That hook fires while the card is still in PileType.Play and
-            still mid-animation.
-         3. And `OnPlayWrapper`'s cleanup is scoped to the ORIGINAL card, so the replacement is stranded
-            in Play and **silently deleted from the deck** on every single trigger.
-       There is no later hook to escape to: a played card reaches Discard via `CardPileCmd.Add`, which
-       does not fire `Hook.AfterCardDiscarded`.
+       Transforming a card that is currently being played strands its Godot node on screen — it floats,
+       frozen, forever. True in OnPlay AND in AfterCardPlayed (that hook fires while the card is still in
+       PileType.Play, mid-animation). Worse: OnPlayWrapper's cleanup is scoped to the ORIGINAL card, so
+       the replacement is stranded in Play and silently deleted from the deck on every trigger. And there
+       is no later hook to escape to — a played card reaches Discard via CardPileCmd.Add, which does not
+       fire Hook.AfterCardDiscarded.
 
-       So the played card just resolves and leaves, exactly like every other card in the game, and we
-       put a NEW basic in the discard pile beside it. Same outcome for the player. Zero engine risk.
-       (The relic does its transform on a card sitting quietly in your HAND at turn start — see
-       TheWash.cs. That is the only safe place to transform anything.)
-
-       THE EXTRA COPIES are the entropy pump: re-forging a held blade raises its CurrentUpgradeLevel
-       (the "retain level"), and swinging it begets one EXTRA basic per level. Banking a blade grows its
-       passive AND grows the payout — and the payout is deck bloat. That's the wash. Cash out big and you
-       flood your own deck with basics. Queering is what makes the bloat good. */
+       Adding to the Discard pile is always safe. Only ever transform a card sitting quietly in a pile. */
     protected virtual CardModel? Begets() => null;
 
     protected virtual int ExtraCopiesOnSwing => CurrentUpgradeLevel;

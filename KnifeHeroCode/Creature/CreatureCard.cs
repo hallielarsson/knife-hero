@@ -27,10 +27,8 @@ public abstract class CreatureCard(int cost, CardType type, CardRarity rarity, T
     // accordingly (2026-07-11 API re-verify against .decompiled).
     public new MegaCrit.Sts2.Core.Combat.ICombatState? CombatState => Owner.Creature.CombatState;
 
-    /* Grief damage is just damage. The old "Lessons cancel grief" rule was draining the very Lessons
-       you need to bank to reach the processing threshold (3 Lessons) — the two currencies fought, so
-       you could never accumulate either. Removed per Hallie's playtest. Now grief hurts your HP
-       straight (the monster's pain), and Lessons are free to pile toward healing. */
+    /* Straight HP damage. Lessons deliberately do NOT cancel it: that rule drained the very Lessons you
+       need to bank to mend a part, so neither currency could ever accumulate. */
     protected async Task TakeGriefDamage(PlayerChoiceContext choiceContext, int amount)
     {
         if (amount > 0)
@@ -38,7 +36,7 @@ public abstract class CreatureCard(int cost, CardType type, CardRarity rarity, T
     }
 }
 
-/* Book — The Creature's card classifier (same marker-interface pattern as IBlade/IFlag, since
-   CardTag/CardKeyword are closed engine enums). A Book is a card you "read"; nothing on its own,
-   but Marginalia and other cards key off it. */
+/* IBook — marker for a card you "read" (Marginalia keys off it).
+   A marker interface and not a CardTag because CardTag/CardKeyword are closed engine enums a mod
+   cannot extend. Same reason as IBlade/IFlag/IPride. */
 public interface IBook { }

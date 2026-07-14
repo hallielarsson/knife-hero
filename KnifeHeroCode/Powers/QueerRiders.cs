@@ -17,31 +17,9 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace KnifeHero.KnifeHeroCode.Powers;
 
-/* ═══════════════════════════════════════════════════════════════════════════════════════════════
-   THE QUEER ENGINE — chassis + rider. Queering never replaces the CARD; it keeps its identity (a Strike
-   is still a Strike) and bolts something on. Divergence by what is added, not by substitution.
-
-   ── A QUEERING REPLACES THE LAST QUEERING ──────────────────────────────────────────────────────
-   (Hallie, 2026-07-13: "a Queer on a card replaces the other queers on a card unless otherwise
-   specified.")
-
-   I had them accumulate, and that was wrong. Stacked riders meant a card that went through the wash
-   enough times became an unreadable pile of every effect in the game at once —
-   "Queer 5: Sharp, Loud, Guarded, Poisoned, Generous" — which is not divergence. It's just *more*, and
-   everything converges on the same maximal card. Accumulation makes everything the same in the end.
-
-   Replacement keeps the thing that actually matters: **each queering makes the card something ELSE.**
-   The Strike you exhaust today comes back Sly. Exhaust it again and it comes back Guarded instead. It is
-   never the same card twice, and it is never all of the cards at once.
-
-   **You don't collect queerness. You keep becoming.**
-
-   ── AND IT READS IN ONE LINE ───────────────────────────────────────────────────────────────────
-       "Deal 6 damage.
-        Queer: Sharp."
-
-   One modifier, holding the current rider. Not N modifiers each stapling on their own sentence.
-   ═══════════════════════════════════════════════════════════════════════════════════════════════ */
+/* THE QUEER ENGINE — chassis + rider. A queering keeps the card's identity (a Strike stays a Strike)
+   and bolts one rider on. A new queering REPLACES the previous rider; riders never accumulate — stacked
+   riders converge every washed card on the same maximal effect pile and stop being readable. */
 public enum QueerKind
 {
     Poisoned,   // 2 Poison on what it hits
@@ -50,9 +28,8 @@ public enum QueerKind
     Exposed,    // 1 Vulnerable
     Generous,   // draw a card
     Guarded,    // 4 Block
-    Fade,       // 1 Stealth, granted AFTER the card resolves — so an Attack breaks your cover and Fade
-                // hands it straight back. See AfterCardPlayedLate. Attacking from Fade still costs Heat:
-                // they heard the knife, they just can't find you.
+    Fade,       // 1 Stealth, granted AFTER the card resolves — see AfterCardPlayedLate. Attacking from
+                // Fade still costs Heat.
     Sly,        // keyword: it plays itself when discarded
     Clingy,     // keyword: Retain
     Early,      // keyword: Innate
@@ -78,11 +55,9 @@ public sealed class QueerMod : CardModifier
         }
     }
 
-    /* Queer a card: find its QueerMod (or make one), and REPLACE whatever it was with something new.
-
-       The single entry point. The relic calls it for both halves of the thesis — what you MAKE (the first
-       Attack you create each turn) and what is CAST OUT (the Strike or Defend you exhaust, which comes
-       back to your draw pile other). Same door, so they're the same kind of becoming. */
+    /* The single entry point: find the card's QueerMod (or make one) and REPLACE its rider with a new
+       random one. Called by EverythingIMakeIsQueer for both halves — the Attack you create each turn,
+       and a draw-pile card when you exhaust a basic. */
     public static void Queer(CardModel card, Player player)
     {
         var mod = DirectModifiers(card).OfType<QueerMod>().FirstOrDefault();
@@ -95,18 +70,7 @@ public sealed class QueerMod : CardModifier
         var rng = player.RunState.Rng.CombatCardGeneration;
         var kind = rng.NextItem(Enum.GetValues<QueerKind>().ToList());
 
-        /* A QUEERING REPLACES THE LAST ONE (Hallie, 2026-07-13: "a Queer on a card replaces the other
-           queers on a card unless otherwise specified").
-
-           Accumulation was the wrong shape and I should have seen it. Stacked riders meant a card that
-           went through the wash enough times turned into an unreadable pile of every effect in the game
-           at once — Queer 5: Sharp, Loud, Guarded, Poisoned, Generous — which is not divergence, it's
-           just *more*. Everything converges on the same maximal card.
-
-           Replacing keeps the thing that actually matters: **each queering makes the card something
-           ELSE.** The Strike you exhaust today comes back Sly; exhaust it again and it comes back
-           Guarded instead. It is never the same card twice, and it is never all of the cards at once.
-           You don't collect queerness. You keep becoming. */
+        // Replace, never accumulate. ClearKeywords first, or a keyword rider outlives its replacement.
         mod.ClearKeywords(card);
         mod._riders.Clear();
         mod._riders.Add(kind);
@@ -126,18 +90,10 @@ public sealed class QueerMod : CardModifier
         description += $"\nQueer: {string.Join(", ", _riders)}.";
     }
 
-    /* ── THE GLOSS ──────────────────────────────────────────────────────────────────────────────
-       (Hallie, 2026-07-13: "Is there a way to get a gloss on the Queer in the side like other keywords?")
-
-       Yes. `CardModel.HoverTips` is what fills the side panel, and it is a plain public getter — so
-       QueerHoverTipPatch (KnifeHeroCode/Patches/QueerHoverTips.cs) postfixes it and appends whatever we
-       return here. Two tips: the umbrella (**what queering IS**, including that a new one replaces the
-       old) and the specific rider currently riding.
-
-       The three keyword riders — Sly, Clingy, Early — get a *second* tip for free, because they really
-       do add the engine's own keyword, and the engine already glosses every keyword on a card. So
-       "Clingy" tells you it grants Retain, and Retain tells you what Retain does. The rider names stay
-       ours; the rules stay the game's. */
+    /* THE SIDE-PANEL GLOSS. `CardModel.HoverTips` fills the side panel and is a public getter, so
+       Patches/QueerHoverTips.cs postfixes it and appends these. Two tips: the umbrella, plus the current
+       rider. The keyword riders (Sly/Clingy/Early) get a second tip for free — the engine auto-glosses
+       every keyword on a card, so don't restate Retain/Innate/Sly in loc text. */
     private static readonly LocString Umbrella = new("static_hover_tips", "queer.description");
     private static readonly LocString UmbrellaTitle = new("static_hover_tips", "queer.title");
 
@@ -194,34 +150,22 @@ public sealed class QueerMod : CardModifier
                     await CreatureCmd.GainBlock(me, new BlockVar(4m, ValueProp.Move), null);
                     break;
 
-                // FADE is not here. It has to land after the attack breaks your cover — see below.
-
-                // Sly / Clingy / Early are keywords. They already did their work when they landed.
+                // FADE is not here — it must land after the attack breaks your cover. See below.
+                // Sly / Clingy / Early are keywords; they did their work when they landed.
             }
         }
     }
 
-    /* ── FADE LANDS LAST ────────────────────────────────────────────────────────────────────────
-       (Hallie, 2026-07-13: "The stealth queer should proc AFTER damage.")
+    /* ⚠ FADE MUST GRANT ITS STEALTH IN AfterCardPlayedLate, NOT OnPlay.
 
-       She's right, and it was worse than mistimed — **Fade did literally nothing on an Attack**, which
-       is the only place it was interesting. Here is the sequence the engine actually runs (CardModel
-       ~line 1931):
+       Engine call order: OnPlay (the card damages; modifiers fire) → AfterCardPlayed, where
+       Stealth.AfterCardPlayed sees an Attack was played and removes ALL Stealth. So a Fade granted in
+       OnPlay is thrown away by the very swing that triggered it — the rider did literally nothing on an
+       Attack, which is the only place it's interesting.
 
-           OnPlay            → the card deals its damage; modifiers fire; Fade grants 1 Stealth
-           AfterCardPlayed   → Stealth.AfterCardPlayed sees an Attack was played and removes ALL Stealth
-
-       So Fade handed you a point of cover and then the very same swing threw it away. My comment in the
-       enum called it "filthy on an attack" and it had never once worked. I reasoned about the interaction
-       instead of following the call order, which is the same mistake as the float bug wearing a new hat.
-
-       The fix is a hook, not a workaround. `Hook.AfterCardPlayed` dispatches TWO full passes over every
-       listener — `AfterCardPlayed`, then `AfterCardPlayedLate` (Hook.cs:278). Stealth's break is in the
-       first pass. Granting Fade's Stealth in the second pass therefore lands strictly after it, for
-       every listener, with **no dependence on listener order**. Not a race we win; a race we're not in.
-
-       And now the rider means what its name means: you strike, they see the knife, and by the time they
-       look up **you are already gone.** */
+       `Hook.AfterCardPlayed` dispatches TWO full passes over every listener: AfterCardPlayed, then
+       AfterCardPlayedLate. Stealth's break is in the first pass, so granting in the second lands strictly
+       after it with no dependence on listener order. */
     public override async Task AfterCardPlayedLate(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (cardPlay.Card != Owner) return;

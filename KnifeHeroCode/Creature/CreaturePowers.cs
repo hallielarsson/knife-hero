@@ -12,27 +12,24 @@ using MegaCrit.Sts2.Core.Models.Powers;
 
 namespace KnifeHero.KnifeHeroCode.CreatureHero.Powers;
 
-/* Lesson — the Creature's depth resource. A stacking counter that does nothing raw; payoff cards
-   (Quote at Length) read it. Reuses the mod's KnifeHeroPower base (icon from images/powers/). */
+/* Lesson — the depth resource. Inert; spent by mending Parts, read by Quote at Length. */
 public sealed class Lesson : KnifeHeroPower
 {
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
 }
 
-/* Grief — a stacking debuff you accumulate (e.g. a Vexing Memory festering in hand). Inert on its
-   own, but cards that make you "take damage equal to your Grief" cash it in — and the more you've
-   stacked, the worse it bites. Note: that damage is grief damage, so Lessons can cancel it
-   (see CreatureCard.TakeGriefDamage). */
+/* Grief — a READOUT, not a resource: MendedBody SETs it each turn to the number of parts of you that
+   are not whole (scars count double). ⚠ Nothing may apply or spend it directly — the next Recount
+   would overwrite the change and the number would silently disagree with the deck. */
 public sealed class Grief : KnifeHeroPower
 {
     public override PowerType Type => PowerType.Debuff;
     public override PowerStackType StackType => PowerStackType.Counter;
 }
 
-/* Marginalia — the learning engine. Whenever you play a Book or a Power, gain a Lesson. (The engine
-   has no on-power-GAINED hook, so we hook card-play instead — same shape as Panache/Closeted.)
-   Single-stack: presence matters, not count. */
+/* Marginalia — play a Book or a Power, gain a Lesson.
+   ⚠ The engine has no on-power-GAINED hook, so this rides AfterCardPlayed instead. */
 public sealed class MarginaliaPower : KnifeHeroPower
 {
     public override PowerType Type => PowerType.Buff;
@@ -46,76 +43,27 @@ public sealed class MarginaliaPower : KnifeHeroPower
     }
 }
 
-/* (ProcessedPartPower removed 2026-06-15, Pathetic Governor — it was an orphan: never applied
-   anywhere, and superseded by the Wholeness mend in ThrobbingHeart.AfterCombatVictory, which now
-   handles what a redeemed part grows into directly. Grieved in bro-engine; see THE_CREATURE/HEALING.md.) */
+/* Wholeness — a READOUT, like Grief: MendedBody SETs it each turn to the number of mended parts in
+   your deck. Every mended organ scales on it. ⚠ Do not apply or spend it directly.
 
-/* Wholeness — the healing axis (THE_CREATURE/HEALING.md, the open keystone, now built).
-   A counter you raise ONLY by mending a part (redeeming a Throbbing Heart that survives the combat).
-   Vengeance scales with Grief — loud, capped, reset every fight. Wholeness is the orthogonal payoff:
-   alongside the permanent max-HP raise the mend grants, it knits your body a little each turn — the
-   slow road that out-scales vengeance late.
-
-   The healing is a PASSIVE turn-start trickle on the power itself: at the start of each of your turns,
-   heal equal to your Wholeness. Once per turn-start, it is UNPUMPABLE — there is no playable card that
-   re-triggers it, so it cannot feed back into a runaway healing loop.
-
-   PROPOSAL (Claude, Pathetic Governor 2026-06-15): HEALING.md specified "+1 Wholeness per part mended,
-   +2 max HP per Wholeness, healing amplified per Wholeness." The permanent max-HP raise is applied
-   directly on the creature when a heart mends (SetMaxHp — it persists across combats, the run-long
-   body). The in-combat healing lives here as the passive trickle (NOT on Mended Heart — the earlier
-   per-play heal there could be re-played via DontLookAway → runaway loop, fixed/grieved 2026-06-15).
-   A cleaner run-level persistence (re-deriving the count each combat) is left for Hallie once a stable
-   run-state hook is chosen — flagged rather than guessed. Final numbers are Hallie's to mint. */
+   ⚠ IT MUST NOT HEAL. The turn-start heal that used to live here is deliberately a no-op override, kept
+   so the reason survives: it scaled with TURNS SPENT against a bleed of ~1, so the strictly correct line
+   was to stop killing the enemy and farm run-level HP. Sustain now pays once, at combat end, in
+   MendedBody.AfterCombatVictory. */
 public sealed class Wholeness : KnifeHeroPower
 {
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
 
-    /* ⚠ WHOLENESS NO LONGER HEALS YOU EVERY TURN. (Fable, 2026-07-13.)
-
-       It used to. The old comment right here said it "can't be pumped into a feedback loop" because it
-       fires once per turn — which is true, and which entirely missed the point. **It didn't need to be
-       pumped. It just needed the turn to keep happening.**
-
-       Hallie, playtest: *"there's an incentive to just spend the whole game healing at the end, because
-       then it feels like an obligation to play unfun."*
-
-       She's right, and it was three engines deep: Wholeness healed you every turn, the mend healed 2,
-       and the Mended Gut healed 2×Wholeness and could be replayed from your discard forever. All three
-       scale with TURNS SPENT, against a bleed of ~1. So the correct line was always: don't kill the
-       enemy, sit there, and farm HP — and HP is run-level, so it's real money. The better your body got,
-       the more the game paid you to stop playing it.
-
-       **Sustain must never scale with time spent in a fight**, or the optimal play is to not finish it.
-
-       The healing moved to where it cannot be farmed: MendedBody pays it ONCE, when the fight is over,
-       at 2 per Wholeness. Same reward for the same body — you just can't milk it. Stalling now does
-       nothing but bleed you. */
     public override Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player) =>
         Task.CompletedTask;
 }
 
-/* BecomeWhoYouArePower — the Rare capstone's engine (THE_CREATURE/DESIGN.md, the breadth payoff).
-   At the start of each of your turns: gain Strength equal to your number of DISTINCT Powers, then gain
-   1 Lesson. The Creature becomes the sum of its assembled parts — and the more distinct parts you've
-   read into yourself, the faster it compounds. Stack count adds a flat bonus per stack (so a second
-   copy / upgrade just adds to the per-turn Strength), but the scaling driver is breadth, not stacks.
-   Counts THIS power among the distinct powers (you are also a part you're made of) — consistent with
-   Recombinant's "all of it is you" decision. */
+/* BecomeWhoYouArePower — each turn, gain Strength equal to (Wholeness × stacks).
+   ⚠ BALANCE: it reads Wholeness, NOT distinct-Power count. Counting Powers opened at +3 Strength/turn
+   for free — Grief, Wholeness and Lesson are almost always on you — and compounded from there. */
 public sealed class BecomeWhoYouArePower : KnifeHeroPower
 {
-    /* NERFED 2026-07-12. Hallie: "Become Who You Are is BANANAS powerful."
-
-       It used to grant Strength equal to your DISTINCT POWERS, every turn. But Grief, Wholeness and
-       Lesson are basically always on you, so it opened at +3 Strength a turn and compounded from there,
-       for free, forever.
-
-       Now it grants Strength equal to your WHOLENESS — the number of parts of you that you have actually
-       made whole. Which is the right number for this card to read, because that is what "becoming who you
-       are" MEANS in this character. It starts at zero. You have to earn every point of it by mending a
-       piece of yourself. And it pays the Tender, who took the slow road, instead of anyone who happened
-       to play four books. */
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
 
@@ -131,7 +79,7 @@ public sealed class BecomeWhoYouArePower : KnifeHeroPower
     }
 }
 
-/* Polymath — at the start of each turn, gain a Lesson (compounding study). Counter-stacks. */
+/* Polymath — gain a Lesson per stack at the start of each turn. */
 public sealed class PolymathPower : KnifeHeroPower
 {
     public override PowerType Type => PowerType.Buff;
@@ -146,17 +94,8 @@ public sealed class PolymathPower : KnifeHeroPower
 }
 
 
-/* THE APPETITE — at the start of your turn, take a Part. Whether or not you are carrying one.
-
-   The "if you carry nothing broken, take one" job moved to the starting relic, because that is who the
-   Creature IS and it should not depend on being offered a card (see MendedBody.TheAppetiteReturns).
-
-   Which frees this to be what a Rare ought to be: **the accelerator, with no brakes.** A part EVERY
-   turn, on top of the one your body was already going to hand you. Grief climbs faster than any Lesson
-   economy can answer — you will not mend your way out of this, and you are not supposed to. It is the
-   Mourner's card: let them rot, let the grief stack, and let Wallow and Keening eat.
-
-   Take it when you have decided you would rather be a weapon than a person. */
+/* THE APPETITE — take a Part at the start of every turn, unconditionally, per stack.
+   The unconditional version; MendedBody has the "only if nothing is broken" floor. */
 public sealed class AppetitePower : KnifeHeroPower
 {
     public override PowerType Type => PowerType.Buff;

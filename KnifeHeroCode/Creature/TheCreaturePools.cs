@@ -4,8 +4,8 @@ using Godot;
 
 namespace KnifeHero.KnifeHeroCode.CreatureHero;
 
-/* The Creature's pools. Second character in the same mod (Hallie's call), so it reuses the mod's
-   placeholder energy icons / card base. Design authored by Claude; see THE_CREATURE/DESIGN.md. */
+/* The Creature's pools. Second character in the same mod, so it reuses the mod's placeholder energy
+   icons and card base. */
 public class TheCreatureCardPool : CustomCardPoolModel
 {
     public override string Title => TheCreature.CharacterId; // not a display name
