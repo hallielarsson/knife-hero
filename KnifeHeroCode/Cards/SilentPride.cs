@@ -9,6 +9,10 @@ using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
 
+
+//The text on this has the discard thing. I think we need to do the shiv one. If it starts in 
+//your hand, add 1 shiv to your hand. When you attack, Draw a card. thats it. Thats the whole tweet. 
+
 namespace KnifeHero.KnifeHeroCode.Cards;
 
 /* SILENT PRIDE — a Pride blade. Hallie, 2026-07-12: "Silent Pride can take the old knife whip ability."

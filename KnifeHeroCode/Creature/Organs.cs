@@ -123,12 +123,20 @@ public sealed class TheGut() : PartCard(0, CardType.Curse, CardRarity.Curse, Tar
     protected override CardModel Mended() => CombatState.CreateCard<MendedGut>(Owner);
 }
 
-/* MENDED GUT — you can digest. Heal 2 HP for every part of you that is whole.
-   The only sustained healing the Creature has, and it only works if you are already working. */
+/* MENDED GUT — you can digest. Heal 2 HP for every part of you that is whole. Exhaust.
+
+   ⚠ EXHAUST IS LOad-BEARING, not flavour. Without it this card is replayable from your discard every
+   single turn, healing 2×Wholeness a turn against a bleed of ~1 — which made "stop killing the enemy
+   and farm HP" the strictly correct line, and made the game an obligation to play badly. It was one of
+   three engines doing that (see Wholeness and MendedBody). Exhaust makes it what it should be: the
+   emergency meal, once, when you need it. **You can digest. You cannot graze.** */
 public sealed class MendedGut() : CreatureCard(1, CardType.Skill, CardRarity.Token, TargetType.Self), IMendedPart
 {
     public override string PortraitPath => "the_gut.png".CardImagePath();
     public override string CustomPortraitPath => "the_gut.png".BigCardImagePath();
+
+    public override IEnumerable<CardKeyword> CanonicalKeywords =>
+        new List<CardKeyword> { CardKeyword.Exhaust };
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

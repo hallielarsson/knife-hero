@@ -12,6 +12,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.ValueProps;
@@ -77,7 +78,26 @@ public sealed class MendedBody : CustomRelicModel
             : CardPile.GetCards(Owner, PileType.Deck);
 
     private int WholeCount() => AllOfMe().Count(c => c is IMendedPart);
-    private int BrokenCount() => AllOfMe().Count(c => c is IPart);
+
+    /* A SCAR COUNTS DOUBLE. (Hallie, playtest: *"Grief gains too slowly for grief cards."*)
+
+       She's right, and the reason was that Grief could only climb by scarring, and a scar was worth
+       exactly as much as a fresh wound — so the Mourner, who deliberately lets everything rot, ended a
+       long fight on Grief 3, and Wallow and Keening were reading a number that barely moved. The build
+       was theoretical. You cannot make a weapon out of a stat that doesn't grow.
+
+       So: a broken part costs you 1. **A part that will never be whole costs you 2.**
+
+       Which is the truest sentence in the character. A fresh wound is a thing you might still answer; a
+       scar is the answer, and the answer was no. It goes on costing you at a rate the open wound never
+       did, and it costs you in the one way you can no longer do anything about. *Unmetabolized experience
+       does not get cheaper when it stops bleeding.*
+
+       And mechanically it does exactly what the Mourner needed: rot on purpose and your Grief climbs
+       twice as fast, your bleed doubles with it, and Keening and Wallow finally have something to eat.
+       **You become a weapon made of what you could not heal, and it costs you double to hold.** */
+    private int BrokenCount() =>
+        AllOfMe().Sum(c => c switch { IScar => 2, IPart => 1, _ => 0 });
 
     // At the top of every combat, count yourself.
     public override async Task BeforeCombatStart()
@@ -138,11 +158,53 @@ public sealed class MendedBody : CustomRelicModel
         await CardPileCmd.AddGeneratedCardToCombat(Parts.Random(Owner), PileType.Hand, Owner);
     }
 
+    /* ── THE BODY KNITS WHEN THE FIGHT IS OVER ──────────────────────────────────────────────────
+       Heal 2 per Wholeness. Once. At the end.
+
+       (Hallie, playtest: *"there's an incentive to just spend the whole game healing at the end, because
+       then it feels like an obligation to play unfun."*)
+
+       This is where ALL of the Creature's sustain now lives, and the reason it lives *here* is the only
+       design rule that matters for healing in a game with run-level HP:
+
+           **Sustain must not scale with turns spent, or the optimal play is to never finish the fight.**
+
+       Every previous version broke that rule three ways at once (Wholeness healed per turn, the mend
+       healed 2, the Gut healed 2×Wholeness and was replayable forever). All of it paid out per-turn
+       against a bleed of ~1, so the correct line was to stop killing things and sit there — and the more
+       whole you were, the better the pay. The game was bribing her to be bored.
+
+       Paying at combat end keeps the *entire* reward — a Tender who assembled four organs still walks out
+       +8 HP — and removes every reason to linger. You cannot farm a number that is only counted once.
+
+       And it says the right thing. **You do not knit while you are being hit. You knit afterwards.** */
+    /* ⚠ We must REMEMBER how whole we got, not recount it at the end.
+
+       AllOfMe() counts the combat piles during a fight and the run deck outside one — and by the time
+       AfterCombatVictory runs, the combat is over, so it would count the RUN DECK. Mends are
+       combat-local (Player.PopulateCombatState clones the deck; Transform only writes back to
+       PileType.Deck), so the run deck contains zero mended organs, always. Recounting here would heal
+       for 2 × 0, every time, silently, forever — a dead reward that looks live in the code.
+
+       So the count is stamped at each Recount, while it still means something. */
+    private int _wholeThisCombat;
+
+    public override async Task AfterCombatVictory(CombatRoom room)
+    {
+        if (Owner?.Creature == null || _wholeThisCombat <= 0) return;
+
+        Flash();
+        await CreatureCmd.Heal(Owner.Creature, 2m * _wholeThisCombat, false);
+        _wholeThisCombat = 0;
+    }
+
     // Set both powers to exactly what the deck says. Not add — SET. These are readouts, not resources.
     private async Task Recount(PlayerChoiceContext choiceContext)
     {
         if (Owner?.Creature == null) return;
-        await Sync<Wholeness>(choiceContext, WholeCount());
+        int whole = WholeCount();
+        _wholeThisCombat = whole;   // stamped while it still means something — see AfterCombatVictory.
+        await Sync<Wholeness>(choiceContext, whole);
         await Sync<Grief>(choiceContext, BrokenCount());
     }
 

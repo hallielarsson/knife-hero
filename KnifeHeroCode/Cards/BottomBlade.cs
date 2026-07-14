@@ -8,7 +8,7 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 
 namespace KnifeHero.KnifeHeroCode.Cards;
-
+//Hallie: Lets make it 4 /6 block, 5 / 8 damage on swing. On retain, gain 4 block.
 /* BOTTOM BLADE — forged by HOLDING a Switch Blade to end of turn. The mirror of Top Chop.
 
      ON FORGE:  +4 Block immediately (applied at the forge site in FancyFootwork).

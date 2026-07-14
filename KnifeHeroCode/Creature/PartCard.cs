@@ -77,8 +77,15 @@ public abstract class PartCard(int cost, CardType type, CardRarity rarity, Targe
        Bigger organs cost more. */
     protected virtual int LessonsToMend => 2;
 
-    /* How many of your turns it will wait. Then it rots. */
-    protected virtual int TurnsToFester => 4;
+    /* How many of your turns it will wait. Then it rots.
+
+       3, not 4 (Hallie, playtest: *"Grief gains too slowly for grief cards"*). Grief only climbs when
+       something SCARS — a scar is a part of you that will never be whole, so it keeps counting, forever.
+       At a 4-turn clock the Mourner could only add a point of Grief every fourth turn, which meant Wallow
+       and Keening were reading a number that barely moved and the whole rot-it-all build was theoretical.
+       At 3 the grief actually stacks inside a fight, and the choice to let something go has teeth you can
+       feel in the same combat you made it. */
+    protected virtual int TurnsToFester => 3;
 
     private int _turnsLeft = -1;
 
@@ -161,7 +168,6 @@ public abstract class PartCard(int cost, CardType type, CardRarity rarity, Targe
             await PowerCmd.ModifyAmount(choiceContext, lesson, -LessonsToMend, Owner.Creature, this);
 
         await PowerCmd.Apply<Wholeness>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
-        await CreatureCmd.Heal(Owner.Creature, 2m, false);
 
         await OnMended(choiceContext);
         _mending = true;   // the card becomes whole at end of turn, from the discard. Never here.

@@ -15,6 +15,10 @@ using MegaCrit.Sts2.Core.ValueProps;
 namespace KnifeHero.KnifeHeroCode.Cards;
 
 /* ═══════════════════════════════════════════════════════════════════════════════════════════════
+   Hallie: OK. Once more. THIS TIME. Lets get rid of it and just call iy "Stabby". On play, it still CAN absorb a strike or defend.
+   If it does so, you gain block or vigor equal to the amount gained and it upgrades once. On retain, it gives you U + 2 block, on attack it does 8 + U damage and the above absorb, option.
+   That's it. Thats the whole tweet. Top chop and bottom blade become their own cards. No Exhaust, no nothing, better block on bottom blade, better templating on the instructions?
+
    SWITCH BLADE — ⟨1⟩ Attack.
 
      Deal 6 (9) damage. Exhaust a Strike or Defend in your hand and forge a Pride Blade.

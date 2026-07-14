@@ -5,7 +5,7 @@ using KnifeHero.KnifeHeroCode.Powers;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
-
+//I think we need to get rid of this iirc.
 namespace KnifeHero.KnifeHeroCode.Cards;
 
 /* The Closet — Hallie's design, reworked into a *maintained posture* (whetstone 2026-06-15,

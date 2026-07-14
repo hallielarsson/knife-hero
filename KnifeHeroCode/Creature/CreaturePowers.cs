@@ -72,14 +72,28 @@ public sealed class Wholeness : KnifeHeroPower
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
 
-    // The healed body knits a little each turn. Heal equal to Wholeness at turn start — fires exactly
-    // once per turn no matter how many cards you play, so it can't be pumped into a feedback loop.
-    public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
-    {
-        if (player != Owner.Player || Amount <= 0m) return;
-        Flash();
-        await CreatureCmd.Heal(Owner, Amount, false);
-    }
+    /* ⚠ WHOLENESS NO LONGER HEALS YOU EVERY TURN. (Fable, 2026-07-13.)
+
+       It used to. The old comment right here said it "can't be pumped into a feedback loop" because it
+       fires once per turn — which is true, and which entirely missed the point. **It didn't need to be
+       pumped. It just needed the turn to keep happening.**
+
+       Hallie, playtest: *"there's an incentive to just spend the whole game healing at the end, because
+       then it feels like an obligation to play unfun."*
+
+       She's right, and it was three engines deep: Wholeness healed you every turn, the mend healed 2,
+       and the Mended Gut healed 2×Wholeness and could be replayed from your discard forever. All three
+       scale with TURNS SPENT, against a bleed of ~1. So the correct line was always: don't kill the
+       enemy, sit there, and farm HP — and HP is run-level, so it's real money. The better your body got,
+       the more the game paid you to stop playing it.
+
+       **Sustain must never scale with time spent in a fight**, or the optimal play is to not finish it.
+
+       The healing moved to where it cannot be farmed: MendedBody pays it ONCE, when the fight is over,
+       at 2 per Wholeness. Same reward for the same body — you just can't milk it. Stalling now does
+       nothing but bleed you. */
+    public override Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player) =>
+        Task.CompletedTask;
 }
 
 /* BecomeWhoYouArePower — the Rare capstone's engine (THE_CREATURE/DESIGN.md, the breadth payoff).

@@ -95,7 +95,7 @@ public sealed class IroncladPride() : PrideCard(1, CardType.Attack, CardRarity.U
     }
 }
 
-
+//Hallie: This is still not it. I think, if its in your hand since the start of your turn it adds one of those energy cards.
 /* WATCHER PRIDE — the sight.
      HELD:  at the start of your turn, draw 2 and discard 1.
      SWUNG: draw 3.
@@ -134,6 +134,8 @@ public sealed class WatcherPride() : PrideCard(1, CardType.Skill, CardRarity.Unc
 }
 
 
+
+//This needs to be an attack
 /* REGENT PRIDE — the one that eats its own court.
      COST: exhausts another Pride blade from your hand when you play it. It cannot be played otherwise.
      HELD: nothing. It is not a flag you fly; it is a thing you feed.

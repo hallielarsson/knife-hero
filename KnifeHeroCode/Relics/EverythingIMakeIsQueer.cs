@@ -65,49 +65,54 @@ public sealed class EverythingIMakeIsQueer : KnifeHeroRelic
         return Task.CompletedTask;
     }
 
-    /* ── WHAT IS CAST OUT COMES BACK OTHER ──────────────────────────────────────────────────────
-       Exhaust a Strike or a Defend and it does not die. It returns to your draw pile, queer.
+    /* ── THE RELIC NO LONGER UN-EXHAUSTS YOUR BASICS ────────────────────────────────────────────
+       (Hallie, playtest: *"Does the relic still un-exhaust attacks and defends? Because it probably
+       shouldn't."*)
 
-       This used to live on the QUEER curse — an Innate, Eternal, Unplayable card that sat in your hand
-       forever. Hallie cut it (2026-07-12): *"we don't have anything that mints it or uses it or gets rid
-       of it."* She's right. It was a permanent −1 to hand size, in a deck where hand space is the only
-       real currency, and it bought you a mechanic you could not see, could not aim, and could not remove.
-       The tax was real and the card was inert.
+       It did, and it shouldn't. Exhausting a Strike or a Defend used to send it back to your draw pile,
+       queered.
 
-       So the thesis moves here, where the rest of the Queer engine already lives, and the hand slot goes
-       back to the player:
+       I first wrote this up as "the relic was refunding the Switch Blade's cost." Hallie: *"Not cost —
+       exhausting a card isn't a straight cost, esp. a basic."* She's right and it matters, because the
+       actual problem is the opposite one and it's bigger.
 
-           what you MAKE      → the first Attack you create each turn comes out queer.   (above)
-           what is CAST OUT   → the normative you throw away comes back queer.           (here)
+       **Exhausting a basic is a BENEFIT.** Thinning is one of the deepest levers in the genre: every
+       Strike you remove makes every good card you own more likely to show up. The Switch Blade doesn't
+       *charge* you a basic — it *upgrades* one, out of the deck and into a blade. That's the whole
+       pleasure of it.
 
-       Every other character deletes its Strikes and Defends to reach a lean core. The Gay Blade can't —
-       it queers them. **The cast-out normative doesn't leave. It comes back other.** And now it can do
-       that more than once: QueerMod accumulates, so a Strike you keep exhausting keeps coming back MORE
-       other — Queer 1, then Queer 2, then Queer 3. The world can fail to erase you as many times as it
-       likes. */
+       And this relic silently forbade it. Every basic you exhausted came straight back, so **the Gay
+       Blade could never thin, ever, by any route.** A relic that quietly cancels a core strategic lever
+       isn't a gift, it's a trap — and it's an invisible one, because nothing fails. Your deck just stays
+       fat forever and you never learn why.
+
+       ── BUT DON'T JUST DELETE THE UPSIDE ───────────────────────────────────────────────────────
+       Hallie, immediately: *"so also nerfing its benefit."* Yes — cutting the clause takes half the
+       relic's text with it, and this is a STARTER relic. It cannot be "sometimes nothing."
+
+       So the benefit stays and only the *destination* changes. Exhaust a Strike or a Defend and it does
+       not come back — but **what it was passes into something else.** A card in your draw pile is
+       queered.
+
+       This is strictly better than what it replaced, and it's better because it says the truer thing:
+
+           the old clause  → what you cast out returns, unchanged except for a rider
+           this one        → what you cast out is GONE, and it changes what's left behind
+
+       You get to thin. You get the queering. And you don't have to be given back to be worth something —
+       **what you let go of still makes the rest of you different.** */
     public override async Task AfterCardExhausted(PlayerChoiceContext choiceContext, CardModel card,
         bool causedByEthereal)
     {
         if (card.Owner != Owner) return;
-
         if (!card.Tags.Contains(CardTag.Strike) && !card.Tags.Contains(CardTag.Defend)) return;
 
-        await CardPileCmd.Add(card, PileType.Draw);
-        QueerMod.Queer(card, Owner);
+        // The basic stays exhausted — you keep the thinning. It just doesn't leave quietly.
+        var draw = CardPile.GetCards(Owner, PileType.Draw).ToList();
+        if (draw.Count == 0) return;
+
+        var rng = Owner.RunState.Rng.CombatCardGeneration;
+        QueerMod.Queer(rng.NextItem(draw), Owner);
         Flash();
     }
-
-
-    /* WHEN A PRIDE IS EXHAUSTED, A SPENT BASIC COMES BACK AS A SWITCH BLADE.
-       (Hallie, post-playtest, 2026-07-12.)
-
-       This is the loop's engine, and moving it here is what let the Switch Blade stop being a novel.
-       Before, the Switch Blade itself had to recruit from the discard — so the card had to say four
-       things. Now it says one thing per path, and the RELIC closes the circle:
-
-           swing a Top Chop  →  it exhausts  →  a spent Strike in your discard becomes a Switch Blade
-           swing a Bottom    →  it exhausts  →  a spent Defend does the same
-
-       Your prides die and your basics come back sharpened. Nothing is wasted, and the deck feeds itself
-       out of the pile of things it already used. */
 }
