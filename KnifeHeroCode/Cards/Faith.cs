@@ -22,11 +22,18 @@ public sealed class Faith() : KnifeHeroCard(1, CardType.Attack, CardRarity.Commo
     private bool _drawnOnce;
     private bool _believed;
 
+    /* {Payoff} is a DynamicVar so the card can NAME the reward it's promising. The text used to say "it
+       deals 10 damage" as a literal — and an upgraded Faith pays 15, so the card was making a promise it
+       then overkept, silently, forever. A card that lies in your favour is still a card that lies. */
     protected override IEnumerable<DynamicVar> CanonicalVars =>
-        new List<DynamicVar> { new DamageVar(1m, ValueProp.Move) };
+        new List<DynamicVar> { new DamageVar(1m, ValueProp.Move), new IntVar("Payoff", 10m) };
 
     // UPGRADE: faith is rewarded more. The payoff climbs from 10 to 15.
-    protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(5m);
+    protected override void OnUpgrade()
+    {
+        DynamicVars.Damage.UpgradeValueBy(5m);
+        DynamicVars["Payoff"].UpgradeValueBy(5m);
+    }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
@@ -42,7 +49,10 @@ public sealed class Faith() : KnifeHeroCard(1, CardType.Attack, CardRarity.Commo
         {
             if (_drawnOnce)
             {
-                DynamicVars.Damage.UpgradeValueBy(9m);   // 1 -> 10
+                // Climb to exactly the payoff we PROMISED on the card — derived, never hardcoded, so an
+                // upgraded Faith lands on 15 and an un-upgraded one on 10 without a second magic number.
+                var dmg = DynamicVars.Damage;
+                dmg.UpgradeValueBy(DynamicVars["Payoff"].BaseValue - dmg.BaseValue);
                 _believed = true;
             }
             else

@@ -109,20 +109,25 @@ public sealed class Fire() : KnifeHeroCard(1, CardType.Attack, CardRarity.Common
    (turn it into Shivs). Three ways to cash the same currency, and you'll only ever draw one of them. */
 public sealed class Backstab() : KnifeHeroCard(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
 {
+    /* {Per} is a DynamicVar, not a private field, so the card text can print it and cannot lie after an
+       upgrade. It used to be `IsUpgraded ? 3m : 2m` with a hardcoded "2" in the loc string — so an
+       upgraded Backstab dealt 3 per Stealth and told you 2, forever, and nothing anywhere would ever
+       catch it. Four cards were doing this. If a number can change, it lives in a DynamicVar. */
     protected override IEnumerable<DynamicVar> CanonicalVars =>
-        new List<DynamicVar> { new DamageVar(6m, ValueProp.Move) };
+        new List<DynamicVar> { new DamageVar(6m, ValueProp.Move), new IntVar("Per", 2m) };
 
-    protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(3m);
-
-    // +2 damage per Stealth (3 upgraded). The deeper the shadow, the deeper the knife.
-    private decimal PerStealth => IsUpgraded ? 3m : 2m;
+    protected override void OnUpgrade()
+    {
+        DynamicVars.Damage.UpgradeValueBy(3m);
+        DynamicVars["Per"].UpgradeValueBy(1m);   // the deeper the shadow, the deeper the knife
+    }
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
 
         decimal stealth = Owner.Creature.GetPower<Stealth>()?.Amount ?? 0m;
-        decimal damage = DynamicVars.Damage.BaseValue + stealth * PerStealth;
+        decimal damage = DynamicVars.Damage.BaseValue + stealth * DynamicVars["Per"].BaseValue;
 
         await DamageCmd.Attack(damage).FromCard(this).Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);

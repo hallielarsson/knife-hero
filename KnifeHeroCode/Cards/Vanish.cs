@@ -1,3 +1,6 @@
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using System.Collections.Generic;
+using MegaCrit.Sts2.Core.ValueProps;
 using System.Threading.Tasks;
 using BaseLib.Abstracts;
 using KnifeHero.KnifeHeroCode.Character;
@@ -12,12 +15,17 @@ namespace KnifeHero.KnifeHeroCode.Cards;
    Placeholder; flags will come from many cards later. */
 public sealed class Vanish() : KnifeHeroCard(1, CardType.Skill, CardRarity.Common, TargetType.Self)
 {
-    // UPGRADE: 3 Stealth instead of 2.
     public override int MaxUpgradeLevel => 1;
-    private decimal StealthGain => IsUpgraded ? 3m : 2m;
+
+    // {Stealth} as a DynamicVar, so the text prints the real number after upgrade instead of a frozen 2.
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new List<DynamicVar> { new IntVar("Stealth", 2m) };
+
+    protected override void OnUpgrade() => DynamicVars["Stealth"].UpgradeValueBy(1m);
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<Stealth>(choiceContext, Owner.Creature, StealthGain, Owner.Creature, this, false);
+        await PowerCmd.Apply<Stealth>(choiceContext, Owner.Creature,
+            DynamicVars["Stealth"].BaseValue, Owner.Creature, this, false);
     }
 }

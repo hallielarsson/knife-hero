@@ -1,3 +1,6 @@
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using System.Collections.Generic;
+using MegaCrit.Sts2.Core.ValueProps;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,17 +20,17 @@ public sealed class RainbowStrike() : KnifeHeroCard(1, CardType.Attack, CardRari
     public override string CustomPortraitPath => "rainbow_strike.png".BigCardImagePath();
 
 
-    // Damage per Flag. Upgradeable so the rainbow brightens with the deck.
-    // PROPOSAL (Claude 2026-06-15): base 2, +1 on upgrade (every flag hits harder). Hallie to tune.
-    private int _perFlag = 2;
+    // Damage per Flag — a DynamicVar, so the card text prints {Per} and stays true after upgrade.
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new List<DynamicVar> { new IntVar("Per", 2m) };
+
+    protected override void OnUpgrade() => DynamicVars["Per"].UpgradeValueBy(1m);
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
         int flags = Owner.Creature.FlagCount();
-        await DamageCmd.Attack(_perFlag * flags).FromCard(this).Targeting(cardPlay.Target)
-            .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+        await DamageCmd.Attack(DynamicVars["Per"].BaseValue * flags).FromCard(this)
+            .Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
     }
-
-    protected override void OnUpgrade() => _perFlag += 1;
 }
