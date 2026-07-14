@@ -3,65 +3,64 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Cards;
-using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
-
-
-//The text on this has the discard thing. I think we need to do the shiv one. If it starts in 
-//your hand, add 1 shiv to your hand. When you attack, Draw a card. thats it. Thats the whole tweet. 
 
 namespace KnifeHero.KnifeHeroCode.Cards;
 
-/* SILENT PRIDE — a Pride blade. Hallie, 2026-07-12: "Silent Pride can take the old knife whip ability."
+/* SILENT PRIDE — ⟨1⟩ Attack. Retain. A Pride blade.
 
-     HELD:  gain 3 Block whenever you discard a card.
-     SWUNG: deal 8, apply Weak, and put a Shiv in your discard — and this blade loses 1 damage, for good.
+     HELD:  at the start of your turn, add a Shiv to your hand.
+     SWUNG: deal {Damage} damage. Draw a card.
 
-   It's the blade that spends itself. Every swing trades a point of the sword for a knife in the pile, so
-   it gets weaker as your hand gets sharper. You are, slowly, turning your pride into ammunition.
+   (Hallie, 2026-07-13: *"The text on this has the discard thing. I think we need to do the shiv one. If
+   it starts in your hand, add 1 shiv to your hand. When you attack, draw a card. That's it. That's the
+   whole tweet."*)
 
-   Held, it's the Silent's discard engine (the old Silent Pride power's job, now a thing you carry). The
-   two halves want opposite things — holding it wants you discarding, swinging it wants you attacking —
-   which is the Pride mechanic doing what it's for.
+   ── WHAT IT WAS, AND WHY IT WASN'T WORKING ─────────────────────────────────────────────────────
+   It was carrying three riders — gain 3 Block whenever you discard, deal 8 + apply Weak + drop a Shiv in
+   your discard, and permanently lose 1 damage each swing. A discard engine, a decay mechanic, and a
+   debuff, on a common. It read like a paragraph and it depended on a discard economy the deck doesn't
+   really have.
 
-   The decay is permanent for the fight (UpgradeValueBy(-1)), so managing it IS the play: swing it early
-   and often for a fistful of shivs and a blunt sword, or hold it and keep the edge.
+   Now it is the SHIV blade, and it says one thing per state:
 
-   ⁉ FLAGGED — Hallie's original margin note also said Silent should "inflict Weak on what it hits", so
-   both riders are on the swing. Numbers (8 damage, 3 Block, 1 Weak) are hers to mint. */
+     fly it   → a knife a turn, into your hand, where you can throw it
+     swing it → it cuts, and it hands you the next card
+
+   And the two states finally *want the same build* instead of fighting each other. Held, it feeds the go-
+   wide shiv deck (and the relic queers the first Attack you create each turn — that's this Shiv, every
+   turn, free). Swung, it draws, so it keeps the chain going. **The Silent doesn't make noise. It makes
+   knives.**
+
+   ⚠ TURN START, not end of turn. A Shiv added by WhileFlown (BeforeSideTurnEnd) would land in your hand
+   and be discarded by the flush a moment later — Shivs don't Retain. Same trap as Watcher Pride's Fuel.
+   The card has to hand you the knife when you can still throw it. */
 public sealed class SilentPride() : PrideCard(1, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy)
 {
-    public override bool GainsBlock => true;
-
     protected override IEnumerable<DynamicVar> CanonicalVars =>
-        new List<DynamicVar> { new DamageVar(8m, ValueProp.Move), new BlockVar(3m, ValueProp.Move) };
+        new List<DynamicVar> { new DamageVar(8m, ValueProp.Move) };
 
-    protected override void OnUpgrade()
+    protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(3m);
+
+    // HELD — a knife a turn, into your hand.
+    public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
     {
-        DynamicVars.Damage.UpgradeValueBy(3m);
-        DynamicVars.Block.UpgradeValueBy(1m);
+        if (Pile?.Type != PileType.Hand || player != Owner) return;
+
+        var shiv = CombatState.CreateCard<Shiv>(Owner);
+        await CardPileCmd.AddGeneratedCardToCombat(shiv, PileType.Hand, Owner);
     }
 
-    // HELD — the Silent's discard engine. You're carrying it, so every card you throw away pays you.
-    public override async Task AfterCardDiscarded(PlayerChoiceContext choiceContext, MegaCrit.Sts2.Core.Models.CardModel card)
-    {
-        if (Pile?.Type != PileType.Hand || card.Owner != Owner) return;
-        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, null);
-    }
-
-    // SWUNG — deal, Weaken, and shed a knife. The blade gets duller; your discard gets sharper.
+    // SWUNG — it cuts, and it hands you the next card.
     protected override async Task OnSwung(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
-        await PowerCmd.Apply<WeakPower>(choiceContext, cardPlay.Target, 1m, Owner.Creature, this, false);
-
-        var shiv = CombatState.CreateCard<Shiv>(Owner);
-        await CardPileCmd.AddGeneratedCardToCombat(shiv, PileType.Discard, Owner);
-        DynamicVars.Damage.UpgradeValueBy(-1m);
+        await CardPileCmd.Draw(choiceContext, 1m, Owner);
     }
 }

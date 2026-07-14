@@ -8,41 +8,44 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 
 namespace KnifeHero.KnifeHeroCode.Cards;
-//Hallie: Lets make it 4 /6 block, 5 / 8 damage on swing. On retain, gain 4 block.
-/* BOTTOM BLADE — forged by HOLDING a Switch Blade to end of turn. The mirror of Top Chop.
 
-     ON FORGE:  +4 Block immediately (applied at the forge site in FancyFootwork).
-     KEPT:      +2 Block at the end of every turn you hold it. **Flat — never scales.**
-     SWUNG:     Deal damage AND gain 2 Block per forge level. Exhaust.
+/* BOTTOM BLADE — ⟨1⟩ Attack. Retain. A Pride blade. The mirror of Top Chop.
 
-   The Top sharpens your next attack; the Bottom puts up the wall. Same shape, same split: holding is a
-   flat trickle that never improves, swinging is where the forging pays. Carry it until it's heavy, then
-   swing it — and when it exhausts, the relic turns a spent Defend in your discard back into a Switch
-   Blade. */
-public sealed class BottomBlade() : PrideCard(1, CardType.Attack, CardRarity.Token, TargetType.AnyEnemy)
+     RETAINED: gain 4 Block.
+     SWUNG:    deal {Damage} damage AND gain {Block} Block.
+
+   Hallie's numbers, 2026-07-13: *"Let's make it 4/6 block, 5/8 damage on swing. On retain, gain 4
+   block."* So swinging it is 5 damage + 4 Block, or 8 + 6 upgraded — a real card, not a trickle.
+
+   ── IT IS ITS OWN CARD NOW ─────────────────────────────────────────────────────────────────────
+   Same story as Top Chop: it used to be a Token the Switch Blade forged, with a second "forge level"
+   upgrade economy stapled on. Stabby eats instead of forging, so these are just cards you find and
+   upgrade normally. One economy. The card says what it does.
+
+   The Top sharpens your next attack; the Bottom puts up the wall. Same shape, same split: **holding is a
+   flat, honest 4 that never improves, so there's no reward for hoarding — swinging is where it pays.** */
+public sealed class BottomBlade() : PrideCard(1, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy)
 {
     public override bool GainsBlock => true;
-    public override int MaxUpgradeLevel => 99;
 
-    /* NO EXHAUST (Hallie, 2026-07-13). The blade doesn't die when you swing it — it goes to your
-       discard, and you draw it again, and it's still as sharp as you forged it. A blade is a thing you
-       KEEP. Re-forge it to make it heavier; swing it as often as you like. */
+    /* No Exhaust. Swing it, it lands in your discard, you draw it again. A blade is a thing you keep. */
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
         new List<CardKeyword> { CardKeyword.Retain };
 
-    public const decimal OnForge = 4m;
-
     protected override IEnumerable<DynamicVar> CanonicalVars =>
-        new List<DynamicVar> { new DamageVar(6m, ValueProp.Move), new BlockVar(2m, ValueProp.Move) };
+        new List<DynamicVar> { new DamageVar(5m, ValueProp.Move), new BlockVar(4m, ValueProp.Move) };
 
-    protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(2m);
+    protected override void OnUpgrade()
+    {
+        DynamicVars.Damage.UpgradeValueBy(3m);   // 5 → 8
+        DynamicVars.Block.UpgradeValueBy(2m);    // 4 → 6
+    }
 
-    private decimal Swung => 2m * (CurrentUpgradeLevel + 1);
+    private const decimal Kept = 4m;   // flat, never scales
 
-    // KEPT — the flat Block trickle. Never scales.
     protected override async Task WhileFlown(PlayerChoiceContext choiceContext)
     {
-        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, null);
+        await CreatureCmd.GainBlock(Owner.Creature, new BlockVar(Kept, ValueProp.Move), null);
     }
 
     protected override async Task OnSwung(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -50,6 +53,6 @@ public sealed class BottomBlade() : PrideCard(1, CardType.Attack, CardRarity.Tok
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
-        await CreatureCmd.GainBlock(Owner.Creature, new BlockVar(Swung, ValueProp.Move), cardPlay);
+        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
     }
 }

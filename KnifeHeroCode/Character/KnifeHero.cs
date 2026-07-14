@@ -23,10 +23,10 @@ public class KnifeHero : PlaceholderCharacterModel
     public override int StartingHp => 70;
     
     public override IEnumerable<CardModel> StartingDeck => [
-        /* 2026-07-12 (Hallie): ONE Switch Blade, not four. The engine now feeds itself — playing or
-           holding a Switch Blade recruits another one out of your DISCARD — so you don't need a fistful
-           to start. One seed, and the deck grows its own. That's the deck control she was after: you can
-           see the loop turning instead of drowning in it.
+        /* ONE Stabby. It doesn't need company — it eats the rest of this list.
+           Every Strike and Defend below is food for it: absorb one and you thin the deck, bank its value
+           as Vigor or Block, and sharpen the knife, permanently. By act two the starting deck is gone and
+           it's all in the blade.
            Plus one Feint: free, gives Weak and a Stealth, and teaches the hidden build in fight one. */
         ModelDb.Card<FancyFootwork>(),
         ModelDb.Card<Feint>(),

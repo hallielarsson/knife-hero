@@ -1,7 +1,7 @@
 {
   "KNIFEHERO-STEALTH.title": "Stealth",
-  "KNIFEHERO-STEALTH.description": "Attacks against you are reduced to {Cap} damage. If you lose HP, lose all Stealth. Lose 1 Stealth at the end of your turn.",
-  "KNIFEHERO-STEALTH.smartDescription": "Attacks against you are reduced to {Cap} damage. If you lose HP, lose all Stealth. Lose 1 Stealth at the end of your turn.",
+  "KNIFEHERO-STEALTH.description": "Attacks against you are reduced to {Cap} damage. If you lose HP, or play an Attack, lose all Stealth and gain 1 Heat. Lose 1 Stealth at the end of your turn.",
+  "KNIFEHERO-STEALTH.smartDescription": "Attacks against you are reduced to {Cap} damage. If you lose HP, or play an Attack, lose all Stealth and gain 1 Heat. Lose 1 Stealth at the end of your turn.",
   "KNIFEHERO-CLOSETED.title": "Closeted",
   "KNIFEHERO-CLOSETED.description": "At the start of your turn, discard a card to prevent the next damage you would take. If you can't, lose Closeted and add a Dazed to your hand. Playing an Attack removes all your Stealth and Closeted.",
   "KNIFEHERO-CLOSETED.smartDescription": "At the start of your turn, discard a card to prevent the next damage you would take. If you can't, lose Closeted and add a Dazed to your hand. Playing an Attack removes all your Stealth and Closeted.",
@@ -66,8 +66,8 @@
   "KNIFEHERO-BOTH_IS_GOOD_POWER.description": "The first Pride card you play each turn also triggers its end-of-turn effect.",
   "KNIFEHERO-BOTH_IS_GOOD_POWER.smartDescription": "The first Pride card you play each turn also triggers its end-of-turn effect.",
   "KNIFEHERO-APPETITE_POWER.title": "The Appetite",
-  "KNIFEHERO-APPETITE_POWER.description": "At the start of your turn, if you have no Part in hand, add a random Part to your hand.",
-  "KNIFEHERO-APPETITE_POWER.smartDescription": "At the start of your turn, if you have no Part in hand, add a random Part to your hand.",
+  "KNIFEHERO-APPETITE_POWER.description": "At the start of your turn, add a random Part to your hand.",
+  "KNIFEHERO-APPETITE_POWER.smartDescription": "At the start of your turn, add a random Part to your hand.",
   "KNIFEHERO-IN_THE_CLOSET.title": "In the Closet",
   "KNIFEHERO-IN_THE_CLOSET.description": "Your Attacks deal no damage this turn.",
   "KNIFEHERO-IN_THE_CLOSET.smartDescription": "Your Attacks deal no damage this turn."

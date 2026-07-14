@@ -27,7 +27,6 @@ Legend: cost in ⟨⟩, rarity in [ ]. "Pride" = the retain-sword flags (the ref
 
 ### Stealth / online
 - **Vanish** ⟨?⟩ — Gain 2 Stealth.
-- **The Closet** ⟨?⟩ — Gain 3 Stealth. Next Attack played → lose all Stealth.
 - **The Discourse** [Status] — In hand at end of turn → 1 less energy next turn. Exhaust.
 - **Extremely Online** ⟨0⟩ [Power] — Gain 2 energy. +2 energy each turn. Shuffle a Discourse into draw.
 

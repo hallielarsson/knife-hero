@@ -72,6 +72,19 @@ public sealed class FingerGuns() : PrideCard(1, CardType.Skill, CardRarity.Uncom
         if (enemy == null) return;
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue).WithHitCount(2).FromCard(this)
             .Targeting(enemy).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+
+        /* AND IT MAKES NOISE. (Hallie: *"Finger Guns maybe should just increase Heat when it fires. It's
+           not subtle."*)
+
+           This comment block has claimed for days that firing it costs you a Heat, and the code never did
+           it — found by the agent reconciling card text against code, which is the third rules bug a
+           *text* pass has turned up this week. The prose was right and the card was lying.
+
+           It matters mechanically, not just tonally: Finger Guns is a held Pride that shoots for free from
+           your hand every turn, which is exactly the kind of thing that ought to cost the stealth deck
+           something. Now flying it heats you up. **You cannot point both hands at someone and stay
+           hidden.** */
+        await PowerCmd.Apply<Heat>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
     }
 
     // SWUNG — you point at the next thing you were going to do anyway, and it happens twice.

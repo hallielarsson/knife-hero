@@ -21,6 +21,17 @@ namespace KnifeHero.KnifeHeroCode.Cards;
    Human-sourced mechanic (Hallie); art override is the Art Mapper's to land. */
 public sealed class Kunai() : KnifeHeroCard(0, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy), IBlade
 {
+    /* ⚠ IT IS CALLED "THROWING SHIV" AND IT WAS NOT A SHIV.
+
+       It carried IBlade but not CardTag.Shiv — so Poison Coating, Explosive Tip and Fan of Knives, all of
+       which gate on `Tags.Contains(CardTag.Shiv)`, could not see it. The card whose NAME is Shiv was
+       invisible to every card that cares about shivs, and nothing failed; it just quietly did less than
+       the player had every reason to expect.
+
+       Found by the agent reconciling card text against code. A display name is not a tag, and the game
+       will never tell you the difference. */
+    protected override HashSet<CardTag> CanonicalTags => new HashSet<CardTag> { CardTag.Shiv };
+
     public override string CustomPortraitPath => "card.png".BigCardImagePath();
     public override string PortraitPath => "card.png".CardImagePath();
 

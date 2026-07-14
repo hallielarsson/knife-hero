@@ -7,7 +7,7 @@
 > **For design — intent, open threads, cards not yet built — edit [`CARDS.md`](CARDS.md).**
 > That's the human doc. This one is the mirror.
 
-## THE GAY BLADE  (36 cards)
+## THE GAY BLADE  (35 cards)
 
 ### Basic
 
@@ -21,74 +21,68 @@
 
 | card | ⟨cost⟩ | rarity | text | keywords | tags |
 |---|---|---|---|---|---|
-| **Backstab** | 1 | Common | Deal {Damage} damage, plus 2 for each Stealth you have. | — | — |
+| **Backstab** | 1 | Common | Deal {Damage} damage, plus 2 per Stealth. | — | — |
 | **Chill Touch** | 1 | Common | Deal {Damage} damage. Lose 1 Heat. | — | — |
 | **Faith** | 1 | Common | Deal {Damage} damage. The next time you draw Faith, it deals 10 damage. | — | — |
-| **Switch Blade** | 1 | Common | Deal {Damage} damage. Forge a Top Chop and gain 4 Vigor. Exhaust. If this is in your hand at the end of your turn, forge a Bottom Blade and gain 4 Block instead. | Exhaust | — |
-| **Fire** | 1 | Common | Deal {Damage} damage, plus your Heat. Gain 1 Heat. | — | — |
+| **Switch Blade** | 1 | Common | Deal {Damage} damage. Exhaust a Strike or Defend in your hand and forge a Pride Blade. | Retain | — |
+| **Fire** | 1 | Common | Deal {Damage} damage plus your Heat. Gain 1 Heat. | — | — |
 | **Head Empty, No Thoughts** | 1 | Common | Deal {Damage} damage. Discard a card. | — | — |
-| **Knife Whip** | 1 | Common | Deal {Damage} damage. Each point of damage dealt to Block becomes a Shiv in your discard pile, and reduces this card's damage by that much. | — | IBlade |
+| **Knife Whip** | 1 | Common | Deal {Damage} damage. Damage dealt to Block becomes Shivs in your discard, and reduces this card's damage by that much. | — | IBlade |
 | **Throwing Shiv** | 0 | Common | Deal 1 damage. If this is in your hand at the end of your turn, deal 3 damage to ALL enemies and Exhaust. | — | IBlade |
-| **Labrys** | 1 | Token | Retain. While this is in your hand, block the next instance of damage you would take, gain that much attack, then discard this. Deal {Damage} damage. | Retain | IBlade, IFlagBlade |
+| **Labrys** | 1 | Token | While this is in your hand, block the next instance of damage you would take, gain that much attack, then discard this. Deal {Damage} damage. | Retain | IBlade, IFlagBlade |
 | **Pin** | 1 | Uncommon | Deal {Damage} damage. If this damages the enemy, apply 2 Weak and 2 Vulnerable. | — | IBlade |
 | **Pride was a Riot** | 1 | Common | Remove all of the target's Block, then deal {Damage} damage. | — | — |
 | **Rainbow Strike** | 1 | Uncommon | Deal 2 damage for every Flag you have. | — | — |
 | **Stonewall** | 2 | Uncommon | Gain {Block} Block. Deal {Damage} damage for each Pride card you have played this combat. | — | — |
-| **Superfan of Knives** | 2 | Rare | Deal {Damage} damage to ALL enemies. Add a Shiv to your hand for each enemy. Your Shivs hit all enemies this turn. Exhaust. | Exhaust | — |
+| **Superfan of Knives** | 2 | Rare | Deal {Damage} damage to ALL enemies. Add a Shiv to your hand for each enemy. Your Shivs hit all enemies this turn. | Exhaust | — |
 | **Throwing Knife** | 1 | Common | Deal {Damage} damage. If this deals HP damage, Exhaust it. If it doesn't, return it to your hand. | — | IBlade |
 
 ### Skill
 
 | card | ⟨cost⟩ | rarity | text | keywords | tags |
 |---|---|---|---|---|---|
-| **All You Can Eat** | 1 | Uncommon | Exhaust all knives and shivs in your hand. Gain 3 HP for each. Any healing beyond your max HP becomes Block instead. Exhaust. | Exhaust | — |
-| **Day of Invisibility** | 1 | Uncommon | Your attacks do not break your Stealth this turn. Exhaust. | Exhaust | — |
+| **All You Can Eat** | 1 | Uncommon | Exhaust all knives and shivs in your hand. Gain 3 HP for each. Healing beyond max HP becomes Block. | Exhaust | — |
+| **Day of Invisibility** | 1 | Uncommon | Your Attacks do not remove Stealth this turn. | Exhaust | — |
 | **Explosive Tip** | 1 | Uncommon | This turn, the Shivs you play hit ALL enemies and Exhaust. | — | — |
 | **Go to Ground** | 1 | Common | Gain {Block} Block. Gain 1 Stealth. | — | — |
-| **Look What I Found Down Here** | 1 | Common | Gain {Block} Block. Turn all of your Stealth into Shivs. | Exhaust | — |
-| **Poison Coating** | 1 | Uncommon | This turn, the Shivs you play apply 3 Poison. | — | — |
+| **Look What I Found Down Here** | 1 | Common | Gain {Block} Block. Turn each Stealth into a Shiv. | Exhaust | — |
+| **Poison Coating** | 1 | Uncommon | The Shivs you play apply 3 Poison. | — | — |
 | **Shadow Dodge** | 1 | Common | Gain {Block} Block. Lose 1 Heat. | — | — |
-| **Smoke Bomb** | 2 | Uncommon | Lose all Heat. Exhaust. | Exhaust | — |
-| **The Closet** | 1 | Uncommon | Gain 3 Stealth and become Closeted: each turn, discard a card to prevent the next damage you take (an empty hand breaks the closet for a Dazed). Playing an Attack blows your cover — lose all Stealth. | — | — |
+| **Smoke Bomb** | 2 | Uncommon | Lose all Heat. | Exhaust | — |
+| **The Closet** | 1 | Uncommon | Gain 3 Stealth. Your Attacks deal no damage this turn. | — | — |
 | **Vanish** | 1 | Common | Gain 2 Stealth. | — | — |
 
 ### Power
 
 | card | ⟨cost⟩ | rarity | text | keywords | tags |
 |---|---|---|---|---|---|
-| **Both Is Good** | 2 | Rare | The first Pride card you play each turn also triggers its end-of-turn effect. | Innate | — |
-| **Dead Name** | 2 | Rare | Whenever you would gain Heat, add a Dazed to your discard pile instead. | Innate | — |
+| **Both Is Good** | 2 | Rare | The first Pride you play each turn also triggers its in-hand effect. | Innate | — |
+| **Dead Name** | 2 | Rare | Whenever you would gain Heat, add a Dazed to your discard instead. | Innate | — |
 | **Extremely Online** | 0 | Uncommon | Gain 2 energy. Gain 2 energy at the start of each turn. Shuffle a Discourse into your draw pile. | — | — |
-| **Honeypot** | 2 | Uncommon | Gain Thorns equal to your Heat, plus 2. | Exhaust | — |
-| **Pickpocket** | 1 | Uncommon | The first time you deal damage each turn, gain a Shiv. | Innate | — |
+| **Honeypot** | 2 | Uncommon | Gain Thorns equal to your Heat plus {Bonus}. | Exhaust | — |
+| **Pickpocket** | 1 | Uncommon | The first time you deal damage each turn, add a Shiv to your hand. | Innate | — |
 | **Portal to the Knife Dimension** | 3 | Rare | At the start of each turn, put a copy of a Blade from your deck into your hand. It gains Exhaust and Ethereal. | — | — |
 
 ### Status
 
 | card | ⟨cost⟩ | rarity | text | keywords | tags |
 |---|---|---|---|---|---|
-| **The Discourse** | 1 | Status | If this is in your hand at the end of your turn, gain 1 less energy next turn. Exhaust. | Exhaust | — |
+| **The Discourse** | 1 | Status | If this is in your hand at the end of your turn, gain 1 less energy next turn. | Exhaust | — |
 
-### Curse
-
-| card | ⟨cost⟩ | rarity | text | keywords | tags |
-|---|---|---|---|---|---|
-| **Queer** | — | Curse | Innate. Eternal. Unplayable. Whenever a Strike or Defend you own is Exhausted, Queer it instead: it returns to your deck with a queer rider (it lays Poison when played). | Eternal, Innate, Unplayable | — |
-
-## THE CREATURE  (23 cards)
+## THE CREATURE  (24 cards)
 
 ### Basic
 
 | card | ⟨cost⟩ | rarity | text | keywords | tags |
 |---|---|---|---|---|---|
-| **Annotate** | 1 | Basic | Gain {Block} Block. | — | — |
-| **Recite** | 1 | Basic | Deal {Damage} damage. | — | — |
+| **Defend** | 1 | Basic | Gain {Block} Block. | — | — |
+| **Strike** | 1 | Basic | Deal {Damage} damage. | — | — |
 
 ### Attack
 
 | card | ⟨cost⟩ | rarity | text | keywords | tags |
 |---|---|---|---|---|---|
-| **Keening** | 2 | Uncommon | Exhaust your hand. Gain 1 Grief for each card exhausted, then deal damage equal to twice your Grief to ALL enemies. | Eternal | — |
+| **Keening** | 2 | Uncommon | Exhaust your hand. Deal damage equal to twice your Grief, plus 2 per card exhausted, to ALL enemies. | — | — |
 | **Mended Heart** | 1 | Token | Deal {Damage} damage. "Nothing is ever completely broken." | — | IMendedPart |
 | **Quote at Length** | 1 | Common | Deal damage equal to your Lessons. | — | — |
 | **Recombinant** | 2 | Uncommon | Deal {Damage} damage once for each Power you have. | — | — |
@@ -98,37 +92,38 @@
 | card | ⟨cost⟩ | rarity | text | keywords | tags |
 |---|---|---|---|---|---|
 | **Don't Look Away** | 1 | Common | Return a random card from your Exhaust pile to your hand. Lose 2 HP. | — | — |
-| **Fire, Stolen** | 1 | Common | Gain 1 Lesson and 2 Regeneration. Exhaust. | Exhaust | IBook |
-| **Galvanism** | 1 | Common | Gain 1 Lesson and 1 Strength. Exhaust. | Exhaust | IBook |
-| **Let It Rot** | 0 | Uncommon | Choose a Part in your hand. It festers immediately. Gain 2 Lessons. Exhaust. | Exhaust | — |
+| **Fire, Stolen** | 1 | Common | Gain 1 Lesson and 2 Regeneration. | Exhaust | IBook |
+| **Galvanism** | 1 | Common | Gain 1 Lesson and 1 Strength. | Exhaust | IBook |
+| **Let It Rot** | 0 | Uncommon | Choose a Part in your hand. It festers immediately. Gain 2 Lessons. | Exhaust | — |
 | **Mended Gut** | 1 | Token | Heal 2 HP for each part of you that is whole. | Exhaust | IMendedPart |
 | **Mended Leg** | 1 | Token | Gain 4 Block for each part of you that is whole. | — | IMendedPart |
 | **Mended Throat** | 1 | Token | Gain 1 Lesson for each part of you that is whole. | — | IMendedPart |
-| **Open Book** | 1 | Common | Gain {Block} Block and 2 Lessons. | — | IBook |
+| **Open Book** | 1 | Common | Gain {Block} Block and {Lessons} Lessons. | — | IBook |
 | **Read the Remainder** | 1 | Common | Choose a card in your Exhaust pile. Gain 1 Lesson and heal HP equal to its cost. Return it to your draw pile. | — | — |
-| **Solitude** | 1 | Common | Gain 1 Lesson and 1 Dexterity. Exhaust. | Exhaust | IBook |
-| **The Charnel House** | 1 | Uncommon | Add a random Part to your hand. Exhaust. | Exhaust | — |
-| **Wallow** | 1 | Common | Gain Block equal to your Grief. | Eternal | — |
-| **Wretchedness** | 1 | Common | Gain 1 Lesson and 2 Thorns. Exhaust. | Exhaust | IBook |
+| **Solitude** | 1 | Common | Gain 1 Lesson and 1 Dexterity. | Exhaust | IBook |
+| **The Charnel House** | 1 | Common | Add a random Part to your hand. | Exhaust | — |
+| **Wallow** | 1 | Common | Gain Block equal to your Grief. | — | — |
+| **Wretchedness** | 1 | Common | Gain 1 Lesson and 2 Thorns. | Exhaust | IBook |
 
 ### Power
 
 | card | ⟨cost⟩ | rarity | text | keywords | tags |
 |---|---|---|---|---|---|
-| **Become Who You Are** | 3 | Rare | At the start of each turn, gain Strength equal to your number of Powers and gain 1 Lesson. "I was benevolent and good; misery made me a fiend." | — | IBook |
+| **Become Who You Are** | 3 | Rare | At the start of each turn, gain Strength equal to your Wholeness. | — | IBook |
 | **Marginalia** | 1 | Common | Whenever you play a Book or a Power, gain 1 Lesson. | Exhaust | IBook |
 | **Polymath** | 2 | Uncommon | At the start of each turn, gain 1 Lesson. | Exhaust | IBook |
+| **The Appetite** | 2 | Rare | At the start of your turn, add a random Part to your hand. | — | — |
 
 ### Curse
 
 | card | ⟨cost⟩ | rarity | text | keywords | tags |
 |---|---|---|---|---|---|
-| **Festering Wound** | — | Curse | Unplayable. A scar. While this is in your hand, your attacks deal 1 more damage. It counts toward your Grief forever. | Unplayable | IScar |
+| **Festering Wound** | — | Curse | A scar. While this is in your hand, your attacks deal 1 more damage. It counts toward your Grief forever. | Unplayable | IScar |
 
 ---
 
 ## Integrity
 
-- **67 card classes** in source (36 Gay Blade, 23 Creature).
+- **67 card classes** in source (35 Gay Blade, 24 Creature).
 - Cards in source with **no localization**: none ✅
 - Localization keys with **no card class**: THE_GUT, THE_LEG, THE_THROAT, THROBBING_HEART

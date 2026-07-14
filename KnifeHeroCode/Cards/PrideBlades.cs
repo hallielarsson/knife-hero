@@ -10,6 +10,7 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
 
@@ -95,16 +96,27 @@ public sealed class IroncladPride() : PrideCard(1, CardType.Attack, CardRarity.U
     }
 }
 
-//Hallie: This is still not it. I think, if its in your hand since the start of your turn it adds one of those energy cards.
-/* WATCHER PRIDE — the sight.
-     HELD:  at the start of your turn, draw 2 and discard 1.
-     SWUNG: draw 3.
+/* WATCHER PRIDE — the sight. ⟨1⟩ Skill. Retain.
+     HELD:  at the start of your turn, add a Fuel to your hand.   (Fuel ⟨0⟩: gain 1 Energy, draw 1. Exhaust.)
+     SWUNG: draw {Draw}.
 
-   Hallie's note replaced the old Watcher outright ("draw two cards and discard one at the beginning of
-   your turn"), because the old one GRANTED RETAIN to a random card — and in a deck where hand space is
-   the currency, handing out Retain for free is not a gift, it's making a random card sticky. This one
-   is a real Watcher: you see more, and you throw away what you don't want. It also feeds Silent Pride,
-   which pays you for discarding. */
+   (Hallie, 2026-07-13: *"This is still not it. I think, if it's in your hand since the start of your
+   turn it adds one of those energy cards."*)
+
+   Third version of this card, and the first one that pays for the hand slot it occupies. The problem with
+   both previous Watchers is that a held Pride COSTS you a card in hand — that's the whole Pride mechanic,
+   the retained hand is the play area — and "draw 2 discard 1" gives you back exactly nothing net. You
+   were paying a hand slot for card selection you already had.
+
+   Fuel is the fix, and it's the right one because **the thing a held Pride actually costs you is
+   tempo, so the thing it should give back is tempo.** Every turn you keep flying it, it hands you a free
+   energy and a free card. You are down a hand slot and up an action. That is a real deal with a real
+   price, and you feel both halves of it.
+
+   ⚠ It fires at TURN START, not end of turn. WhileFlown (BeforeSideTurnEnd) would add the Fuel to your
+   hand and then the end-of-turn flush would immediately discard it — Fuel has no Retain — so the card
+   would give you literally nothing, silently. "In your hand since the start of your turn" is what she
+   asked for and it's also the only version that works. */
 public sealed class WatcherPride() : PrideCard(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
@@ -112,51 +124,59 @@ public sealed class WatcherPride() : PrideCard(1, CardType.Skill, CardRarity.Unc
 
     protected override void OnUpgrade() => DynamicVars["Draw"].UpgradeValueBy(1m);
 
-    private decimal DrawOnSwing => DynamicVars["Draw"].BaseValue;
-
-    // HELD — you're looking. Draw two, keep one.
+    // HELD — you kept watch, and the watch pays.
     public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
     {
         if (Pile?.Type != PileType.Hand || player != Owner) return;
-        await CardPileCmd.Draw(choiceContext, 2m, Owner);
 
-        var prefs = new CardSelectorPrefs(
-            new MegaCrit.Sts2.Core.Localization.LocString("gameplay_ui", "CHOOSE_CARD_DISCARD_HEADER"), 1);
-        var chosen = await CardSelectCmd.FromHand(choiceContext, Owner, prefs, null, this);
-        foreach (var c in chosen)
-            await CardCmd.Discard(choiceContext, c);
+        var fuel = CombatState.CreateCard<Fuel>(Owner);
+        await CardPileCmd.AddGeneratedCardToCombat(fuel, PileType.Hand, Owner);
     }
 
     protected override async Task OnSwung(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await CardPileCmd.Draw(choiceContext, DrawOnSwing, Owner);
+        await CardPileCmd.Draw(choiceContext, DynamicVars["Draw"].BaseValue, Owner);
     }
 }
 
 
 
-//This needs to be an attack
-/* REGENT PRIDE — the one that eats its own court.
-     COST: exhausts another Pride blade from your hand when you play it. It cannot be played otherwise.
-     HELD: nothing. It is not a flag you fly; it is a thing you feed.
-     SWUNG: each turn after, deal 6 to an enemy and gain 6 Block, for the rest of the fight.
+/* REGENT PRIDE — ⟨2⟩ Attack. Retain. The one that eats its own court.
+     COST:  exhausts another Pride from your hand when you play it. It cannot be played otherwise.
+     SWUNG: deal {Damage} damage — and every turn after, deal 6 and gain 6 Block, for the rest of the fight.
+
+   ── IT'S AN ATTACK NOW (Hallie, 2026-07-13: *"This needs to be an attack."*) ───────────────────
+   It was a Power, which meant the crown was something you *installed* — you paid 2 energy and a Pride
+   and got a delayed engine and no impact. The turn you played it was your worst turn of the fight. Now
+   it hits when you crown it, which is the correct shape for a card whose whole story is a coronation:
+   **you don't accede to the throne quietly.**
+
+   ⚠ AND IT KEEPS RETAIN. It was silently dropping it: `PrideCard` grants Retain, and the old override
+   returned `IsUpgraded ? { Innate } : { }` — no Retain — so the Regent was the only Pride in the deck you
+   could not hold. That's not a design decision, it's a copy-paste of the Innate-upgrade block from
+   DeadName and BothIsGood, which are not PrideCards. Caught by the agent doing the text reconciliation,
+   which is the second time this week a "text" pass has found a rules bug the code review didn't.
 
    Hallie: "Regent works as is as long as it applies to Pride Blades instead of Pets."
 
-   So the Regent is the payoff for having built a court of flags — and the price is one of them. It's the
-   only card in the deck that *consumes* a Pride, which means it's in direct tension with Stonewall and
-   Pride Parade (which want you swinging them) and with Knife Block (which wants you holding them). You
-   have to decide what your prides are FOR. */
-public sealed class RegentPride() : PrideCard(2, CardType.Power, CardRarity.Rare, TargetType.Self)
+   The Regent is the payoff for having built a court of flags — and the price is one of them. It's the
+   only card in the deck that *consumes* a Pride, so it's in direct tension with Stonewall and Pride
+   Parade (which want you swinging them) and with Knife Block (which wants you holding them). You have to
+   decide what your prides are FOR. */
+public sealed class RegentPride() : PrideCard(2, CardType.Attack, CardRarity.Rare, TargetType.AnyEnemy)
 {
-    /* UPGRADE: INNATE — you start the fight holding it.
-       (There is no permanent cost-reduction API in this engine; EnergyCost.AddThisCombat is combat-
-       scoped and wrong for an upgrade. Innate is the right upgrade for an expensive Power anyway:
-       the problem with a 2-cost Power is never its cost, it's that you draw it on turn 4.) */
+    /* UPGRADE: INNATE — you start the fight holding it. (There is no permanent cost-reduction API here;
+       EnergyCost.AddThisCombat is combat-scoped and wrong for an upgrade. And the problem with an
+       expensive card is never its cost — it's that you draw it on turn 4.) */
     public override int MaxUpgradeLevel => 1;
 
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
-        IsUpgraded ? new List<CardKeyword> { CardKeyword.Innate } : new List<CardKeyword>();
+        IsUpgraded
+            ? new List<CardKeyword> { CardKeyword.Retain, CardKeyword.Innate }
+            : new List<CardKeyword> { CardKeyword.Retain };
+
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new List<DynamicVar> { new DamageVar(10m, ValueProp.Move) };
 
     // Unplayable unless there's another Pride in hand to sacrifice. The court feeds the crown.
     protected override bool IsPlayable =>
@@ -164,10 +184,15 @@ public sealed class RegentPride() : PrideCard(2, CardType.Power, CardRarity.Rare
 
     protected override async Task OnSwung(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
+
         var court = CardPile.GetCards(Owner, PileType.Hand)
             .FirstOrDefault(c => c is IPride && c != this);
         if (court != null)
             await CardCmd.Exhaust(choiceContext, court, causedByEthereal: false);
+
+        await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
+            .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
 
         await PowerCmd.Apply<RegentPridePower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
     }

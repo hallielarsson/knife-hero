@@ -10,42 +10,42 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace KnifeHero.KnifeHeroCode.Cards;
 
-/* TOP CHOP — forged by PLAYING a Switch Blade. (Hallie, post-playtest with Lori, 2026-07-12.)
+/* TOP CHOP — ⟨1⟩ Attack. Retain. A Pride blade. The mirror of Bottom Blade.
 
-     ON FORGE:  +4 Vigor immediately (applied at the forge site in FancyFootwork).
-     KEPT:      +2 Vigor at the end of every turn you hold it. **Flat — never scales.**
-     SWUNG:     Deal damage, THEN gain 2 Vigor per forge level. Exhaust.
+     RETAINED: gain 4 Vigor.
+     SWUNG:    deal {Damage} damage, THEN gain {Vigor} Vigor.
+
+   ── IT IS ITS OWN CARD NOW ─────────────────────────────────────────────────────────────────────
+   (Hallie, 2026-07-13: *"Top chop and bottom blade become their own cards."*)
+
+   It used to be a Token forged by the Switch Blade, with a "forge level" that the Switch Blade pumped —
+   a whole second upgrade economy bolted onto a card that already had one. Stabby doesn't forge anything
+   anymore; it eats. So these are just cards: you find them, you take them, you upgrade them like
+   everything else. **One upgrade economy. The card says what it does.**
 
    ⚠ THE ORDER MATTERS AND IT IS DELIBERATE: the damage lands FIRST, then the Vigor. Base-game Vigor only
-   buffs the **next** attack and is consumed by it — so granting it after the swing means the Top Chop
-   does NOT buff its own hit. It buffs whatever you swing next. The blade sharpens the one after it.
+   buffs the **next** attack and is consumed by it — so granting it after the swing means Top Chop does
+   NOT buff its own hit. It buffs whatever you swing next. **The blade sharpens the one after it.**
 
-   THE KEPT/SWUNG SPLIT IS THE DESIGN. Holding it is a flat, honest trickle that never improves, so there
-   is no reward for hoarding. Swinging it is where the forging pays. The blade doesn't want to be carried
-   forever — it wants to be carried until it's heavy, and then swung.
-
-   And swinging Exhausts it, which is a **Pride dying**, which is what the relic watches for: a spent
-   Strike in your discard comes back as a Switch Blade. Your prides die and your basics come back
-   sharpened. */
-public sealed class TopChop() : PrideCard(1, CardType.Attack, CardRarity.Token, TargetType.AnyEnemy)
+   Held it is a steady 4 Vigor a turn, which is a lot, and it costs you the hand slot to fly it. Swung it
+   is damage plus a bigger sharpening. Hold it while the wall goes up; swing it when you know what's next. */
+public sealed class TopChop() : PrideCard(1, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy)
 {
-    public override int MaxUpgradeLevel => 99;
-
-    /* NO EXHAUST (Hallie, 2026-07-13). The blade doesn't die when you swing it — it goes to your
-       discard, and you draw it again, and it's still as sharp as you forged it. A blade is a thing you
-       KEEP. Re-forge it to make it heavier; swing it as often as you like. */
+    /* No Exhaust. The blade doesn't die when you swing it — it goes to your discard and you draw it
+       again. **A blade is a thing you keep.** */
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
         new List<CardKeyword> { CardKeyword.Retain };
 
-    public const decimal OnForge = 4m;   // read by FancyFootwork at the forge site
-
     protected override IEnumerable<DynamicVar> CanonicalVars =>
-        new List<DynamicVar> { new DamageVar(6m, ValueProp.Move) };
+        new List<DynamicVar> { new DamageVar(5m, ValueProp.Move), new IntVar("Vigor", 4m) };
 
-    protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(2m);
+    protected override void OnUpgrade()
+    {
+        DynamicVars.Damage.UpgradeValueBy(3m);          // 5 → 8, mirroring Bottom Blade
+        DynamicVars["Vigor"].UpgradeValueBy(2m);        // 4 → 6
+    }
 
-    private const decimal Kept = 2m;                          // flat, forever
-    private decimal Swung => 2m * (CurrentUpgradeLevel + 1);  // this is the half that scales
+    private const decimal Kept = 4m;   // flat, never scales — no reward for hoarding
 
     protected override async Task WhileFlown(PlayerChoiceContext choiceContext)
     {
@@ -60,6 +60,7 @@ public sealed class TopChop() : PrideCard(1, CardType.Attack, CardRarity.Token, 
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
 
-        await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, Swung, Owner.Creature, this, false);
+        await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature,
+            DynamicVars["Vigor"].BaseValue, Owner.Creature, this, false);
     }
 }
