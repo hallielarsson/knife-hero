@@ -172,3 +172,60 @@ public sealed class IntoTheStreets() : KnifeHeroCard(1, CardType.Skill, CardRari
             Owner.Creature, this, false);
     }
 }
+
+/* THE CLOSET — ⟨1⟩ Power. Gain 1 Stealth at the start of each turn. The passive hide-engine. */
+public sealed class TheCloset() : KnifeHeroCard(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
+{
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        await PowerCmd.Apply<TheClosetPower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
+    }
+}
+
+/* FLANK — ⟨0⟩ Skill. Lose all Stealth; gain {Per} Vigor per Stealth lost, plus {Bonus}.
+   A Skill, so it clears Stealth by hand (the Attack-only auto-break doesn't fire) — and reads the bank
+   before clearing it. */
+public sealed class Flank() : KnifeHeroCard(0, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
+{
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new List<DynamicVar> { new IntVar("Per", 2m), new IntVar("Bonus", 1m) };
+
+    protected override void OnUpgrade() => DynamicVars["Bonus"].UpgradeValueBy(1m);
+
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        var stealth = Owner.Creature.GetPower<Stealth>();
+        int lost = (int)(stealth?.Amount ?? 0m);
+        if (stealth != null) await PowerCmd.Remove(stealth);
+
+        decimal vigor = DynamicVars["Per"].BaseValue * lost + DynamicVars["Bonus"].BaseValue;
+        if (vigor > 0m)
+            await PowerCmd.Apply<VigorPower>(choiceContext, Owner.Creature, vigor, Owner.Creature, this, false);
+    }
+}
+
+/* SNEAK ATTACK — ⟨1⟩ Attack. Lose all Stealth, deal {Per} per Stealth lost, then gain 1 Stealth.
+   Read the bonus in OnPlay (before the swing's own auto-break clears Stealth), and re-seed the 1 in
+   AfterCardPlayedLate so it survives that break — the same trick the Fade queer-rider uses. */
+public sealed class SneakAttack() : KnifeHeroCard(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
+{
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new List<DynamicVar> { new IntVar("Per", 3m) };
+
+    protected override void OnUpgrade() => DynamicVars["Per"].UpgradeValueBy(1m);
+
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
+        int lost = (int)(Owner.Creature.GetPower<Stealth>()?.Amount ?? 0m);
+        if (lost > 0)
+            await DamageCmd.Attack((int)DynamicVars["Per"].BaseValue * lost).FromCard(this)
+                .Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+    }
+
+    public override async Task AfterCardPlayedLate(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        if (cardPlay.Card != this) return;
+        await PowerCmd.Apply<Stealth>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
+    }
+}

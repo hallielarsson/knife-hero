@@ -151,3 +151,36 @@ public sealed class BothIsGoodPower : KnifeHeroPower
         return Task.CompletedTask;
     }
 }
+
+/* THE CLOSET — gain `Amount` Stealth at the start of each turn. The passive hide-engine. */
+public sealed class TheClosetPower : KnifeHeroPower
+{
+    public override PowerType Type => PowerType.Buff;
+    public override PowerStackType StackType => PowerStackType.Counter;
+
+    public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext,
+        MegaCrit.Sts2.Core.Entities.Players.Player player)
+    {
+        if (player != Owner.Player) return;
+        await PowerCmd.Apply<Stealth>(choiceContext, Owner, Amount, Owner, null, false);
+    }
+}
+
+/* BISEXUAL LIGHTNING — at the start of each turn, deal `Amount` to each of 2 random enemies (always 2). */
+public sealed class BisexualLightningPower : KnifeHeroPower
+{
+    public override PowerType Type => PowerType.Buff;
+    public override PowerStackType StackType => PowerStackType.Counter;
+
+    public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext,
+        MegaCrit.Sts2.Core.Entities.Players.Player player)
+    {
+        if (player != Owner.Player) return;
+        var enemies = Owner.CombatState.HittableEnemies.ToList();
+        if (enemies.Count == 0) return;
+        var rng = Owner.Player.RunState.Rng.CombatCardGeneration;
+        for (int i = 0; i < 2; i++)
+            await CreatureCmd.Damage(choiceContext, rng.NextItem(enemies), Amount,
+                MegaCrit.Sts2.Core.ValueProps.ValueProp.Unpowered, Owner, null);
+    }
+}

@@ -32,7 +32,7 @@ public enum QueerKind
                 // Fade still costs Visibility.
     Sly,        // keyword: it plays itself when discarded
     Clingy,     // keyword: Retain
-    Early,      // keyword: Innate
+    // (No Innate rider: Innate only matters at combat start, so granting it mid-combat does nothing.)
 }
 
 public sealed class QueerMod : CardModifier
@@ -50,7 +50,6 @@ public sealed class QueerMod : CardModifier
             {
                 case QueerKind.Sly:    card.RemoveKeyword(CardKeyword.Sly); break;
                 case QueerKind.Clingy: card.RemoveKeyword(CardKeyword.Retain); break;
-                case QueerKind.Early:  card.RemoveKeyword(CardKeyword.Innate); break;
             }
         }
     }
@@ -80,9 +79,11 @@ public sealed class QueerMod : CardModifier
         {
             case QueerKind.Sly:    card.AddKeyword(CardKeyword.Sly); break;
             case QueerKind.Clingy: card.AddKeyword(CardKeyword.Retain); break;
-            case QueerKind.Early:  card.AddKeyword(CardKeyword.Innate); break;
         }
     }
+
+    /// True if this card currently carries a queer rider. Used by Knife Block / Pride Parade / Solidarity.
+    public static bool IsQueer(CardModel card) => DirectModifiers(card).OfType<QueerMod>().Any();
 
     public override void ModifyDescription(Creature? target, ref string description)
     {
