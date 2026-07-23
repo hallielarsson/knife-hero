@@ -15,3 +15,6 @@ Directory.Build.props
 .decompiled-baselib/
 obj/
 .DS_Store
+
+# Generated every build by tools/cards.py (see CardList target)
+CARDS_IMPLEMENTED.md
