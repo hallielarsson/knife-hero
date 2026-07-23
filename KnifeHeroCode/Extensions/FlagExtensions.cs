@@ -33,7 +33,7 @@ public static class FlagExtensions
        A Flag is: an IFlag power (Stealth, Extremely Online, the Pride flags — counted by stacks),
        OR any pet on your side (the flags are pets), OR a retained flag-blade in your hand
        (Top/Bottom and the pride swords — the flags are swords). Used by Stonewall, Rainbow Strike. */
-    public static int FlagCount(this Creature creature)
+    public static int PrideCount(this Creature creature)
     {
         int powerFlags = (int)creature.Powers.Where(p => p is IFlag).Sum(p => p.Amount);
         int petFlags = creature.CombatState.Creatures.Count(c => c.IsPet && c.Side == creature.Side);

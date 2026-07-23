@@ -15,9 +15,9 @@ namespace KnifeHero.KnifeHeroCode.Cards;
 
 /* THE COMMON ATTACKS — Hallie, 2026-07-12. The deck's baseline attacks, all cost 1.
 
-   Three of the four talk to Heat, which is what makes Heat a real axis rather than just a punishment:
-     • CHILL TOUCH  cools you down    (−1 Heat)
-     • FIRE         heats you up      (+1 Heat, and hits harder for it)
+   Three of the four talk to Visibility, which is what makes Visibility a real axis rather than just a punishment:
+     • CHILL TOUCH  cools you down    (−1 Visibility)
+     • DASHING STRIKE         heats you up      (+1 Visibility, and hits harder for it)
      • BACKSTAB     hides you first   (+1 Stealth, then strikes — and striking normally breaks Stealth,
                                        so it hands you cover with one hand and takes it with the other)
 
@@ -48,7 +48,7 @@ public sealed class HeadEmptyNoThoughts() : KnifeHeroCard(1, CardType.Attack, Ca
 }
 
 
-/* CHILL TOUCH — ⟨1⟩ Deal 7 (10). Lose 1 Heat.
+/* CHILL TOUCH — ⟨1⟩ Deal 7 (10). Lose 1 Visibility.
    The attack that cools you down. In a deck where attacking normally *reveals* you, this is the one that
    walks it back a step. The only attack in the game that makes you harder to find. */
 public sealed class ChillTouch() : KnifeHeroCard(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
@@ -64,18 +64,18 @@ public sealed class ChillTouch() : KnifeHeroCard(1, CardType.Attack, CardRarity.
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
 
-        var heat = Owner.Creature.GetPower<Heat>();
-        if (heat != null) await PowerCmd.ModifyAmount(choiceContext, heat, -1m, Owner.Creature, this);
+        var visibility = Owner.Creature.GetPower<Visibility>();
+        if (visibility != null) await PowerCmd.ModifyAmount(choiceContext, visibility, -1m, Owner.Creature, this);
     }
 }
 
 
-/* FIRE — ⟨1⟩ Deal 6 (9), plus your Heat. Gain 1 Heat.
-   The louder you are, the harder you hit — and the louder you get. Fire is the whole Honeypot build in
+/* DASHING STRIKE — ⟨1⟩ Deal 6 (9), plus your Visibility. Gain 1 Visibility.
+   The louder you are, the harder you hit — and the louder you get. DashingStrike is the whole Honeypot build in
    one card: it's a spiral you climb on purpose. Every swing makes the next one bigger and makes you
-   easier to find, and if you're running Honeypot (Thorns = Heat + 2) that's exactly what you want.
+   easier to find, and if you're running Honeypot (Thorns = Visibility + 2) that's exactly what you want.
    Dead Name turns the drawback off entirely, which is the other way to abuse it. */
-public sealed class Fire() : KnifeHeroCard(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
+public sealed class DashingStrike() : KnifeHeroCard(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new List<DynamicVar> { new DamageVar(6m, ValueProp.Move) };
@@ -85,12 +85,12 @@ public sealed class Fire() : KnifeHeroCard(1, CardType.Attack, CardRarity.Common
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
-        decimal heat = Owner.Creature.GetPower<Heat>()?.Amount ?? 0m;
+        decimal visibility = Owner.Creature.GetPower<Visibility>()?.Amount ?? 0m;
 
-        await DamageCmd.Attack(DynamicVars.Damage.BaseValue + heat).FromCard(this).Targeting(cardPlay.Target)
+        await DamageCmd.Attack(DynamicVars.Damage.BaseValue + visibility).FromCard(this).Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
 
-        await PowerCmd.Apply<Heat>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
+        await PowerCmd.Apply<Visibility>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
     }
 }
 

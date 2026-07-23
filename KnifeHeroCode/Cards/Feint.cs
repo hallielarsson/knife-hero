@@ -1,3 +1,5 @@
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
+using System.Collections.Generic;
 using System;
 using System.Threading.Tasks;
 using KnifeHero.KnifeHeroCode.Powers;
@@ -21,10 +23,18 @@ namespace KnifeHero.KnifeHeroCode.Cards;
    "Feint" is a placeholder; hers to mint. */
 public sealed class Feint() : KnifeHeroCard(0, CardType.Skill, CardRarity.Basic, TargetType.AnyEnemy)
 {
+    // Already free, so the upgrade buys cover rather than cost: 1 Stealth → 2.
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new List<DynamicVar> { new IntVar("Weak", 1m), new IntVar("Stealth", 1m) };
+
+    protected override void OnUpgrade() => DynamicVars["Stealth"].UpgradeValueBy(1m);
+
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
-        await PowerCmd.Apply<WeakPower>(choiceContext, cardPlay.Target, 1m, Owner.Creature, this, false);
-        await PowerCmd.Apply<Stealth>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
+        await PowerCmd.Apply<WeakPower>(choiceContext, cardPlay.Target,
+            DynamicVars["Weak"].BaseValue, Owner.Creature, this, false);
+        await PowerCmd.Apply<Stealth>(choiceContext, Owner.Creature,
+            DynamicVars["Stealth"].BaseValue, Owner.Creature, this, false);
     }
 }

@@ -29,7 +29,7 @@ public enum QueerKind
     Generous,   // draw a card
     Guarded,    // 4 Block
     Fade,       // 1 Stealth, granted AFTER the card resolves — see AfterCardPlayedLate. Attacking from
-                // Fade still costs Heat.
+                // Fade still costs Visibility.
     Sly,        // keyword: it plays itself when discarded
     Clingy,     // keyword: Retain
     Early,      // keyword: Innate

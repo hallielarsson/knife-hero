@@ -15,21 +15,21 @@ namespace KnifeHero.KnifeHeroCode.Powers;
 
 /* STEALTH + HEAT.
 
-   STEALTH — while you have it, every incoming hit is capped at 1 + Heat damage (the cap is on DAMAGE,
+   STEALTH — while you have it, every incoming hit is capped at 1 + Visibility damage (the cap is on DAMAGE,
    via ModifyDamageCap, not on HP loss — so Block still matters and a 20-damage swing costs the same
    Block as a 3-damage one). Losing HP wipes the ENTIRE Stealth bank. Attacking wipes it too, and adds
-   Heat. The stacks are fuel: Backstab, Sneak Attack and Look What I Found Down Here cash them.
+   Visibility. The stacks are fuel: Backstab, Sneak Attack and Look What I Found Down Here cash them.
 
    HEAT — the clock, and Stealth's only balancing pressure (without it: hide, chip your Block, hide
-   forever). It does two things at once: hits get bigger (cap = 1 + Heat), and every hit strips Heat
-   stacks of Stealth EVEN IF Block ate it completely. Heat never decays within a fight.
+   forever). It does two things at once: hits get bigger (cap = 1 + Visibility), and every hit strips Visibility
+   stacks of Stealth EVEN IF Block ate it completely. Visibility never decays within a fight.
 
    NOT an IFlag: being hidden is not a pride flag, so it doesn't count for Stonewall / Rainbow Strike.
 
    ⚠ ModifyDamageCap and AfterDamageReceived are separate engine passes — the first sizes the hit, the
-   second reads what happened. Heat can enlarge a hit AND strip Stealth in the same swing, no special
+   second reads what happened. Visibility can enlarge a hit AND strip Stealth in the same swing, no special
    handling needed. */
-public sealed class Heat : KnifeHeroPower
+public sealed class Visibility : KnifeHeroPower
 {
     public override PowerType Type => PowerType.Debuff;
     public override PowerStackType StackType => PowerStackType.Counter;
@@ -42,19 +42,19 @@ public sealed class Stealth : KnifeHeroPower
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
 
-    private int HeatAmount => (int)(Owner?.GetPower<Heat>()?.Amount ?? 0m);
+    private int VisibilityAmount => (int)(Owner?.GetPower<Visibility>()?.Amount ?? 0m);
 
-    // The cap displays as a live number rather than "1 plus your Heat".
+    // The cap displays as a live number rather than "1 plus your Visibility".
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new List<DynamicVar> { new IntVar("Cap", 1m) };
 
     /* ⚠ PowerModel has NO preview/refresh hook, so the displayed number must be re-synced by hand at
-       every moment Heat can change: turn start, being hit, and playing a card (Fire gains Heat on play).
+       every moment Visibility can change: turn start, being hit, and playing a card (Fire gains Visibility on play).
        Miss one and the card shows a stale cap. */
     private void SyncCap()
     {
         var cap = DynamicVars["Cap"];
-        decimal want = 1m + HeatAmount;
+        decimal want = 1m + VisibilityAmount;
         if (cap.BaseValue != want) cap.UpgradeValueBy(want - cap.BaseValue);
     }
 
@@ -66,10 +66,10 @@ public sealed class Stealth : KnifeHeroPower
         if (!CombatManager.Instance.IsInProgress) return decimal.MaxValue;
         if (target != Owner) return decimal.MaxValue;
         SyncCap();
-        return 1m + HeatAmount;
+        return 1m + VisibilityAmount;
     }
 
-    /* Playing an Attack costs you the whole Stealth bank AND a point of Heat. This is the hidden build's
+    /* Playing an Attack costs you the whole Stealth bank AND a point of Visibility. This is the hidden build's
        central tension — safe, or doing something, not both — and it's why the cash-out cards exist.
        (Unseen, from Day of Invisibility, suspends it for a turn.) */
     public override async Task AfterCardPlayed(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -81,7 +81,7 @@ public sealed class Stealth : KnifeHeroPower
 
         var deadName = Owner.GetPower<DeadNamePower>();
         if (deadName != null) await deadName.RefuseTheName();
-        else await PowerCmd.Apply<Heat>(choiceContext, Owner, 1m, Owner, null, false);
+        else await PowerCmd.Apply<Visibility>(choiceContext, Owner, 1m, Owner, null, false);
 
         await PowerCmd.Remove(this);
     }
@@ -92,24 +92,24 @@ public sealed class Stealth : KnifeHeroPower
         if (target != Owner) return;
         SyncCap();
 
-        // You bled: the whole Stealth bank goes, and you gain a Heat (permanent for the fight).
+        // You bled: the whole Stealth bank goes, and you gain a Visibility (permanent for the fight).
         // ⚠ Dead Name intercepts here and in AfterCardPlayed — between them, these are the ONLY two
-        // places Heat is ever granted by being found. Any new Heat source must check DeadNamePower too.
+        // places Visibility is ever granted by being found. Any new Visibility source must check DeadNamePower too.
         if (result.UnblockedDamage > 0m)
         {
             var deadName = Owner.GetPower<DeadNamePower>();
             if (deadName != null) await deadName.RefuseTheName();
-            else await PowerCmd.Apply<Heat>(choiceContext, Owner, 1m, Owner, null, false);
+            else await PowerCmd.Apply<Visibility>(choiceContext, Owner, 1m, Owner, null, false);
 
             await PowerCmd.Remove(this);
             return;
         }
 
-        // Blocked, but they're getting warmer: a hit costs you Heat stacks of cover even when Block ate
-        // it completely. At Heat 0 being swung at is free.
-        int heat = HeatAmount;
-        if (heat > 0)
-            await PowerCmd.ModifyAmount(choiceContext, this, -heat, Owner, null);
+        // Blocked, but they're getting warmer: a hit costs you Visibility stacks of cover even when Block ate
+        // it completely. At Visibility 0 being swung at is free.
+        int visibility = VisibilityAmount;
+        if (visibility > 0)
+            await PowerCmd.ModifyAmount(choiceContext, this, -visibility, Owner, null);
     }
 
     /* Lose 1 Stealth at end of turn. ⚠ BALANCE: without this the bank has no leak — every other way to
@@ -122,6 +122,9 @@ public sealed class Stealth : KnifeHeroPower
     public override async Task AfterSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side,
         IEnumerable<Creature> participants)
     {
+        // ⚠ Only YOUR turn ending leaks a Stealth — Owner is a participant on the enemy's turn end too,
+        // so without the side gate the bank drained twice a round (cf. Unseen, which gates the same way).
+        if (side != CombatSide.Player) return;
         if (!participants.Contains(Owner)) return;
         await PowerCmd.ModifyAmount(choiceContext, this, -1m, Owner, null);
     }

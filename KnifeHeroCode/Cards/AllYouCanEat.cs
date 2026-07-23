@@ -22,6 +22,9 @@ namespace KnifeHero.KnifeHeroCode.Cards;
    That interaction is left in on purpose; flag in playtest if it confuses. */
 public sealed class AllYouCanEat() : KnifeHeroCard(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
 {
+    // Upgrade: costs 1 less.
+    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
+
     // PROPOSAL: HP gained per knife/shiv eaten.
     private const int PerBlade = 3;
 

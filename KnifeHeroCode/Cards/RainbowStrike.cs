@@ -29,7 +29,7 @@ public sealed class RainbowStrike() : KnifeHeroCard(1, CardType.Attack, CardRari
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
-        int flags = Owner.Creature.FlagCount();
+        int flags = Owner.Creature.PrideCount();
         await DamageCmd.Attack(DynamicVars["Per"].BaseValue * flags).FromCard(this)
             .Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
     }

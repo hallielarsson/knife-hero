@@ -13,6 +13,9 @@ namespace KnifeHero.KnifeHeroCode.Cards;
    The big knife-engine payoff. Human-sourced mechanic (Hallie); placeholder art via KnifeHeroCard. */
 public sealed class PortalToTheKnifeDimension() : KnifeHeroCard(3, CardType.Power, CardRarity.Rare, TargetType.Self)
 {
+    // Upgrade: costs 1 less.
+    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
+
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await PowerCmd.Apply<PortalToTheKnifeDimensionPower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);

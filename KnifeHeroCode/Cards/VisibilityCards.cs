@@ -12,11 +12,11 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace KnifeHero.KnifeHeroCode.Cards;
 
-/* THE HEAT CARDS. Heat is the clock on Stealth (see Stealth.cs) and is pure downside on its own. These
+/* THE HEAT CARDS. Visibility is the clock on Stealth (see Stealth.cs) and is pure downside on its own. These
    are the three answers to it: run from it (Smoke Bomb, Shadow Dodge), refuse it (Dead Name), or feed it
    (Honeypot — the build where being found is the plan). */
 
-/* HONEYPOT — ⟨2⟩ Power. Gain Thorns equal to your Heat + {Bonus}. Turns Heat from a punishment into a
+/* HONEYPOT — ⟨2⟩ Power. Gain Thorns equal to your Visibility + {Bonus}. Turns Visibility from a punishment into a
    resource, which is what makes the loud build exist. */
 public sealed class Honeypot() : KnifeHeroCard(2, CardType.Power, CardRarity.Uncommon, TargetType.Self)
 {
@@ -27,13 +27,13 @@ public sealed class Honeypot() : KnifeHeroCard(2, CardType.Power, CardRarity.Unc
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        int heat = (int)(Owner.Creature.GetPower<Heat>()?.Amount ?? 0m);
+        int visibility = (int)(Owner.Creature.GetPower<Visibility>()?.Amount ?? 0m);
         await PowerCmd.Apply<ThornsPower>(choiceContext, Owner.Creature,
-            heat + DynamicVars["Bonus"].BaseValue, Owner.Creature, this, false);
+            visibility + DynamicVars["Bonus"].BaseValue, Owner.Creature, this, false);
     }
 }
 
-/* SMOKE BOMB — ⟨2⟩ Skill, Exhaust. Lose all Heat. Upgrade: no Exhaust. */
+/* SMOKE BOMB — ⟨2⟩ Skill, Exhaust. Lose all Visibility. Upgrade: no Exhaust. */
 public sealed class SmokeBomb() : KnifeHeroCard(2, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
 {
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
@@ -43,12 +43,12 @@ public sealed class SmokeBomb() : KnifeHeroCard(2, CardType.Skill, CardRarity.Un
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        var heat = Owner.Creature.GetPower<Heat>();
-        if (heat != null) await PowerCmd.Remove(heat);
+        var visibility = Owner.Creature.GetPower<Visibility>();
+        if (visibility != null) await PowerCmd.Remove(visibility);
     }
 }
 
-/* SHADOW DODGE — ⟨1⟩ Skill. Gain {Block} Block. Lose 1 Heat. The cheap, repeatable cool-down. */
+/* SHADOW DODGE — ⟨1⟩ Skill. Gain {Block} Block. Lose 1 Visibility. The cheap, repeatable cool-down. */
 public sealed class ShadowDodge() : KnifeHeroCard(1, CardType.Skill, CardRarity.Common, TargetType.Self)
 {
     public override bool GainsBlock => true;
@@ -61,8 +61,8 @@ public sealed class ShadowDodge() : KnifeHeroCard(1, CardType.Skill, CardRarity.
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
-        var heat = Owner.Creature.GetPower<Heat>();
-        if (heat != null) await PowerCmd.ModifyAmount(choiceContext, heat, -1m, Owner.Creature, this);
+        var visibility = Owner.Creature.GetPower<Visibility>();
+        if (visibility != null) await PowerCmd.ModifyAmount(choiceContext, visibility, -1m, Owner.Creature, this);
     }
 }
 
@@ -135,9 +135,9 @@ public sealed class Pickpocket() : KnifeHeroCard(1, CardType.Power, CardRarity.U
     }
 }
 
-/* DEAD NAME — ⟨2⟩ Power. Whenever you would gain Heat, take a Dazed in your discard instead.
-   The hard counter to the Stealth clock: Heat never rises, so Stealth never degrades — paid for in deck
-   clutter. Deliberately anti-synergistic with Honeypot: you cannot both refuse Heat and farm it. */
+/* DEAD NAME — ⟨2⟩ Power. Whenever you would gain Visibility, take a Dazed in your discard instead.
+   The hard counter to the Stealth clock: Visibility never rises, so Stealth never degrades — paid for in deck
+   clutter. Deliberately anti-synergistic with Honeypot: you cannot both refuse Visibility and farm it. */
 public sealed class DeadName() : KnifeHeroCard(2, CardType.Power, CardRarity.Rare, TargetType.Self)
 {
     /* UPGRADE: INNATE. No permanent cost-reduction API exists in this engine — EnergyCost.AddThisCombat

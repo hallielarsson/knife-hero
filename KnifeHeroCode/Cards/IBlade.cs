@@ -13,5 +13,5 @@ namespace KnifeHero.KnifeHeroCode.Cards;
 public interface IBlade { }
 
 /* IFlagBlade — a retained "flag-blade" card (Top, Bottom, and the pride swords). Held in hand, it's
-   one of your Flags (counts in FlagCount). The flags are swords you carry, not just pets. */
+   one of your Flags (counts in PrideCount). The flags are swords you carry, not just pets. */
 public interface IFlagBlade { }

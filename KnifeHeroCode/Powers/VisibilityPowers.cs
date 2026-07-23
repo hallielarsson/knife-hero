@@ -49,19 +49,19 @@ public sealed class PickpocketPower : KnifeHeroPower
     }
 }
 
-/* DEAD NAME — whenever you would gain Heat, take a Dazed instead.
+/* DEAD NAME — whenever you would gain Visibility, take a Dazed instead.
 
-   They don't get to know what to call you. So they never learn where you are — Heat never rises, Stealth
+   They don't get to know what to call you. So they never learn where you are — Visibility never rises, Stealth
    never degrades, and you can hide for the whole fight. The price is that your deck fills up with
    something that isn't you: clutter you have to carry instead of being found.
 
-   Read by Stealth.AfterDamageReceived, which is the only place Heat is ever granted. */
+   Read by Stealth.AfterDamageReceived, which is the only place Visibility is ever granted. */
 public sealed class DeadNamePower : KnifeHeroPower
 {
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Single;
 
-    // Called by Stealth in place of gaining Heat.
+    // Called by Stealth in place of gaining Visibility.
     public async Task RefuseTheName()
     {
         var dazed = Owner.CombatState.CreateCard<Dazed>(Owner.Player);

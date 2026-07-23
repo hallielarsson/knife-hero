@@ -27,7 +27,7 @@ namespace KnifeHero.KnifeHeroCode.Cards;
    repeatedly, or a big thing now? Fly it through a long fight and it out-damages almost anything. Or hold
    it until you draw the biggest attack you own and let it off twice.
 
-   It is filthy with Fire (which grows as your Heat climbs), with a fully-forged Top Chop's Vigor, and
+   It is filthy with Fire (which grows as your Visibility climbs), with a fully-forged Top Chop's Vigor, and
    with Knife Whip against armour (each doubled swing shatters more Block into more Shivs). */
 public sealed class FingerGuns() : PrideCard(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
 {
@@ -43,7 +43,7 @@ public sealed class FingerGuns() : PrideCard(1, CardType.Skill, CardRarity.Uncom
        Every card you play costs 1 more while Finger Guns is in your hand. Not a hand slot — an ENERGY
        TAX, on everything, every turn. You are standing there with both hands up, and both hands are busy.
 
-       That's the honest price for a free engine, and it's better than the Heat I gave it: Heat only
+       That's the honest price for a free engine, and it's better than the Visibility I gave it: Visibility only
        punished you eventually. This punishes you NOW, on every single card, for as long as you're doing
        the bit. */
     public override bool TryModifyEnergyCostInCombat(CardModel card, decimal originalCost, out decimal modifiedCost)
@@ -55,16 +55,16 @@ public sealed class FingerGuns() : PrideCard(1, CardType.Skill, CardRarity.Uncom
         return true;
     }
 
-    /* HELD — it goes off twice, every turn. And it makes NOISE: +1 Heat each time it fires.
-       (Hallie, 2026-07-12: "Finger Guns maybe should just increase Heat when it fires. It's not subtle.")
+    /* HELD — it goes off twice, every turn. And it makes NOISE: +1 Visibility each time it fires.
+       (Hallie, 2026-07-12: "Finger Guns maybe should just increase Visibility when it fires. It's not subtle.")
 
        That one line fixes the balance and the theme at once. It was a free engine — 8 damage a turn for
        nothing but a hand slot, which made it quietly the best card in the deck. Now it's a **timer you
        are winding**: every turn you leave it out, they get better at finding you, your Stealth gets
        thinner, and their hits get bigger.
 
-       Which also makes it the fastest way to build Heat ON PURPOSE — so Finger Guns held is a Honeypot
-       enabler (Thorns = Heat + 2), and Fire's damage climbs with it. The loud build wants this card out.
+       Which also makes it the fastest way to build Visibility ON PURPOSE — so Finger Guns held is a Honeypot
+       enabler (Thorns = Visibility + 2), and Fire's damage climbs with it. The loud build wants this card out.
        The hidden build wants it swung and gone. */
     protected override async Task WhileFlown(PlayerChoiceContext choiceContext)
     {
@@ -73,10 +73,10 @@ public sealed class FingerGuns() : PrideCard(1, CardType.Skill, CardRarity.Uncom
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue).WithHitCount(2).FromCard(this)
             .Targeting(enemy).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
 
-        /* AND IT MAKES NOISE. (Hallie: *"Finger Guns maybe should just increase Heat when it fires. It's
+        /* AND IT MAKES NOISE. (Hallie: *"Finger Guns maybe should just increase Visibility when it fires. It's
            not subtle."*)
 
-           This comment block has claimed for days that firing it costs you a Heat, and the code never did
+           This comment block has claimed for days that firing it costs you a Visibility, and the code never did
            it — found by the agent reconciling card text against code, which is the third rules bug a
            *text* pass has turned up this week. The prose was right and the card was lying.
 
@@ -84,7 +84,7 @@ public sealed class FingerGuns() : PrideCard(1, CardType.Skill, CardRarity.Uncom
            your hand every turn, which is exactly the kind of thing that ought to cost the stealth deck
            something. Now flying it heats you up. **You cannot point both hands at someone and stay
            hidden.** */
-        await PowerCmd.Apply<Heat>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
+        await PowerCmd.Apply<Visibility>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
     }
 
     // SWUNG — you point at the next thing you were going to do anyway, and it happens twice.

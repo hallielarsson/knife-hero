@@ -38,9 +38,18 @@ public sealed class Kunai() : KnifeHeroCard(0, CardType.Attack, CardRarity.Commo
     // The throwing shiv's one number, per Hallie's spec.
     private const decimal BaseDamage = 3m;
 
+    /* Already free, so the upgrade buys damage. Both numbers scale together: {Damage} is the snap-throw
+       (played), {Buried} is the end-of-turn AoE. Both are DynamicVars so neither can lie after upgrade. */
+
     // Card's listed damage is the SNAP-THROW value (played): BASE - 2.
     protected override IEnumerable<DynamicVar> CanonicalVars =>
-        new List<DynamicVar> { new DamageVar(BaseDamage - 2m, ValueProp.Move) };
+        new List<DynamicVar> { new DamageVar(BaseDamage - 2m, ValueProp.Move), new IntVar("Buried", BaseDamage) };
+
+    protected override void OnUpgrade()
+    {
+        DynamicVars.Damage.UpgradeValueBy(2m);
+        DynamicVars["Buried"].UpgradeValueBy(2m);
+    }
 
     public override bool HasTurnEndInHandEffect => true;
 
@@ -55,7 +64,7 @@ public sealed class Kunai() : KnifeHeroCard(0, CardType.Attack, CardRarity.Commo
     // Held to end of turn: the buried throw — deal full BASE damage to the field, then Exhaust.
     protected override async Task OnTurnEndInHand(PlayerChoiceContext choiceContext)
     {
-        await DamageCmd.Attack(BaseDamage).FromCard(this).TargetingAllOpponents(CombatState)
+        await DamageCmd.Attack(DynamicVars["Buried"].BaseValue).FromCard(this).TargetingAllOpponents(CombatState)
             .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
         await CardCmd.Exhaust(choiceContext, this, causedByEthereal: false);
     }
