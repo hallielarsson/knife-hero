@@ -236,3 +236,17 @@ public sealed class Assassin() : KnifeHeroCard(2, CardType.Power, CardRarity.Unc
         await PowerCmd.Apply<AssassinPower>(choiceContext, Owner.Creature, 2m, Owner.Creature, this, false);
     }
 }
+
+/* SMOKE BOMB, BUT ITS KNIVES — ⟨1⟩ Skill. Add {Shivs} Shivs to your hand; at the end of your turn,
+   exhaust every Shiv in hand and gain 1 Stealth for each (SmokeKnivesPower). Cover made of blades. */
+public sealed class SmokeBombKnives() : KnifeHeroCard(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
+{
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new List<DynamicVar> { new IntVar("Shivs", 4m) };
+
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        await Shiv.CreateInHand(Owner, (int)DynamicVars["Shivs"].BaseValue, CombatState);
+        await PowerCmd.Apply<SmokeKnivesPower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
+    }
+}

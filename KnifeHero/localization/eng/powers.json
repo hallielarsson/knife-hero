@@ -79,5 +79,17 @@
   "KNIFEHERO-BISEXUAL_LIGHTNING_POWER.smartDescription": "At the start of each turn, deal {Amount} damage to 2 random enemies.",
   "KNIFEHERO-ASSASSIN_POWER.title": "Assassin",
   "KNIFEHERO-ASSASSIN_POWER.description": "Your Attacks deal {Amount} bonus damage for each Stealth you have.",
-  "KNIFEHERO-ASSASSIN_POWER.smartDescription": "Your Attacks deal {Amount} bonus damage for each Stealth you have."
+  "KNIFEHERO-ASSASSIN_POWER.smartDescription": "Your Attacks deal {Amount} bonus damage for each Stealth you have.",
+  "KNIFEHERO-GAY_WRATH_POWER.title": "Gay Wrath Month",
+  "KNIFEHERO-GAY_WRATH_POWER.description": "At the end of your turn, gain {Amount} Vigor for each Pride or Queer card in your hand.",
+  "KNIFEHERO-GAY_WRATH_POWER.smartDescription": "At the end of your turn, gain {Amount} Vigor for each Pride or Queer card in your hand.",
+  "KNIFEHERO-SOLIDARITY_POWER.title": "Solidarity",
+  "KNIFEHERO-SOLIDARITY_POWER.description": "Whenever you play a Queer or Pride card, gain {Amount} Block.",
+  "KNIFEHERO-SOLIDARITY_POWER.smartDescription": "Whenever you play a Queer or Pride card, gain {Amount} Block.",
+  "KNIFEHERO-SMOKE_KNIVES_POWER.title": "Smoke Bomb",
+  "KNIFEHERO-SMOKE_KNIVES_POWER.description": "At the end of your turn, exhaust all Shivs in your hand and gain 1 Stealth for each.",
+  "KNIFEHERO-SMOKE_KNIVES_POWER.smartDescription": "At the end of your turn, exhaust all Shivs in your hand and gain 1 Stealth for each.",
+  "KNIFEHERO-KNIFE_TO_MEET_U_POWER.title": "Knife to Meet U",
+  "KNIFEHERO-KNIFE_TO_MEET_U_POWER.description": "When you draw a Shiv, draw a card.",
+  "KNIFEHERO-KNIFE_TO_MEET_U_POWER.smartDescription": "When you draw a Shiv, draw a card."
 }

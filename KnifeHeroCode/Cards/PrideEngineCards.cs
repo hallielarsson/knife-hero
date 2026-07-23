@@ -73,3 +73,34 @@ public sealed class BisexualLightning() : KnifeHeroCard(2, CardType.Power, CardR
             DynamicVars["Zap"].BaseValue, Owner.Creature, this, false);
     }
 }
+
+/* GAY WRATH MONTH — ⟨3⟩ Power. At the end of your turn, gain 1 Vigor per Pride or Queer card in hand. */
+public sealed class GayWrathMonth() : KnifeHeroCard(3, CardType.Power, CardRarity.Uncommon, TargetType.Self)
+{
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        await PowerCmd.Apply<GayWrathPower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
+    }
+}
+
+/* SOLIDARITY — ⟨2⟩ (1 upgraded) Power. Whenever you play a Queer or Pride card, gain 3 Block. */
+public sealed class Solidarity() : KnifeHeroCard(2, CardType.Power, CardRarity.Uncommon, TargetType.Self)
+{
+    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);   // 2 -> 1
+
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        await PowerCmd.Apply<SolidarityPower>(choiceContext, Owner.Creature, 3m, Owner.Creature, this, false);
+    }
+}
+
+/* KNIFE TO MEET U — ⟨2⟩ (1 upgraded) Power. When you draw a Shiv, draw a card. */
+public sealed class KnifeToMeetU() : KnifeHeroCard(2, CardType.Power, CardRarity.Uncommon, TargetType.Self)
+{
+    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);   // 2 -> 1
+
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        await PowerCmd.Apply<KnifeToMeetUPower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
+    }
+}
