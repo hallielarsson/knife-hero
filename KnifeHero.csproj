@@ -108,14 +108,17 @@
         <EmbeddedResource Remove="tools/**" />
     </ItemGroup>
 
-    <!-- Reconcile the design doc (CARDS.md) against what is actually implemented, every build.
-         WARNS, never errors: design is *supposed* to run ahead of code — it just shouldn't do it
-         silently. CARDS.md went a month stale (a 06-13 snapshot vs 53 compiled cards, including a
-         Creature deck it barely mentioned) and nobody noticed. Now the compiler notices.
-         Also regenerates nothing — see ./tools/cards.py for the generated mirror. -->
-    <Target Name="CardSync" AfterTargets="Build" Condition="'$(IsInnerGodotExport)' != 'true'">
-        <Exec Command="python3 &quot;$(MSBuildProjectDirectory)/tools/sync.py&quot; --warn"
-              ContinueOnError="true" StandardOutputImportance="high" />
+    <!-- Regenerate CARDS_IMPLEMENTED.md from the code every build. It is GENERATED, never hand-edited,
+         so it cannot go stale.
+
+         This replaces the old CardSync target, which diffed a hand-written CARDS.md against the code and
+         warned on drift. CARDS.md is deleted (Hallie, 2026-07-14: "cards kill it") — it had become a
+         June-13 snapshot describing a forge loop and two blade names that no longer exist, and it warned
+         on every build about cards that were working fine. A hand-written mirror of the code is a second
+         source of truth that only ever loses. The code is the truth; this file just prints it. -->
+    <Target Name="CardList" AfterTargets="Build" Condition="'$(IsInnerGodotExport)' != 'true'">
+        <Exec Command="python3 &quot;$(MSBuildProjectDirectory)/tools/cards.py&quot;"
+              ContinueOnError="true" StandardOutputImportance="low" />
     </Target>
 
     <Target Name="GodotPublish" AfterTargets="Publish" Condition="'$(GodotPath)' != '' and Exists('$(GodotPath)') and '$(IsInnerGodotExport)' != 'true'">
