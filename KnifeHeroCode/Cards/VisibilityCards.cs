@@ -230,16 +230,11 @@ public sealed class SneakAttack() : KnifeHeroCard(1, CardType.Attack, CardRarity
     }
 }
 
-/* ASSASSIN — ⟨2⟩ Power. Your Attacks deal 2 bonus damage per Stealth. The Stealth build's payoff: hide,
-   stack the bank, then every swing scales with how hidden you are.
-   ⚠ Upgrade is INNATE, not the cost-1 the "1U" note asks for — this engine has no permanent
-   cost-reduction API (cf. Dead Name). Swap if you'd rather a different upgrade. */
+/* ASSASSIN — ⟨2⟩ (1 upgraded) Power. Your Attacks deal 2 bonus damage per Stealth. The Stealth build's
+   payoff: hide, stack the bank, then every swing scales with how hidden you are. */
 public sealed class Assassin() : KnifeHeroCard(2, CardType.Power, CardRarity.Uncommon, TargetType.Self)
 {
-    public override int MaxUpgradeLevel => 1;
-
-    public override IEnumerable<CardKeyword> CanonicalKeywords =>
-        IsUpgraded ? new List<CardKeyword> { CardKeyword.Innate } : new List<CardKeyword>();
+    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);   // 2 -> 1
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
