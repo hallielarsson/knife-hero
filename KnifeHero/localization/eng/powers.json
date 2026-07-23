@@ -76,5 +76,8 @@
   "KNIFEHERO-THE_CLOSET_POWER.smartDescription": "Gain {Amount} Stealth at the start of each turn.",
   "KNIFEHERO-BISEXUAL_LIGHTNING_POWER.title": "Bisexual Lightning",
   "KNIFEHERO-BISEXUAL_LIGHTNING_POWER.description": "At the start of each turn, deal {Amount} damage to 2 random enemies.",
-  "KNIFEHERO-BISEXUAL_LIGHTNING_POWER.smartDescription": "At the start of each turn, deal {Amount} damage to 2 random enemies."
+  "KNIFEHERO-BISEXUAL_LIGHTNING_POWER.smartDescription": "At the start of each turn, deal {Amount} damage to 2 random enemies.",
+  "KNIFEHERO-ASSASSIN_POWER.title": "Assassin",
+  "KNIFEHERO-ASSASSIN_POWER.description": "Your Attacks deal {Amount} bonus damage for each Stealth you have.",
+  "KNIFEHERO-ASSASSIN_POWER.smartDescription": "Your Attacks deal {Amount} bonus damage for each Stealth you have."
 }

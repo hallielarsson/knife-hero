@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models.Cards;
+using MegaCrit.Sts2.Core.ValueProps;
 
 namespace KnifeHero.KnifeHeroCode.Powers;
 
@@ -181,6 +182,22 @@ public sealed class BisexualLightningPower : KnifeHeroPower
         var rng = Owner.Player.RunState.Rng.CombatCardGeneration;
         for (int i = 0; i < 2; i++)
             await CreatureCmd.Damage(choiceContext, rng.NextItem(enemies), Amount,
-                MegaCrit.Sts2.Core.ValueProps.ValueProp.Unpowered, Owner, null);
+                ValueProp.Unpowered, Owner, null);
+    }
+}
+
+/* ASSASSIN — your Attacks deal `Amount` bonus damage per point of Stealth (base 2). Same additive hook
+   Vigor uses; reads live Stealth each swing. */
+public sealed class AssassinPower : KnifeHeroPower
+{
+    public override PowerType Type => PowerType.Buff;
+    public override PowerStackType StackType => PowerStackType.Counter;
+
+    public override decimal ModifyDamageAdditive(Creature? target, decimal amount, ValueProp props,
+        Creature? dealer, MegaCrit.Sts2.Core.Models.CardModel? cardSource)
+    {
+        if (Owner != dealer || !props.IsPoweredAttack()) return 0m;
+        int stealth = (int)(Owner.GetPower<Stealth>()?.Amount ?? 0m);
+        return Amount * stealth;
     }
 }

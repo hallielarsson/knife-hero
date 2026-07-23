@@ -27,6 +27,8 @@
   "KNIFEHERO-KNIFE_BLOCK.description": "[color=#e40303]P[/color][color=#ff8c00]r[/color][color=#ffed00]i[/color][color=#008026]d[/color][color=#004dff]e[/color]\nGain {Per} Block for each Pride or Queer card in your hand.",
   "KNIFEHERO-BISEXUAL_LIGHTNING.title": "Bisexual Lightning",
   "KNIFEHERO-BISEXUAL_LIGHTNING.description": "At the start of each turn, deal {Zap} damage to 2 random enemies.",
+  "KNIFEHERO-ASSASSIN.title": "Assassin",
+  "KNIFEHERO-ASSASSIN.description": "Your Attacks deal 2 bonus damage for each Stealth you have.",
   "KNIFEHERO-LABRYS.title": "Labrys",
   "KNIFEHERO-LABRYS.description": "While this is in your hand, block the next instance of damage you would take, gain that much attack, then discard this. Deal {Damage} damage.",
   "KNIFEHERO-RAINBOW_STRIKE.title": "Rainbow Strike",
