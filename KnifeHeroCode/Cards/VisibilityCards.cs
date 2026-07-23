@@ -152,3 +152,23 @@ public sealed class DeadName() : KnifeHeroCard(2, CardType.Power, CardRarity.Rar
         await PowerCmd.Apply<DeadNamePower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
     }
 }
+
+/* INTO THE STREETS — ⟨1⟩ Skill. Gain {Block} Block and {Vis} Visibility. Chosen visibility: like
+   Gay Pride, DeadName does NOT intercept it (that only refuses the Visibility of being *found*). Armour
+   for the loud build — feeds Honeypot, Dashing Strike, and the Visibility payoffs. */
+public sealed class IntoTheStreets() : KnifeHeroCard(1, CardType.Skill, CardRarity.Common, TargetType.Self)
+{
+    public override bool GainsBlock => true;
+
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new List<DynamicVar> { new BlockVar(10m, ValueProp.Move), new IntVar("Vis", 3m) };
+
+    protected override void OnUpgrade() => DynamicVars.Block.UpgradeValueBy(3m);
+
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
+        await PowerCmd.Apply<Visibility>(choiceContext, Owner.Creature, DynamicVars["Vis"].BaseValue,
+            Owner.Creature, this, false);
+    }
+}

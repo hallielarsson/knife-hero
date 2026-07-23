@@ -13,7 +13,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 
 namespace KnifeHero.KnifeHeroCode.Cards;
 
-/* Rainbow Strike — deal 2 damage for every Flag you're flying (sum of your Flag stacks). */
+/* Rainbow Strike — deal {Per} damage for every Pride card in your hand. */
 public sealed class RainbowStrike() : KnifeHeroCard(1, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy)
 {
     public override string PortraitPath => "rainbow_strike.png".CardImagePath();
@@ -29,8 +29,27 @@ public sealed class RainbowStrike() : KnifeHeroCard(1, CardType.Attack, CardRari
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
-        int flags = Owner.Creature.PrideCount();
-        await DamageCmd.Attack(DynamicVars["Per"].BaseValue * flags).FromCard(this)
+        int prides = CardPile.GetCards(Owner, PileType.Hand).Count(c => c is IPride);
+        await DamageCmd.Attack(DynamicVars["Per"].BaseValue * prides).FromCard(this)
             .Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+    }
+}
+
+// RAINBOW MATADOR — Gain {Block} Block, then return a Pride from your discard to your hand.
+public sealed class RainbowMatador() : KnifeHeroCard(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
+{
+    public override bool GainsBlock => true;
+
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new List<DynamicVar> { new BlockVar(7m, ValueProp.Move) };
+
+    protected override void OnUpgrade() => DynamicVars.Block.UpgradeValueBy(3m);
+
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
+
+        var pride = CardPile.GetCards(Owner, PileType.Discard).FirstOrDefault(c => c is IPride);
+        if (pride != null) await CardPileCmd.Add(pride, PileType.Hand);
     }
 }

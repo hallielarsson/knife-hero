@@ -52,13 +52,13 @@ namespace KnifeHero.KnifeHeroCode.Cards;
    No ceiling (MaxUpgradeLevel 99). A Stabby that has eaten your whole starting deck is a monster, and it
    *is* your starting deck — the same eight cards, in one hand, sharpened.
    ═══════════════════════════════════════════════════════════════════════════════════════════════ */
-public sealed class FancyFootwork() : KnifeHeroCard(1, CardType.Attack, CardRarity.Basic, TargetType.AnyEnemy)
+public sealed class FancyFootwork() : PrideCard(1, CardType.Attack, CardRarity.Basic, TargetType.AnyEnemy)
 {
     public override bool GainsBlock => true;
     public override int MaxUpgradeLevel => 99;   // it eats for as long as you feed it
 
-    public override IEnumerable<CardKeyword> CanonicalKeywords =>
-        new List<CardKeyword> { CardKeyword.Retain };
+    // A Pride now: Retain comes from PrideCard. Held it walls up (WhileFlown); swung it stabs and eats
+    // (OnSwung), and every swing ticks PridesPlayed for Stonewall & friends. Your starter feeds the engine.
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new List<DynamicVar> { new DamageVar(8m, ValueProp.Move), new BlockVar(2m, ValueProp.Move) };
@@ -75,18 +75,13 @@ public sealed class FancyFootwork() : KnifeHeroCard(1, CardType.Attack, CardRari
     private static bool IsBasic(CardModel c) =>
         c.Tags.Contains(CardTag.Strike) || c.Tags.Contains(CardTag.Defend);
 
-    /* RETAINED — the flat little wall.
-       ⚠ BeforeSideTurnEnd, NEVER HasTurnEndInHandEffect: that wrapper discards the card afterwards and
-       does not check Retain, so a retained card with a turn-end effect throws itself away every turn,
-       silently. See PrideCard.cs for the full autopsy. */
-    public override async Task BeforeSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side,
-        IEnumerable<Creature> participants)
+    // RETAINED — the flat little wall. (PrideCard.WhileFlown handles the end-of-turn + in-hand gating.)
+    protected override async Task WhileFlown(PlayerChoiceContext choiceContext)
     {
-        if (side != CombatSide.Player || Pile?.Type != PileType.Hand) return;
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, null);
     }
 
-    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    protected override async Task OnSwung(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
