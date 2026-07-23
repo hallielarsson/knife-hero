@@ -118,7 +118,7 @@
   "KNIFEHERO-BACKSTAB.title": "Backstab",
   "KNIFEHERO-BACKSTAB.description": "Deal {Damage} damage, plus {Per} per Stealth.",
   "KNIFEHERO-FINGER_GUNS.title": "Finger Guns",
-  "KNIFEHERO-FINGER_GUNS.description": "[color=#e40303]P[/color][color=#ff8c00]r[/color][color=#ffed00]i[/color][color=#008026]d[/color][color=#004dff]e[/color]\nThe next Attack you play this turn is played twice.\nIn hand: your cards cost 1 more, and at end of turn you deal {Damage} damage twice and gain 1 Visibility.",
+  "KNIFEHERO-FINGER_GUNS.description": "[color=#e40303]P[/color][color=#ff8c00]r[/color][color=#ffed00]i[/color][color=#008026]d[/color][color=#004dff]e[/color]\nThe next Attack you play this turn is played twice.\nIn hand: at end of turn, deal {Damage} damage twice, lose all Stealth, and gain 1 Visibility.",
   "KNIFEHERO-BOTH_IS_GOOD.title": "Both Is Good",
   "KNIFEHERO-BOTH_IS_GOOD.description": "The first Pride you play each turn also triggers its in-hand effect.",
   "KNIFEHERO-THE_THROAT.title": "The Throat",

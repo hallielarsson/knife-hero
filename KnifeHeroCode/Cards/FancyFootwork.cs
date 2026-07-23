@@ -52,7 +52,7 @@ namespace KnifeHero.KnifeHeroCode.Cards;
    No ceiling (MaxUpgradeLevel 99). A Stabby that has eaten your whole starting deck is a monster, and it
    *is* your starting deck — the same eight cards, in one hand, sharpened.
    ═══════════════════════════════════════════════════════════════════════════════════════════════ */
-public sealed class FancyFootwork() : KnifeHeroCard(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
+public sealed class FancyFootwork() : KnifeHeroCard(1, CardType.Attack, CardRarity.Basic, TargetType.AnyEnemy)
 {
     public override bool GainsBlock => true;
     public override int MaxUpgradeLevel => 99;   // it eats for as long as you feed it

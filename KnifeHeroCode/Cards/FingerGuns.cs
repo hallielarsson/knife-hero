@@ -39,33 +39,9 @@ public sealed class FingerGuns() : PrideCard(1, CardType.Skill, CardRarity.Uncom
 
     protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(1m);
 
-    /* THE REAL COST OF LEAVING IT OUT (Hallie, post-playtest 2026-07-12).
-       Every card you play costs 1 more while Finger Guns is in your hand. Not a hand slot — an ENERGY
-       TAX, on everything, every turn. You are standing there with both hands up, and both hands are busy.
-
-       That's the honest price for a free engine, and it's better than the Visibility I gave it: Visibility only
-       punished you eventually. This punishes you NOW, on every single card, for as long as you're doing
-       the bit. */
-    public override bool TryModifyEnergyCostInCombat(CardModel card, decimal originalCost, out decimal modifiedCost)
-    {
-        modifiedCost = originalCost;
-        if (Pile?.Type != PileType.Hand) return false;
-        if (card == this || card.Owner != Owner) return false;
-        modifiedCost = originalCost + 1m;
-        return true;
-    }
-
-    /* HELD — it goes off twice, every turn. And it makes NOISE: +1 Visibility each time it fires.
-       (Hallie, 2026-07-12: "Finger Guns maybe should just increase Visibility when it fires. It's not subtle.")
-
-       That one line fixes the balance and the theme at once. It was a free engine — 8 damage a turn for
-       nothing but a hand slot, which made it quietly the best card in the deck. Now it's a **timer you
-       are winding**: every turn you leave it out, they get better at finding you, your Stealth gets
-       thinner, and their hits get bigger.
-
-       Which also makes it the fastest way to build Visibility ON PURPOSE — so Finger Guns held is a Honeypot
-       enabler (Thorns = Visibility + 2), and Fire's damage climbs with it. The loud build wants this card out.
-       The hidden build wants it swung and gone. */
+    /* HELD — at end of turn it fires twice, and firing from your hand blows your cover: you lose ALL
+       Stealth and gain a Visibility. (This replaced a flat +1-energy tax on every card, which
+       over-corrected Finger Guns from OP to UP.) You cannot point both hands at someone and stay hidden. */
     protected override async Task WhileFlown(PlayerChoiceContext choiceContext)
     {
         var enemy = CombatState.HittableEnemies.FirstOrDefault();
@@ -73,17 +49,8 @@ public sealed class FingerGuns() : PrideCard(1, CardType.Skill, CardRarity.Uncom
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue).WithHitCount(2).FromCard(this)
             .Targeting(enemy).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
 
-        /* AND IT MAKES NOISE. (Hallie: *"Finger Guns maybe should just increase Visibility when it fires. It's
-           not subtle."*)
-
-           This comment block has claimed for days that firing it costs you a Visibility, and the code never did
-           it — found by the agent reconciling card text against code, which is the third rules bug a
-           *text* pass has turned up this week. The prose was right and the card was lying.
-
-           It matters mechanically, not just tonally: Finger Guns is a held Pride that shoots for free from
-           your hand every turn, which is exactly the kind of thing that ought to cost the stealth deck
-           something. Now flying it heats you up. **You cannot point both hands at someone and stay
-           hidden.** */
+        var stealth = Owner.Creature.GetPower<Stealth>();
+        if (stealth != null) await PowerCmd.Remove(stealth);
         await PowerCmd.Apply<Visibility>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
     }
 
