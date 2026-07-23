@@ -119,17 +119,7 @@ public sealed class WatcherPride() : PrideCard(1, CardType.Skill, CardRarity.Unc
    swinging them) and Knife Block (which wants you holding them). */
 public sealed class RegentPride() : PrideCard(2, CardType.Attack, CardRarity.Rare, TargetType.AnyEnemy)
 {
-    /* UPGRADE: INNATE. There is no permanent cost-reduction API in this engine — EnergyCost.AddThisCombat
-       is combat-scoped and wrong for an upgrade. */
-    public override int MaxUpgradeLevel => 1;
-
-    /* ⚠ RETAIN MUST BE RE-ADDED HERE. Overriding CanonicalKeywords replaces PrideCard's list, and
-       without Retain this is the one Pride in the deck you cannot hold — silently, with nothing failing.
-       (It shipped that way once, copy-pasted from DeadName/BothIsGood, which are not PrideCards.) */
-    public override IEnumerable<CardKeyword> CanonicalKeywords =>
-        IsUpgraded
-            ? new List<CardKeyword> { CardKeyword.Retain, CardKeyword.Innate }
-            : new List<CardKeyword> { CardKeyword.Retain };
+    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);   // 2 -> 1 (Retain comes from PrideCard)
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new List<DynamicVar> { new DamageVar(10m, ValueProp.Move) };
@@ -188,12 +178,7 @@ public sealed class DykePride() : PrideCard(2, CardType.Attack, CardRarity.Uncom
    The first Pride you play each turn also fires its held effect. See BothIsGoodPower. */
 public sealed class BothIsGood() : KnifeHeroCard(2, CardType.Power, CardRarity.Rare, TargetType.Self)
 {
-    /* UPGRADE: INNATE. No permanent cost-reduction API exists in this engine — EnergyCost.AddThisCombat
-       is combat-scoped and wrong for an upgrade. (Not a PrideCard, so no Retain to preserve.) */
-    public override int MaxUpgradeLevel => 1;
-
-    public override IEnumerable<CardKeyword> CanonicalKeywords =>
-        IsUpgraded ? new List<CardKeyword> { CardKeyword.Innate } : new List<CardKeyword>();
+    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);   // 2 -> 1
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

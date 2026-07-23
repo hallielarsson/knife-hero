@@ -140,12 +140,7 @@ public sealed class Pickpocket() : KnifeHeroCard(1, CardType.Power, CardRarity.U
    clutter. Deliberately anti-synergistic with Honeypot: you cannot both refuse Visibility and farm it. */
 public sealed class DeadName() : KnifeHeroCard(2, CardType.Power, CardRarity.Rare, TargetType.Self)
 {
-    /* UPGRADE: INNATE. No permanent cost-reduction API exists in this engine — EnergyCost.AddThisCombat
-       is combat-scoped and wrong for an upgrade. */
-    public override int MaxUpgradeLevel => 1;
-
-    public override IEnumerable<CardKeyword> CanonicalKeywords =>
-        IsUpgraded ? new List<CardKeyword> { CardKeyword.Innate } : new List<CardKeyword>();
+    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);   // 2 -> 1
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
