@@ -112,19 +112,23 @@ public sealed class Stealth : KnifeHeroPower
             await PowerCmd.ModifyAmount(choiceContext, this, -visibility, Owner, null);
     }
 
-    /* Lose 1 Stealth at end of turn. ⚠ BALANCE: without this the bank has no leak — every other way to
-       lose Stealth needs the fight to act on you, so a turn of Defends was pure deposit and the optimal
+    /* Lose 1 Stealth at end of the ENEMY turn. ⚠ BALANCE: without this the bank has no leak — every other
+       way to lose Stealth needs the fight to act on you, so a turn of Defends was pure deposit and the optimal
        line was always "hide four turns, cash one enormous Backstab". The cash-out stays possible; it just
        isn't free.
+
+       ⚠ TIMING: the leak fires at the end of the ENEMY turn, not yours — so Stealth you build on your turn
+       fully protects you through the immediately-following enemy turn, and only ticks down once that turn
+       resolves. (Leaking at your own turn end instead would strip a stack before the enemy ever swings.)
 
        AfterSideTurnEnd + participants.Contains(Owner) is the engine's idiom (cf. FlankingPower). Hitting
        0 self-removes — ModifyAmount calls ShouldRemoveDueToAmount — so there's no dead icon to clean up. */
     public override async Task AfterSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side,
         IEnumerable<Creature> participants)
     {
-        // ⚠ Only YOUR turn ending leaks a Stealth — Owner is a participant on the enemy's turn end too,
-        // so without the side gate the bank drained twice a round (cf. Unseen, which gates the same way).
-        if (side != CombatSide.Player) return;
+        // ⚠ Only the ENEMY turn ending leaks a Stealth — Owner is a participant on both sides' turn end,
+        // so without the side gate the bank drained twice a round.
+        if (side != CombatSide.Enemy) return;
         if (!participants.Contains(Owner)) return;
         await PowerCmd.ModifyAmount(choiceContext, this, -1m, Owner, null);
     }
