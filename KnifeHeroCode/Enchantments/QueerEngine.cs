@@ -42,11 +42,15 @@ public static class Queer
        ever lands something legal for that card (Sharp/Inky→attacks, Nimble→block cards). */
     private static readonly List<Option> Pool = new()
     {
-        Opt<Sharp>(3, 3m),        // +3 damage (attacks)
-        Opt<Nimble>(3, 4m),       // +4 block (block cards)
+        // ⚠ Every pool member must be safe on ANY card its Can() admits. Sharp/Nimble self-restrict
+        // (attacks / block-cards). Swift/Steady/Thorns/Clone are target-agnostic. Do NOT add a base-game
+        // enchant whose OnPlay assumes cardPlay.Target unless it also restricts CanEnchant to Attacks —
+        // Inky does the former without the latter, so it landed on Self skills and HUNG the turn on a null
+        // target (Hallie, 2026-07-25). Cut. A "Weak on hit" queer would need to be our own, attack-gated.
+        Opt<Sharp>(3, 3m),        // +3 damage (self-restricts to attacks)
+        Opt<Nimble>(3, 4m),       // +4 block (self-restricts to block cards)
         Opt<Swift>(2, 1m),        // draw a card when played
         Opt<Steady>(2, 1m),       // Retain
-        Opt<Inky>(2, 1m),         // +damage & Weak (attacks)
         Opt<Thorns>(2, 2m),       // gain Thorns when played
         Opt<Clone>(1, 1m),        // play it → add a copy to hand   ⭐ rare
     };

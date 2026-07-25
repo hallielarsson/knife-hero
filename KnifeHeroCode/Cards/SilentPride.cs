@@ -3,6 +3,8 @@ using KnifeHero.KnifeHeroCode.Enchantments;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using System.Collections.Generic;
+using MegaCrit.Sts2.Core.HoverTips;
 
 namespace KnifeHero.KnifeHeroCode.Cards;
 
@@ -20,6 +22,8 @@ public sealed class SilentPride() : KnifeHeroCard(1, CardType.Power, CardRarity.
 
     // The upgrade IS the Retain grant (applied in OnPlay via GrantsRetain).
     protected override void OnUpgrade() { }
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => PrideEnchantment.TipFor<Shady>(0m);
 
     protected override bool IsPlayable => PrideEnchantment.HasEnchantableAttack(Owner, this);
 

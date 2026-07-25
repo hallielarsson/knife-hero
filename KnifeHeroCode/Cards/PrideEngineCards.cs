@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using KnifeHero.KnifeHeroCode.Enchantments;
 using KnifeHero.KnifeHeroCode.Powers;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -40,6 +41,8 @@ public sealed class KnifeBlock() : KnifeHeroCard(1, CardType.Power, CardRarity.U
 {
     public override int MaxUpgradeLevel => 1;
     protected override void OnUpgrade() { }
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => PrideEnchantment.TipFor<Walling>(2m);
 
     protected override bool IsPlayable => PrideEnchantment.HasEnchantableAttack(Owner, this);
 

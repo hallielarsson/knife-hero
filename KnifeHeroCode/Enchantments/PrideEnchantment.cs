@@ -48,8 +48,9 @@ public abstract class PrideEnchantment : CustomEnchantmentModel
     // A Pride flies on an Attack. (Same restriction Sharp uses.)
     public override bool CanEnchantCardType(CardType cardType) => cardType == CardType.Attack;
 
-    // Print the held effect on the card face + show its number.
-    public override bool HasExtraCardText => true;
+    // HOVER ONLY (Hallie: "rely on the hover mechanics"). No card-face text — the enchant reads from its
+    // icon + hover tip. (Leaving this on printed a raw `…extraCardText` loc key on the card.)
+    public override bool HasExtraCardText => false;
     public override bool ShowAmount => true;
 
     /* THE UPGRADE AXIS. Hallie, 2026-07-24: "the upgrade effect for these powers will often add Retain."
@@ -118,6 +119,17 @@ public abstract class PrideEnchantment : CustomEnchantmentModel
             e.ModifyCard();   // re-runs OnEnchant → adds Retain to the enchanted Attack
         }
         return e;
+    }
+
+    /* THE APPLIER GLOSS. "Enchant an Attack with Regent." is illegible until you know what Regent does — so
+       the applier card carries the enchant's own hover tip (override ExtraHoverTips => TipFor<TheEnchant>()).
+       Hover the Pride in hand and the side panel spells out the flag it grants. `amount` is what the applier
+       will bestow, so the previewed numbers match. */
+    public static IEnumerable<IHoverTip> TipFor<T>(decimal amount) where T : EnchantmentModel
+    {
+        var e = ModelDb.Enchantment<T>().ToMutable();
+        e.Amount = (int)amount;
+        return new List<IHoverTip> { e.HoverTip };
     }
 }
 

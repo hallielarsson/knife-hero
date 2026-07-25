@@ -2,6 +2,8 @@ using System.Threading.Tasks;
 using KnifeHero.KnifeHeroCode.Enchantments;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using System.Collections.Generic;
+using MegaCrit.Sts2.Core.HoverTips;
 
 namespace KnifeHero.KnifeHeroCode.Cards;
 
@@ -12,6 +14,8 @@ public sealed class TopChop() : KnifeHeroCard(1, CardType.Power, CardRarity.Unco
 {
     public override int MaxUpgradeLevel => 1;
     protected override void OnUpgrade() { }   // the upgrade is the Retain grant (via Bestow)
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => PrideEnchantment.TipFor<Top>(4m);
 
     protected override bool IsPlayable => PrideEnchantment.HasEnchantableAttack(Owner, this);
 

@@ -2,6 +2,8 @@ using System.Threading.Tasks;
 using KnifeHero.KnifeHeroCode.Enchantments;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using System.Collections.Generic;
+using MegaCrit.Sts2.Core.HoverTips;
 
 namespace KnifeHero.KnifeHeroCode.Cards;
 
@@ -15,6 +17,7 @@ namespace KnifeHero.KnifeHeroCode.Cards;
 public sealed class RegentPride() : KnifeHeroCard(1, CardType.Power, CardRarity.Rare, TargetType.Self)
 {
     public override int MaxUpgradeLevel => 1;
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => PrideEnchantment.TipFor<Regent>(6m);
     protected override void OnUpgrade() { }
 
     protected override bool IsPlayable => PrideEnchantment.HasEnchantableAttack(Owner, this);
@@ -33,6 +36,7 @@ public sealed class RegentPride() : KnifeHeroCard(1, CardType.Power, CardRarity.
 public sealed class DykePride() : KnifeHeroCard(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
 {
     public override int MaxUpgradeLevel => 1;
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => PrideEnchantment.TipFor<Parry>(0m);
     protected override void OnUpgrade() { }
 
     protected override bool IsPlayable => PrideEnchantment.HasEnchantableAttack(Owner, this);

@@ -28,9 +28,9 @@
   "KNIFEHERO-ASSASSIN.title": "Assassin",
   "KNIFEHERO-ASSASSIN.description": "Your Attacks deal 2 bonus damage for each Stealth you have.",
   "KNIFEHERO-GAY_WRATH_MONTH.title": "Gay Wrath Month",
-  "KNIFEHERO-GAY_WRATH_MONTH.description": "At the end of your turn, gain 1 Vigor for each Pride or Queer card in your hand.",
+  "KNIFEHERO-GAY_WRATH_MONTH.description": "At the end of your turn, gain 1 Vigor for each enchanted card in your hand.",
   "KNIFEHERO-SOLIDARITY.title": "Solidarity",
-  "KNIFEHERO-SOLIDARITY.description": "Whenever you play a Queer or Pride card, gain 3 Block.",
+  "KNIFEHERO-SOLIDARITY.description": "Whenever you play an enchanted card, gain 3 Block.",
   "KNIFEHERO-KNIFE_TO_MEET_U.title": "Knife to Meet U",
   "KNIFEHERO-KNIFE_TO_MEET_U.description": "When you draw a Shiv, draw a card.",
   "KNIFEHERO-SMOKE_BOMB_KNIVES.title": "Smoke Bomb, but its Knives",
@@ -168,5 +168,9 @@
   "KNIFEHERO-MENDED_HIP.title": "Mended Hip",
   "KNIFEHERO-MENDED_HIP.description": "Deal {Damage} damage for each part of you that is whole.",
   "KNIFEHERO-GLOW_UP.title": "Glow Up",
-  "KNIFEHERO-GLOW_UP.description": "Whenever you play an enchanted card, upgrade it."
+  "KNIFEHERO-GLOW_UP.description": "Whenever you play an enchanted card, upgrade it.",
+  "KNIFEHERO-THE_DIAPHRAGM.title": "The Diaphragm",
+  "KNIFEHERO-THE_DIAPHRAGM.description": "A part of you that isn't yours yet. Requires 2 Lessons: mend it. If you hold it for 3 turns without mending it, it festers.",
+  "KNIFEHERO-MENDED_DIAPHRAGM.title": "Mended Diaphragm",
+  "KNIFEHERO-MENDED_DIAPHRAGM.description": "Draw a card for each part of you that is whole. Exhaust."
 }

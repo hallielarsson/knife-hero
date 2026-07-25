@@ -16,18 +16,14 @@ namespace KnifeHero.KnifeHeroCode.Cards;
 /* ═══════════════════════════════════════════════════════════════════════════════════════════════
    STABBY — ⟨1⟩ Attack. Retain. A Blade.
 
-     Deal {Damage} damage. You may digest a Strike or Defend in your hand: it Exhausts, and this becomes
-     more Top (from a Strike) or more Bottom (from a Defend).
+     Deal {Damage} damage. You may Exhaust a Strike or Defend in your hand to enchant this with Top (from
+     a Strike) or Bottom (from a Defend).
 
-   ── THE DIGEST NOW FEEDS AN ENCHANT (Hallie, 2026-07-24) ───────────────────────────────────────
-   Stabby still eats your deck, but instead of just gaining Vigor/Block and upgrading, digesting a basic
-   ENCHANTS STABBY ITSELF — a Strike makes it Top (Vigor a turn while held), a Defend makes it Bottom
-   (Block a turn). One enchant slot, so Stabby commits to a lean on the first bite and DEEPENS it on each
-   later one (same-type digests stack the enchant's amount; the opposite type can't overwrite it). The
-   knife that eats your starting deck becomes a Top or a Bottom, sharpened by everything it swallowed.
-
-   Digesting is still not a cost — you thin your deck AND feed the blade. See PrideEnchantment.cs (Top/
-   Bottom). Retain keeps it in hand so its flag flies. */
+   Stabby eats your deck, and what it digests it BECOMES: a Strike makes it Top (Vigor a turn while held),
+   a Defend makes it Bottom (Block a turn). One enchant slot, so Stabby commits to a lean on the first
+   bite and deepens it on each later one (same-type digests stack the enchant's amount; the opposite type
+   can't overwrite it). Digesting still thins your deck AND feeds the blade — it's never a cost. Retain
+   keeps it in hand so its flag flies. See PrideEnchantment.cs (Top/Bottom). */
 public sealed class FancyFootwork() : KnifeHeroCard(1, CardType.Attack, CardRarity.Basic, TargetType.AnyEnemy), IBlade
 {
     public override IEnumerable<CardKeyword> CanonicalKeywords =>

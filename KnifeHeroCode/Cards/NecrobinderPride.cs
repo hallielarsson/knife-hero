@@ -6,6 +6,8 @@ using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using System.Collections.Generic;
+using MegaCrit.Sts2.Core.HoverTips;
 
 namespace KnifeHero.KnifeHeroCode.Cards;
 
@@ -25,6 +27,8 @@ public sealed class NecrobinderPride() : KnifeHeroCard(1, CardType.Power, CardRa
     protected override void OnUpgrade() { }
 
     // Unplayable unless you own an Attack to slay with (hand, draw, or discard).
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => PrideEnchantment.TipFor<Slay>(0m);
+
     protected override bool IsPlayable => PrideEnchantment.HasEnchantableAttack(Owner, this);
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

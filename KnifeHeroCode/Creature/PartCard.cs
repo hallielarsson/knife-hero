@@ -125,6 +125,7 @@ public static class Parts
             () => combat.CreateCard<TheLeg>(owner),
             () => combat.CreateCard<TheGut>(owner),
             () => combat.CreateCard<TheHip>(owner),
+            () => combat.CreateCard<TheDiaphragm>(owner),
         };
         return rng.NextItem(organs)();
     }

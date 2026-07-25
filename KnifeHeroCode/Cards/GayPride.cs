@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
 
@@ -36,6 +37,9 @@ public sealed class GayPride() : KnifeHeroCard(1, CardType.Power, CardRarity.Unc
 
     // The upgrade IS the Retain grant (applied in OnPlay via GrantsRetain); Visibility-per-turn stays 1.
     protected override void OnUpgrade() { }
+
+    // Gloss what Proud does, on THIS card (so "Enchant an Attack with Proud" is legible in hand).
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => PrideEnchantment.TipFor<Proud>(1m);
 
     // Unplayable unless you own an Attack to fly the flag on (hand, draw, or discard).
     protected override bool IsPlayable => PrideEnchantment.HasEnchantableAttack(Owner, this);

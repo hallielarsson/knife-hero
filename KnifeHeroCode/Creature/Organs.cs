@@ -145,6 +145,37 @@ public sealed class MendedHip() : CreatureCard(1, CardType.Attack, CardRarity.To
 }
 
 
+/* THE DIAPHRAGM — mend for 2 Lessons. Gray990: the sagittal sections, the breath. */
+public sealed class TheDiaphragm() : PartCard(0, CardType.Curse, CardRarity.Curse, TargetType.Self)
+{
+    public override string PortraitPath => "the_diaphragm.png".CardImagePath();
+    public override string CustomPortraitPath => "the_diaphragm.png".BigCardImagePath();
+
+    protected override int LessonsToMend => 2;
+    protected override CardModel Mended() => CombatState.CreateCard<MendedDiaphragm>(Owner);
+}
+
+/* MENDED DIAPHRAGM — draw a card for each part of you that is whole. Exhaust.
+
+   DECIDED (bro, design owner, 2026-07-25): the breath, and the one niche the mended-limb suite was
+   missing — DRAW. The body finds its rhythm and pulls its cards to it. Exhaust is load-bearing for the
+   same reason as the Gut's: a replayable per-Wholeness draw is a stall-and-farm engine. Numbers Hallie's. */
+public sealed class MendedDiaphragm() : CreatureCard(1, CardType.Skill, CardRarity.Token, TargetType.Self), IMendedPart
+{
+    public override string PortraitPath => "the_diaphragm.png".CardImagePath();
+    public override string CustomPortraitPath => "the_diaphragm.png".BigCardImagePath();
+
+    public override IEnumerable<CardKeyword> CanonicalKeywords =>
+        new List<CardKeyword> { CardKeyword.Exhaust };
+
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        int whole = Math.Max(1, (int)(Owner.Creature.GetPower<Wholeness>()?.Amount ?? 0m));
+        await CardPileCmd.Draw(choiceContext, whole, Owner);
+    }
+}
+
+
 /* LET IT ROT — ⟨0⟩ Skill, Exhaust. Fester an unmended Part in your hand immediately. Gain 2 Lessons.
    The only way to choose to scar. Costs 0 because the cost is the organ, not the energy. */
 public sealed class LetItRot() : CreatureCard(0, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
