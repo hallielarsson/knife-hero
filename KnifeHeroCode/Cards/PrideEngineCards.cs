@@ -29,7 +29,7 @@ public sealed class GayParris() : KnifeHeroCard(1, CardType.Skill, CardRarity.Un
         var attacks = CardPile.GetCards(Owner, PileType.Hand)
             .Where(c => c != this && c.Type == CardType.Attack).ToList();
         if (attacks.Count == 0) return;
-        QueerMod.Queer(Owner.RunState.Rng.CombatCardGeneration.NextItem(attacks), Owner);
+        Queer.Apply(Owner.RunState.Rng.CombatCardGeneration.NextItem(attacks), Owner);
     }
 }
 
@@ -45,8 +45,8 @@ public sealed class KnifeBlock() : PrideCard(2, CardType.Skill, CardRarity.Uncom
 
     protected override void OnUpgrade() => DynamicVars["Per"].UpgradeValueBy(1m);
 
-    private int Count() => CardPile.GetCards(Owner, PileType.Hand)
-        .Count(c => c is IPride || QueerMod.IsQueer(c) || PrideEnchantment.IsFlag(c));
+    // THE ONE AXIS: enchanted cards in hand (Pride flags and queer cards are the same thing now).
+    private int Count() => CardPile.GetCards(Owner, PileType.Hand).Count(Queer.Is);
 
     protected override Task WhileFlown(PlayerChoiceContext choiceContext) => GainByCount();
     protected override Task OnSwung(PlayerChoiceContext choiceContext, CardPlay cardPlay) => GainByCount();

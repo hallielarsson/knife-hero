@@ -7,5 +7,9 @@
   "KNIFEHERO-SLAY.extraCardText": "Slay: end of turn, Doom a random enemy = your Pride cards in hand.",
   "KNIFEHERO-SHADY.title": "Shady",
   "KNIFEHERO-SHADY.description": "While this is in your hand, put a Shiv on top of your draw pile at the end of your turn. When you play this, draw a card.",
-  "KNIFEHERO-SHADY.extraCardText": "Shady: Shiv on top of your deck at end of turn while held; draw 1 when played."
+  "KNIFEHERO-SHADY.extraCardText": "Shady: Shiv on top of your deck at end of turn while held; draw 1 when played.",
+  "KNIFEHERO-THORNS.title": "Thorns",
+  "KNIFEHERO-THORNS.description": "When you play this card, gain {Amount} Thorns.",
+  "KNIFEHERO-CLONE.title": "Clone",
+  "KNIFEHERO-CLONE.description": "When you play this card, add a copy of it to your hand."
 }

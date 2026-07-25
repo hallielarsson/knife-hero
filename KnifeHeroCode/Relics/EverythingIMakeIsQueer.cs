@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using KnifeHero.KnifeHeroCode.Enchantments;
 using KnifeHero.KnifeHeroCode.Powers;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -54,7 +55,7 @@ public sealed class EverythingIMakeIsQueer : KnifeHeroRelic
     {
         if (_mintedThisTurn || creator != Owner || card.Type != CardType.Attack) return;
         _mintedThisTurn = true;
-        QueerMod.Queer(card, Owner);
+        Queer.Apply(card, Owner);
         Flash();
         await Task.CompletedTask;
     }
@@ -112,7 +113,7 @@ public sealed class EverythingIMakeIsQueer : KnifeHeroRelic
         if (draw.Count == 0) return;
 
         var rng = Owner.RunState.Rng.CombatCardGeneration;
-        QueerMod.Queer(rng.NextItem(draw), Owner);
+        Queer.Apply(rng.NextItem(draw), Owner);
         Flash();
     }
 }

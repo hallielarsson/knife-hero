@@ -25,8 +25,7 @@ public sealed class GayWrathPower : KnifeHeroPower
         IEnumerable<Creature> participants)
     {
         if (side != CombatSide.Player || !participants.Contains(Owner)) return;
-        int n = CardPile.GetCards(Owner.Player, PileType.Hand)
-            .Count(c => c is IPride || QueerMod.IsQueer(c) || Enchantments.PrideEnchantment.IsFlag(c));
+        int n = CardPile.GetCards(Owner.Player, PileType.Hand).Count(Enchantments.Queer.Is);
         if (n > 0) await PowerCmd.Apply<VigorPower>(choiceContext, Owner, Amount * n, Owner, null, false);
     }
 }
@@ -40,8 +39,7 @@ public sealed class SolidarityPower : KnifeHeroPower
     public override async Task AfterCardPlayed(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (cardPlay.Card.Owner != Owner.Player) return;
-        if (!(cardPlay.Card is IPride || QueerMod.IsQueer(cardPlay.Card)
-              || Enchantments.PrideEnchantment.IsFlag(cardPlay.Card))) return;
+        if (!Enchantments.Queer.Is(cardPlay.Card)) return;
         await CreatureCmd.GainBlock(Owner, new BlockVar(Amount, ValueProp.Move), null);
     }
 }
