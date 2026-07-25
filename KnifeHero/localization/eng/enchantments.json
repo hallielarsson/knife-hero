@@ -19,5 +19,9 @@
   "KNIFEHERO-WALLING.title": "Walling",
   "KNIFEHERO-WALLING.description": "While this is in your hand, at the end of your turn gain {Amount} Block for each enchanted card in your hand.",
   "KNIFEHERO-BI.title": "Bi",
-  "KNIFEHERO-BI.description": "While this is in your hand, at the end of your turn deal {Amount} damage twice and gain 1 Visibility."
+  "KNIFEHERO-BI.description": "While this is in your hand, at the end of your turn deal {Amount} damage twice and gain 1 Visibility.",
+  "KNIFEHERO-PARRY.title": "Parry",
+  "KNIFEHERO-PARRY.description": "While this is in your hand, HP loss is voided and banked as bonus damage on this card.",
+  "KNIFEHERO-REGENT.title": "Regent",
+  "KNIFEHERO-REGENT.description": "While this is in your hand, at the start of your turn deal {Amount} damage to a random enemy and gain {Amount} Block."
 }

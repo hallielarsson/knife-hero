@@ -38,9 +38,9 @@ public sealed class Stonewall() : KnifeHeroCard(2, CardType.Attack, CardRarity.U
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
 
-        int prides = (int)(Owner.Creature.Powers.FirstOrDefault(p => p is PridesPlayed)?.Amount ?? 0m);
-        if (prides > 0)
-            await DamageCmd.Attack(DynamicVars.Damage.BaseValue).WithHitCount(prides).FromCard(this)
+        int flags = CardPile.GetCards(Owner, PileType.Hand).Count(Enchantments.Queer.Is);
+        if (flags > 0)
+            await DamageCmd.Attack(DynamicVars.Damage.BaseValue).WithHitCount(flags).FromCard(this)
                 .Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
     }
 

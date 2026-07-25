@@ -282,3 +282,47 @@ public sealed class Bi : PrideEnchantment
         await PowerCmd.Apply<Visibility>(choiceContext, Card.Owner.Creature, 1m, Card.Owner.Creature, Card, false);
     }
 }
+
+/* PARRY — Dyke Pride's flag, the labrys. While held, HP loss is voided and banked as bonus damage on the
+   enchanted card; playing it cashes the banked damage. Wants you to be hit. (Stateful; persisted for
+   mid-combat saves.) */
+public sealed class Parry : PrideEnchantment
+{
+    protected override string? CustomIconPath => "parry.png".EnchantmentImagePath();
+    public override bool ShowAmount => false;
+
+    [SavedProperty(SerializationCondition.SaveIfNotTypeDefault)]
+    public int Banked { get; set; }
+
+    // While in hand, void HP loss to the owner and bank it.
+    public override decimal ModifyHpLostBeforeOsty(Creature target, decimal amount, ValueProp props,
+        Creature? dealer, CardModel? cardSource)
+    {
+        if (Card.Owner == null || Card.Pile?.Type != PileType.Hand || target != Card.Owner.Creature || amount <= 0m)
+            return amount;
+        Banked += (int)amount;
+        return 0m;
+    }
+
+    // The blade cashes what it drank.
+    public override decimal EnchantDamageAdditive(decimal originalDamage, ValueProp props) =>
+        props.IsPoweredAttack() ? Banked : 0m;
+}
+
+/* REGENT — Regent Pride's flag, rare. While held, at the start of your turn deal {Amount} damage to a
+   random enemy and gain {Amount} Block. The court in session, every turn. */
+public sealed class Regent : PrideEnchantment
+{
+    protected override string? CustomIconPath => "regent.png".EnchantmentImagePath();
+    public override bool ShowAmount => true;
+
+    public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
+    {
+        if (Card.Owner == null || player != Card.Owner || Card.Pile?.Type != PileType.Hand) return;
+        var enemy = Card.Owner.Creature.CombatState?.HittableEnemies.FirstOrDefault();
+        if (enemy != null)
+            await DamageCmd.Attack(Amount).FromCard(Card).Targeting(enemy)
+                .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+        await CreatureCmd.GainBlock(Card.Owner.Creature, new BlockVar(Amount, ValueProp.Move), null);
+    }
+}

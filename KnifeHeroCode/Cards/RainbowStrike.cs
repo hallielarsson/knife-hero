@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BaseLib.Abstracts;
 using KnifeHero.KnifeHeroCode.Character;
+using KnifeHero.KnifeHeroCode.Enchantments;
 using KnifeHero.KnifeHeroCode.Extensions;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -29,7 +30,7 @@ public sealed class RainbowStrike() : KnifeHeroCard(1, CardType.Attack, CardRari
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
-        int prides = CardPile.GetCards(Owner, PileType.Hand).Count(c => c is IPride);
+        int prides = CardPile.GetCards(Owner, PileType.Hand).Count(c => Queer.Is(c));
         await DamageCmd.Attack(DynamicVars["Per"].BaseValue * prides).FromCard(this)
             .Targeting(cardPlay.Target).WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
     }
@@ -49,7 +50,7 @@ public sealed class RainbowMatador() : KnifeHeroCard(1, CardType.Skill, CardRari
     {
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
 
-        var pride = CardPile.GetCards(Owner, PileType.Discard).FirstOrDefault(c => c is IPride);
+        var pride = CardPile.GetCards(Owner, PileType.Discard).FirstOrDefault(c => Queer.Is(c));
         if (pride != null) await CardPileCmd.Add(pride, PileType.Hand);
     }
 }
