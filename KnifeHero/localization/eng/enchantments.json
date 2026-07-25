@@ -11,5 +11,13 @@
   "KNIFEHERO-THORNS.title": "Thorns",
   "KNIFEHERO-THORNS.description": "When you play this card, gain {Amount} Thorns.",
   "KNIFEHERO-CLONE.title": "Clone",
-  "KNIFEHERO-CLONE.description": "When you play this card, add a copy of it to your hand."
+  "KNIFEHERO-CLONE.description": "When you play this card, add a copy of it to your hand.",
+  "KNIFEHERO-TOP.title": "Top",
+  "KNIFEHERO-TOP.description": "While this is in your hand, gain {Amount} Vigor at the end of your turn.",
+  "KNIFEHERO-BOTTOM.title": "Bottom",
+  "KNIFEHERO-BOTTOM.description": "While this is in your hand, gain {Amount} Block at the end of your turn.",
+  "KNIFEHERO-WALLING.title": "Walling",
+  "KNIFEHERO-WALLING.description": "While this is in your hand, at the end of your turn gain {Amount} Block for each enchanted card in your hand.",
+  "KNIFEHERO-BI.title": "Bi",
+  "KNIFEHERO-BI.description": "While this is in your hand, at the end of your turn deal {Amount} damage twice and gain 1 Visibility."
 }

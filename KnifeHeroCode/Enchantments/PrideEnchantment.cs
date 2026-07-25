@@ -12,6 +12,7 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
+using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Saves.Runs;
@@ -210,5 +211,74 @@ public sealed class Shady : PrideEnchantment
     {
         if (Card.Owner == null) return;
         await CardPileCmd.Draw(choiceContext, 1m, Card.Owner);
+    }
+}
+
+/* TOP — Top Chop's flag. While held, gain {Amount} Vigor at end of turn. The Gay Blade's top lean:
+   offense that sharpens the next swing. (Stabby applies this when it digests a Strike.) */
+public sealed class Top : PrideEnchantment
+{
+    protected override string? CustomIconPath => "top.png".EnchantmentImagePath();
+    public override bool ShowAmount => true;
+    protected override IEnumerable<IHoverTip> FlagTips =>
+        new List<IHoverTip> { HoverTipFactory.FromPower<VigorPower>() };
+
+    public override async Task BeforeSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side,
+        IEnumerable<Creature> participants)
+    {
+        if (!FlyingInHand(side)) return;
+        await PowerCmd.Apply<VigorPower>(choiceContext, Card.Owner!.Creature, Amount, Card.Owner.Creature, Card, false);
+    }
+}
+
+/* BOTTOM — Bottom Blade's flag. While held, gain {Amount} Block at end of turn. The bottom lean:
+   the wall. (Stabby applies this when it digests a Defend.) */
+public sealed class Bottom : PrideEnchantment
+{
+    protected override string? CustomIconPath => "bottom.png".EnchantmentImagePath();
+    public override bool ShowAmount => true;
+
+    public override async Task BeforeSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side,
+        IEnumerable<Creature> participants)
+    {
+        if (!FlyingInHand(side)) return;
+        await CreatureCmd.GainBlock(Card.Owner!.Creature, new BlockVar(Amount, ValueProp.Move), null);
+    }
+}
+
+/* WALLING — Knife Block's flag. While held, at end of turn gain {Amount} Block per enchanted card in your
+   hand (this one counts). The go-wide payoff: the more of your hand is flags, the higher the wall. */
+public sealed class Walling : PrideEnchantment
+{
+    protected override string? CustomIconPath => "walling.png".EnchantmentImagePath();
+    public override bool ShowAmount => true;
+
+    public override async Task BeforeSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side,
+        IEnumerable<Creature> participants)
+    {
+        if (!FlyingInHand(side)) return;
+        int flags = CardPile.GetCards(Card.Owner!, PileType.Hand).Count(Queer.Is);
+        if (flags <= 0) return;
+        await CreatureCmd.GainBlock(Card.Owner.Creature, new BlockVar(Amount * flags, ValueProp.Move), null);
+    }
+}
+
+/* BI — Finger Guns' flag (Bisexual Pride). While held, at end of turn deal {Amount} damage twice and gain
+   1 Visibility. (No "lose all Stealth" gloss — attacking implies it.) Both hands, pointed outward. */
+public sealed class Bi : PrideEnchantment
+{
+    protected override string? CustomIconPath => "bi.png".EnchantmentImagePath();
+    public override bool ShowAmount => true;
+
+    public override async Task BeforeSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side,
+        IEnumerable<Creature> participants)
+    {
+        if (!FlyingInHand(side)) return;
+        var combat = Card.Owner!.Creature.CombatState;
+        var enemy = combat?.HittableEnemies.FirstOrDefault();
+        if (enemy == null) return;
+        await DamageCmd.Attack(Amount).WithHitCount(2).FromCard(Card).Targeting(enemy)
+            .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+        await PowerCmd.Apply<Visibility>(choiceContext, Card.Owner.Creature, 1m, Card.Owner.Creature, Card, false);
     }
 }

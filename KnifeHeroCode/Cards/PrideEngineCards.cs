@@ -33,30 +33,21 @@ public sealed class GayParris() : KnifeHeroCard(1, CardType.Skill, CardRarity.Un
     }
 }
 
-/* KNIFE BLOCK — ⟨2⟩ Pride. Gain {Per} Block per Pride or Queer card in your hand.
-   The in-hand payoff (opposite Stonewall's played-count): swing it for the block now, or hold it and
-   wall up every turn. Counts itself while held. */
-public sealed class KnifeBlock() : PrideCard(2, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
+/* KNIFE BLOCK — ⟨1⟩ Power. Enchant an Attack with Walling: while it's in your hand, at end of turn gain
+   2 Block per enchanted card in your hand. Upgraded: the enchanted Attack also gains Retain.
+   (2.0: converted from the held/swung Pride to the enchant frame — see PrideEnchantment.cs, Walling.) */
+public sealed class KnifeBlock() : KnifeHeroCard(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
 {
-    public override bool GainsBlock => true;
+    public override int MaxUpgradeLevel => 1;
+    protected override void OnUpgrade() { }
 
-    protected override IEnumerable<DynamicVar> CanonicalVars =>
-        new List<DynamicVar> { new IntVar("Per", 2m) };
+    protected override bool IsPlayable => PrideEnchantment.HasEnchantableAttack(Owner, this);
 
-    protected override void OnUpgrade() => DynamicVars["Per"].UpgradeValueBy(1m);
-
-    // THE ONE AXIS: enchanted cards in hand (Pride flags and queer cards are the same thing now).
-    private int Count() => CardPile.GetCards(Owner, PileType.Hand).Count(Queer.Is);
-
-    protected override Task WhileFlown(PlayerChoiceContext choiceContext) => GainByCount();
-    protected override Task OnSwung(PlayerChoiceContext choiceContext, CardPlay cardPlay) => GainByCount();
-
-    private async Task GainByCount()
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        int n = Count();
-        if (n <= 0) return;
-        await CreatureCmd.GainBlock(Owner.Creature,
-            new BlockVar((int)DynamicVars["Per"].BaseValue * n, ValueProp.Move), null);
+        var chosen = await PrideEnchantment.ChooseAttack(choiceContext, Owner, this);
+        if (chosen == null) return;
+        PrideEnchantment.Bestow<Walling>(chosen, 2m, IsUpgraded);
     }
 }
 
