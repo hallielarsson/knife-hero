@@ -25,13 +25,12 @@ namespace KnifeHero.KnifeHeroCode.Powers;
 
    All numbers below are // PROPOSAL — set to be *playable*, not final. Tune by feel. */
 
-/* Poison Coating — every shiv you play lays Poison on its target. PERMANENT.
+/* Poison Coating — THIS TURN, every shiv you play lays Poison on its target.
 
-   BUG (Hallie, 2026-07-12: "poison coating was doing nothing") — and she's right, it was structurally
-   dead. It used to strip itself at end of turn ("this turn, every shiv..."), but every shiv generator in
-   the deck puts shivs in your DISCARD, not your hand. So the turn you played Poison Coating there was
-   almost never a shiv available to coat, and by the time you drew one the buff was gone.
-   Fixed by making it a real Power: coat the knives once, and they stay coated. */
+   History: it was briefly made permanent (2026-07-12) because shiv generators put shivs in your DISCARD,
+   so "this turn" often found nothing to coat. Hallie reverted it to this-turn (2026-07-24) — the deck now
+   feeds shivs into hand / on top of draw (Shady, Smoke Bomb, Shiv Magnet), so a turn actually has knives
+   to coat, and a permanent poison-per-shiv was too strong left on. Strips itself at end of turn. */
 public sealed class PoisonCoatingPower : KnifeHeroPower
 {
     // ART NOTE for the Art Mapper: no poison_coating_power.png yet — fall back to the generic
@@ -58,6 +57,12 @@ public sealed class PoisonCoatingPower : KnifeHeroPower
         await PowerCmd.Apply<PoisonPower>(choiceContext, target, Amount, Owner, null, false);
     }
 
+    // THIS TURN only — strip at end of your turn (cf. Explosive Tip).
+    public override async Task AfterSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side,
+        System.Collections.Generic.IEnumerable<Creature> participants)
+    {
+        if (side == CombatSide.Player) await PowerCmd.Remove(this);
+    }
 }
 
 /* Explosive Tip — this turn, the shivs you play hit ALL enemies and Exhaust.

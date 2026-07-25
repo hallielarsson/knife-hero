@@ -1,8 +1,8 @@
 namespace KnifeHero.KnifeHeroCode.Cards;
 
 /* Blade — a marker classifier for the knife cards. Does NOTHING on its own; it exists purely so
-   other cards can key off "is this a Blade?" (Portal to the Knife Dimension copies a Blade; future
-   blade-synergy cards can read it too).
+   other cards can key off "is this a Blade?" (blade-synergy cards read it — e.g. effects that copy or
+   tutor a Blade from your deck).
 
    Why an interface and not a keyword/tag: Hallie asked for "a keyword à la Ethereal that we can key
    off of." The engine won't allow it — CardTag (None/Strike/Defend/Minion/OstyAttack/Shiv) and
