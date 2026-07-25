@@ -1,13 +1,10 @@
 {
   "KNIFEHERO-PROUD.title": "Proud",
   "KNIFEHERO-PROUD.description": "Deals bonus damage equal to your Visibility. While this is in your hand, gain {Amount} Visibility at the end of your turn.",
-  "KNIFEHERO-PROUD.extraCardText": "Proud: +Visibility damage; +{Amount} Visibility at end of turn while held.",
   "KNIFEHERO-SLAY.title": "Slay",
   "KNIFEHERO-SLAY.description": "While this is in your hand, at the end of your turn apply Doom to a random enemy equal to the number of Pride cards in your hand.",
-  "KNIFEHERO-SLAY.extraCardText": "Slay: end of turn, Doom a random enemy = your Pride cards in hand.",
   "KNIFEHERO-SHADY.title": "Shady",
   "KNIFEHERO-SHADY.description": "While this is in your hand, put a Shiv on top of your draw pile at the end of your turn. When you play this, draw a card.",
-  "KNIFEHERO-SHADY.extraCardText": "Shady: Shiv on top of your deck at end of turn while held; draw 1 when played.",
   "KNIFEHERO-THORNS.title": "Thorns",
   "KNIFEHERO-THORNS.description": "When you play this card, gain {Amount} Thorns.",
   "KNIFEHERO-CLONE.title": "Clone",
