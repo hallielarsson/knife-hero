@@ -106,6 +106,45 @@ public sealed class MendedGut() : CreatureCard(1, CardType.Skill, CardRarity.Tok
 }
 
 
+/* THE HIP — mend for 3 Lessons (a whole limb, like the Leg). Gray1244: hip & gluteal region. */
+public sealed class TheHip() : PartCard(0, CardType.Curse, CardRarity.Curse, TargetType.Self)
+{
+    public override string PortraitPath => "the_hip.png".CardImagePath();
+    public override string CustomPortraitPath => "the_hip.png".BigCardImagePath();
+
+    protected override int LessonsToMend => 3;
+    protected override CardModel Mended() => CombatState.CreateCard<MendedHip>(Owner);
+}
+
+/* MENDED HIP — deal 4 damage for each part of you that is whole.
+
+   DECIDED (bro, design owner, 2026-07-24): the offensive mended limb. The hip & gluteal region is the
+   body's seat of locomotive power — the largest muscles, the thrust that drives a blow — so a body made
+   more whole strikes harder. It fills the one gap in the mended-limb suite: throat gives Lessons, leg
+   gives Block, gut heals, Mended Heart hits FLAT — nothing converts Wholeness into damage. This does, so
+   it is the Tender's compounding kill-button: the reward for mending many parts is finally a threat, not
+   just durability. Answers BLUE_SKY.md's open "each limb should do something the organ would do."
+   The 4-per-Wholeness is a starting number; Hallie mints the final. */
+public sealed class MendedHip() : CreatureCard(1, CardType.Attack, CardRarity.Token, TargetType.AnyEnemy), IMendedPart
+{
+    public override string PortraitPath => "the_hip.png".CardImagePath();
+    public override string CustomPortraitPath => "the_hip.png".BigCardImagePath();
+
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new List<DynamicVar> { new DamageVar(4m, ValueProp.Move) };
+
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
+        int whole = Math.Max(1, (int)(Owner.Creature.GetPower<Wholeness>()?.Amount ?? 0m));
+        await DamageCmd.Attack(DynamicVars.Damage.BaseValue * whole).FromCard(this).Targeting(cardPlay.Target)
+            .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+    }
+
+    protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(2m);
+}
+
+
 /* LET IT ROT — ⟨0⟩ Skill, Exhaust. Fester an unmended Part in your hand immediately. Gain 2 Lessons.
    The only way to choose to scar. Costs 0 because the cost is the organ, not the energy. */
 public sealed class LetItRot() : CreatureCard(0, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
