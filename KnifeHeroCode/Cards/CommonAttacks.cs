@@ -64,8 +64,8 @@ public sealed class ChillTouch() : KnifeHeroCard(1, CardType.Attack, CardRarity.
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue).FromCard(this).Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
 
-        var visibility = Owner.Creature.GetPower<Visibility>();
-        if (visibility != null) await PowerCmd.ModifyAmount(choiceContext, visibility, -1m, Owner.Creature, this);
+        var vis = CardPile.GetCards(Owner, PileType.Hand).OfType<Visibility>().FirstOrDefault();
+        if (vis != null) await CardCmd.Exhaust(choiceContext, vis, causedByEthereal: false);   // cool down: -1 Visibility
     }
 }
 
@@ -85,12 +85,12 @@ public sealed class DashingStrike() : KnifeHeroCard(1, CardType.Attack, CardRari
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target, "cardPlay.Target");
-        decimal visibility = Owner.Creature.GetPower<Visibility>()?.Amount ?? 0m;
+        decimal visibility = Visibility.CountInHand(Owner);
 
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue + visibility).FromCard(this).Targeting(cardPlay.Target)
             .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
 
-        await PowerCmd.Apply<Visibility>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
+        await Visibility.Add(choiceContext, Owner, 1, PileType.Hand);   // chosen → to hand (climb the spiral)
     }
 }
 

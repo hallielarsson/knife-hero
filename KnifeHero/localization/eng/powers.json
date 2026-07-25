@@ -91,5 +91,8 @@
   "KNIFEHERO-KNIFE_TO_MEET_U_POWER.smartDescription": "When you draw a Shiv, draw a card.",
   "KNIFEHERO-GLOW_UP_POWER.title": "Glow Up",
   "KNIFEHERO-GLOW_UP_POWER.description": "Whenever you play an enchanted card, upgrade it.",
-  "KNIFEHERO-GLOW_UP_POWER.smartDescription": "Whenever you play an enchanted card, upgrade it."
+  "KNIFEHERO-GLOW_UP_POWER.smartDescription": "Whenever you play an enchanted card, upgrade it.",
+  "KNIFEHERO-HONEYPOT_POWER.title": "Honeypot",
+  "KNIFEHERO-HONEYPOT_POWER.description": "Whenever you play a Visibility, gain {Amount} Thorns and Exhaust it.",
+  "KNIFEHERO-HONEYPOT_POWER.smartDescription": "Whenever you play a Visibility, gain {Amount} Thorns and Exhaust it."
 }

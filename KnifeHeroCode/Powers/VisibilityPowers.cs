@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models.Cards;
+using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
 
 namespace KnifeHero.KnifeHeroCode.Powers;
@@ -67,6 +68,23 @@ public sealed class DeadNamePower : KnifeHeroPower
     {
         var dazed = Owner.CombatState.CreateCard<Dazed>(Owner.Player);
         await CardPileCmd.AddGeneratedCardToCombat(dazed, PileType.Discard, Owner.Player);
+    }
+}
+
+/* HONEYPOT — whenever you play a Visibility card, gain `Amount` Thorns AND Exhaust it. With Honeypot out,
+   Visibility stops being baggage and becomes a resource: you spend the cards you were found for on armor.
+   (Hallie, 2026-07-25.) */
+public sealed class HoneypotPower : KnifeHeroPower
+{
+    public override PowerType Type => PowerType.Buff;
+    public override PowerStackType StackType => PowerStackType.Counter;
+
+    public override async Task AfterCardPlayed(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        if (cardPlay.Card.Owner != Owner.Player) return;
+        if (cardPlay.Card is not KnifeHero.KnifeHeroCode.Cards.Visibility) return;
+        await PowerCmd.Apply<ThornsPower>(choiceContext, Owner, Amount, Owner, null, false);
+        await CardCmd.Exhaust(choiceContext, cardPlay.Card, causedByEthereal: false);
     }
 }
 

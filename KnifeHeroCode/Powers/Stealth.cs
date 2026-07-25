@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using KnifeHero.KnifeHeroCode.Cards;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -29,20 +30,13 @@ namespace KnifeHero.KnifeHeroCode.Powers;
    ⚠ ModifyDamageCap and AfterDamageReceived are separate engine passes — the first sizes the hit, the
    second reads what happened. Visibility can enlarge a hit AND strip Stealth in the same swing, no special
    handling needed. */
-public sealed class Visibility : KnifeHeroPower
-{
-    public override PowerType Type => PowerType.Debuff;
-    public override PowerStackType StackType => PowerStackType.Counter;
-
-    // No behaviour of its own — Stealth reads it. Its own power so the player can see the clock.
-}
-
 public sealed class Stealth : KnifeHeroPower
 {
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
 
-    private int VisibilityAmount => (int)(Owner?.GetPower<Visibility>()?.Amount ?? 0m);
+    // Visibility is a status CARD now (Cards/Visibility.cs). "How visible you are" = the ones in your hand.
+    private int VisibilityAmount => Owner != null ? Visibility.CountInHand(Owner.Player) : 0;
 
     // The cap displays as a live number rather than "1 plus your Visibility".
     protected override IEnumerable<DynamicVar> CanonicalVars =>
@@ -81,7 +75,7 @@ public sealed class Stealth : KnifeHeroPower
 
         var deadName = Owner.GetPower<DeadNamePower>();
         if (deadName != null) await deadName.RefuseTheName();
-        else await PowerCmd.Apply<Visibility>(choiceContext, Owner, 1m, Owner, null, false);
+        else await Visibility.Add(choiceContext, Owner.Player, 1, PileType.Draw);   // found → looms in your draw
 
         await PowerCmd.Remove(this);
     }
@@ -99,17 +93,15 @@ public sealed class Stealth : KnifeHeroPower
         {
             var deadName = Owner.GetPower<DeadNamePower>();
             if (deadName != null) await deadName.RefuseTheName();
-            else await PowerCmd.Apply<Visibility>(choiceContext, Owner, 1m, Owner, null, false);
+            else await Visibility.Add(choiceContext, Owner.Player, 1, PileType.Draw);   // found → looms in your draw
 
             await PowerCmd.Remove(this);
             return;
         }
 
-        // Blocked, but they're getting warmer: a hit costs you Visibility stacks of cover even when Block ate
-        // it completely. At Visibility 0 being swung at is free.
-        int visibility = VisibilityAmount;
-        if (visibility > 0)
-            await PowerCmd.ModifyAmount(choiceContext, this, -visibility, Owner, null);
+        // Blocked → nothing happens. (The old "getting warmer" rule — a blocked hit strips Visibility-many
+        // Stealth — was cut with the Visibility-as-card rework, 2026-07-25: the new pressure is the
+        // draw-a-Visibility-lose-a-Stealth loop. If the clock needs more teeth in play, bring it back.)
     }
 
     /* Lose 1 Stealth at end of the ENEMY turn. ⚠ BALANCE: without this the bank has no leak — every other

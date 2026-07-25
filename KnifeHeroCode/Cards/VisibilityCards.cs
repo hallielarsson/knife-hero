@@ -21,30 +21,35 @@ namespace KnifeHero.KnifeHeroCode.Cards;
 public sealed class Honeypot() : KnifeHeroCard(2, CardType.Power, CardRarity.Uncommon, TargetType.Self)
 {
     protected override IEnumerable<DynamicVar> CanonicalVars =>
-        new List<DynamicVar> { new IntVar("Bonus", 2m) };
+        new List<DynamicVar> { new IntVar("Thorns", 1m) };
 
-    protected override void OnUpgrade() => DynamicVars["Bonus"].UpgradeValueBy(2m);
+    public override int MaxUpgradeLevel => 1;
+    protected override void OnUpgrade() => DynamicVars["Thorns"].UpgradeValueBy(1m);   // 1 -> 2
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        int visibility = (int)(Owner.Creature.GetPower<Visibility>()?.Amount ?? 0m);
-        await PowerCmd.Apply<ThornsPower>(choiceContext, Owner.Creature,
-            visibility + DynamicVars["Bonus"].BaseValue, Owner.Creature, this, false);
+        await PowerCmd.Apply<HoneypotPower>(choiceContext, Owner.Creature, DynamicVars["Thorns"].BaseValue,
+            Owner.Creature, this, false);
     }
 }
 
-/* SMOKE BOMB — ⟨2⟩ Skill, Exhaust. Lose all Visibility. Upgrade: no Exhaust. */
-public sealed class SmokeBomb() : KnifeHeroCard(2, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
+/* SMOKE BOMB — ⟨3⟩ (⟨2⟩ upgraded) Skill, Rare, Exhaust. Exhaust EVERY status card in your whole deck —
+   hand, draw, AND discard. A one-shot cleanse, and unique: nothing else in the deck reaches your whole
+   deck like this. Works on any Status, not just Visibility. */
+public sealed class SmokeBomb() : KnifeHeroCard(3, CardType.Skill, CardRarity.Rare, TargetType.Self)
 {
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
-        IsUpgraded ? new List<CardKeyword>() : new List<CardKeyword> { CardKeyword.Exhaust };
+        new List<CardKeyword> { CardKeyword.Exhaust };   // a one-shot sweep
 
     public override int MaxUpgradeLevel => 1;
+    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);   // 3 -> 2
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        var visibility = Owner.Creature.GetPower<Visibility>();
-        if (visibility != null) await PowerCmd.Remove(visibility);
+        var statuses = CardPile.GetCards(Owner, PileType.Hand, PileType.Draw, PileType.Discard)
+            .Where(c => c.Type == CardType.Status && c != this).ToList();
+        foreach (var s in statuses)
+            await CardCmd.Exhaust(choiceContext, s, causedByEthereal: false);
     }
 }
 
@@ -61,8 +66,8 @@ public sealed class ShadowDodge() : KnifeHeroCard(1, CardType.Skill, CardRarity.
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
-        var visibility = Owner.Creature.GetPower<Visibility>();
-        if (visibility != null) await PowerCmd.ModifyAmount(choiceContext, visibility, -1m, Owner.Creature, this);
+        var status = CardPile.GetCards(Owner, PileType.Hand).FirstOrDefault(c => c.Type == CardType.Status && c != this);
+        if (status != null) await CardCmd.Exhaust(choiceContext, status, causedByEthereal: false);
     }
 }
 
@@ -163,8 +168,7 @@ public sealed class IntoTheStreets() : KnifeHeroCard(1, CardType.Skill, CardRari
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
-        await PowerCmd.Apply<Visibility>(choiceContext, Owner.Creature, DynamicVars["Vis"].BaseValue,
-            Owner.Creature, this, false);
+        await Visibility.Add(choiceContext, Owner, (int)DynamicVars["Vis"].BaseValue, PileType.Hand);   // chosen → hand
     }
 }
 

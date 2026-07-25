@@ -148,15 +148,14 @@ public sealed class Proud : PrideEnchantment
     public override decimal EnchantDamageAdditive(decimal originalDamage, ValueProp props)
     {
         if (!props.IsPoweredAttack()) return 0m;
-        return Card.Owner?.Creature.GetPower<Visibility>()?.Amount ?? 0m;
+        return Card.Owner != null ? Cards.Visibility.CountInHand(Card.Owner) : 0m;
     }
 
     public override async Task BeforeSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side,
         IEnumerable<Creature> participants)
     {
         if (!FlyingInHand(side)) return;
-        await PowerCmd.Apply<Visibility>(choiceContext, Card.Owner!.Creature, Amount,
-            Card.Owner.Creature, Card, false);
+        await Cards.Visibility.Add(choiceContext, Card.Owner!, Amount, PileType.Hand);   // chosen → to hand
     }
 }
 
@@ -291,7 +290,7 @@ public sealed class Bi : PrideEnchantment
         if (enemy == null) return;
         await DamageCmd.Attack(Amount).WithHitCount(2).FromCard(Card).Targeting(enemy)
             .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
-        await PowerCmd.Apply<Visibility>(choiceContext, Card.Owner.Creature, 1m, Card.Owner.Creature, Card, false);
+        await Cards.Visibility.Add(choiceContext, Card.Owner, 1, PileType.Hand);   // chosen → to hand
     }
 }
 
