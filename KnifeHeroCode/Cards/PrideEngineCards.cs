@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using KnifeHero.KnifeHeroCode.Enchantments;
 using KnifeHero.KnifeHeroCode.Powers;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -45,7 +46,7 @@ public sealed class KnifeBlock() : PrideCard(2, CardType.Skill, CardRarity.Uncom
     protected override void OnUpgrade() => DynamicVars["Per"].UpgradeValueBy(1m);
 
     private int Count() => CardPile.GetCards(Owner, PileType.Hand)
-        .Count(c => c is IPride || QueerMod.IsQueer(c));
+        .Count(c => c is IPride || QueerMod.IsQueer(c) || PrideEnchantment.IsFlag(c));
 
     protected override Task WhileFlown(PlayerChoiceContext choiceContext) => GainByCount();
     protected override Task OnSwung(PlayerChoiceContext choiceContext, CardPlay cardPlay) => GainByCount();
@@ -102,5 +103,15 @@ public sealed class KnifeToMeetU() : KnifeHeroCard(2, CardType.Power, CardRarity
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await PowerCmd.Apply<KnifeToMeetUPower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
+    }
+}
+
+/* GLOW UP — ⟨1⟩ Power. Whenever you play an enchanted card, upgrade it. The flag build's scaling engine:
+   fly a flag on a Strike and every replay levels it. See GlowUpPower. */
+public sealed class GlowUp() : KnifeHeroCard(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
+{
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        await PowerCmd.Apply<GlowUpPower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
     }
 }

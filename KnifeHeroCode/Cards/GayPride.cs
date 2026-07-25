@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using KnifeHero.KnifeHeroCode.Powers;
+using KnifeHero.KnifeHeroCode.Enchantments;
+using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -9,34 +11,40 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace KnifeHero.KnifeHeroCode.Cards;
 
-/* GAY PRIDE — ⟨2⟩ (⟨1⟩ upgraded) Attack. Retain. A Pride.
-     HELD:  gain 1 Visibility at end of turn.
-     SWUNG: deal damage equal to your Visibility to ALL enemies.
+/* GAY PRIDE — ⟨1⟩ Skill. Enchant an Attack in your hand with Proud: while it's in your hand, gain
+   {Visibility} Visibility at the end of your turn. Upgraded: the enchanted Attack also gains Retain, so
+   the flag stays in your hand and flies every turn.
 
-   The Visibility payoff. Every other card treats Visibility as a countdown to being found; this one is the reason to
-   let it climb. Fly it and it makes you louder every turn; swing it and every point of that noise lands
-   on everything in the room.
+   ── THE 2.0 SHAPE (Hallie, 2026-07-24) ──────────────────────────────────────────────────────────────
+   A Pride is no longer a two-state held/swung card (see the retired PrideCard framework). It hands its
+   held effect to another card as an ENCHANTMENT and leaves. Proud is Gay Pride's old HELD clause,
+   verbatim. Playing it on an Attack is the whole card.
 
-   ⚠ The held effect grants Visibility via PowerCmd directly and NOT through Stealth's found-you path, so
-   DeadNamePower does NOT intercept it. That's deliberate: Dead Name refuses the visibility of being *found*,
-   and this is visibility you chose. See Stealth.cs — the two interception points there are the only ones. */
-public sealed class GayPride() : PrideCard(2, CardType.Attack, CardRarity.Uncommon, TargetType.AllEnemies)
+   Why this is better: the effect rides ON the target card with native UI — an icon, a hover tip, the
+   text on the face — so the learning curve is atomic (you learn "Proud = bolt this onto a card" once).
+   And it's HAND-ONLY and unplayable with no Attack in hand, which is the fun: sometimes you fly the flag
+   on a sub-optimal blade, because that's what you're holding. See PrideEnchantment.cs.
+
+   ⚠ Proud grants Visibility via PowerCmd directly, NOT through Stealth's found-you path, so DeadNamePower
+   does NOT intercept it — visibility you chose, not visibility of being found. (Preserved from 1.0.) */
+public sealed class GayPride() : KnifeHeroCard(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
 {
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        new List<DynamicVar> { new IntVar("Visibility", 1m) };
+
     public override int MaxUpgradeLevel => 1;
 
-    protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
+    // The upgrade IS the Retain grant (applied in OnPlay via GrantsRetain); Visibility-per-turn stays 1.
+    protected override void OnUpgrade() { }
 
-    protected override async Task WhileFlown(PlayerChoiceContext choiceContext)
+    // Unplayable unless you own an Attack to fly the flag on (hand, draw, or discard).
+    protected override bool IsPlayable => PrideEnchantment.HasEnchantableAttack(Owner, this);
+
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<Visibility>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
-    }
+        var chosen = await PrideEnchantment.ChooseAttack(choiceContext, Owner, this);
+        if (chosen == null) return;
 
-    protected override async Task OnSwung(PlayerChoiceContext choiceContext, CardPlay cardPlay)
-    {
-        decimal visibility = Owner.Creature.GetPower<Visibility>()?.Amount ?? 0m;
-        if (visibility <= 0m) return;
-
-        await DamageCmd.Attack(visibility).FromCard(this).TargetingAllOpponents(CombatState)
-            .WithHitFx("vfx/vfx_attack_slash").Execute(choiceContext);
+        PrideEnchantment.Bestow<Proud>(chosen, DynamicVars["Visibility"].BaseValue, IsUpgraded);
     }
 }

@@ -91,5 +91,8 @@
   "KNIFEHERO-SMOKE_KNIVES_POWER.smartDescription": "At the end of your turn, exhaust all Shivs in your hand and gain 1 Stealth for each.",
   "KNIFEHERO-KNIFE_TO_MEET_U_POWER.title": "Knife to Meet U",
   "KNIFEHERO-KNIFE_TO_MEET_U_POWER.description": "When you draw a Shiv, draw a card.",
-  "KNIFEHERO-KNIFE_TO_MEET_U_POWER.smartDescription": "When you draw a Shiv, draw a card."
+  "KNIFEHERO-KNIFE_TO_MEET_U_POWER.smartDescription": "When you draw a Shiv, draw a card.",
+  "KNIFEHERO-GLOW_UP_POWER.title": "Glow Up",
+  "KNIFEHERO-GLOW_UP_POWER.description": "Whenever you play an enchanted card, upgrade it.",
+  "KNIFEHERO-GLOW_UP_POWER.smartDescription": "Whenever you play an enchanted card, upgrade it."
 }

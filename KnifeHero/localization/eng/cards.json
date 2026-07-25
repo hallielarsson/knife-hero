@@ -130,7 +130,7 @@
   "KNIFEHERO-DEAD_NAME.title": "Dead Name",
   "KNIFEHERO-DEAD_NAME.description": "Whenever you would gain Visibility, add a Dazed to your discard instead.",
   "KNIFEHERO-SILENT_PRIDE.title": "Silent Pride",
-  "KNIFEHERO-SILENT_PRIDE.description": "[color=#e40303]P[/color][color=#ff8c00]r[/color][color=#ffed00]i[/color][color=#008026]d[/color][color=#004dff]e[/color]\nRetained: at the start of your turn, add a Shiv to your hand.\nDeal {Damage} damage. Draw 1 card.",
+  "KNIFEHERO-SILENT_PRIDE.description": "Enchant an Attack you own with Shady: while in your hand, put a Shiv on top of your draw pile at end of turn; when you play it, draw a card.",
   "KNIFEHERO-IRONCLAD_PRIDE.title": "Ironclad Pride",
   "KNIFEHERO-IRONCLAD_PRIDE.description": "[color=#e40303]P[/color][color=#ff8c00]r[/color][color=#ffed00]i[/color][color=#008026]d[/color][color=#004dff]e[/color]\nDeal {Damage} damage. Apply {Vuln} Vulnerable.\nIn hand: at the end of your turn, deal {Burn} damage to a random enemy for each card you Exhausted.",
   "KNIFEHERO-WATCHER_PRIDE.title": "Watcher Pride",
@@ -170,5 +170,13 @@
   "KNIFEHERO-THE_APPETITE.title": "The Appetite",
   "KNIFEHERO-THE_APPETITE.description": "At the start of your turn, add a random Part to your hand.",
   "KNIFEHERO-GAY_PRIDE.title": "Gay Pride",
-  "KNIFEHERO-GAY_PRIDE.description": "[color=#e40303]P[/color][color=#ff8c00]r[/color][color=#ffed00]i[/color][color=#008026]d[/color][color=#004dff]e[/color]\nDeal damage equal to your Visibility to ALL enemies.\nRetained: gain 1 Visibility."
+  "KNIFEHERO-GAY_PRIDE.description": "[color=#e40303]P[/color][color=#ff8c00]r[/color][color=#ffed00]i[/color][color=#008026]d[/color][color=#004dff]e[/color]\nEnchant an Attack in your hand with Proud: it deals bonus damage equal to your Visibility, and gains {Visibility} Visibility at the end of your turn while held.",
+  "KNIFEHERO-NECROBINDER_PRIDE.title": "Necrobinder Pride",
+  "KNIFEHERO-NECROBINDER_PRIDE.description": "Enchant an Attack in your hand with Slay: at the end of your turn, apply Doom to a random enemy equal to your Pride cards in hand.",
+  "KNIFEHERO-THE_HIP.title": "The Hip",
+  "KNIFEHERO-THE_HIP.description": "A part of you that isn't yours yet. Requires 3 Lessons: mend it. If you hold it for 3 turns without mending it, it festers.",
+  "KNIFEHERO-MENDED_HIP.title": "Mended Hip",
+  "KNIFEHERO-MENDED_HIP.description": "Deal {Damage} damage for each part of you that is whole.",
+  "KNIFEHERO-GLOW_UP.title": "Glow Up",
+  "KNIFEHERO-GLOW_UP.description": "Whenever you play an enchanted card, upgrade it."
 }

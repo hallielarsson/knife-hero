@@ -25,7 +25,8 @@ public sealed class GayWrathPower : KnifeHeroPower
         IEnumerable<Creature> participants)
     {
         if (side != CombatSide.Player || !participants.Contains(Owner)) return;
-        int n = CardPile.GetCards(Owner.Player, PileType.Hand).Count(c => c is IPride || QueerMod.IsQueer(c));
+        int n = CardPile.GetCards(Owner.Player, PileType.Hand)
+            .Count(c => c is IPride || QueerMod.IsQueer(c) || Enchantments.PrideEnchantment.IsFlag(c));
         if (n > 0) await PowerCmd.Apply<VigorPower>(choiceContext, Owner, Amount * n, Owner, null, false);
     }
 }
@@ -39,7 +40,8 @@ public sealed class SolidarityPower : KnifeHeroPower
     public override async Task AfterCardPlayed(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         if (cardPlay.Card.Owner != Owner.Player) return;
-        if (!(cardPlay.Card is IPride || QueerMod.IsQueer(cardPlay.Card))) return;
+        if (!(cardPlay.Card is IPride || QueerMod.IsQueer(cardPlay.Card)
+              || Enchantments.PrideEnchantment.IsFlag(cardPlay.Card))) return;
         await CreatureCmd.GainBlock(Owner, new BlockVar(Amount, ValueProp.Move), null);
     }
 }
@@ -76,5 +78,26 @@ public sealed class KnifeToMeetUPower : KnifeHeroPower
     {
         if (card.Owner != Owner.Player || !card.Tags.Contains(CardTag.Shiv)) return;
         await CardPileCmd.Draw(choiceContext, 1m, Owner.Player);
+    }
+}
+
+/* GLOW UP — whenever you play an ENCHANTED card, upgrade it. Being a flag makes you level up: an enchanted
+   Strike you keep replaying climbs every time. (CardCmd.Enchant fires no hook, so we ride AfterCardPlayed
+   and check the card carried an enchantment. Upgrade MUTATES IN PLACE — unlike Transform it doesn't
+   replace the model, so doing it mid-resolve strands no Godot node.) */
+public sealed class GlowUpPower : KnifeHeroPower
+{
+    public override PowerType Type => PowerType.Buff;
+    public override PowerStackType StackType => PowerStackType.Single;
+
+    public override Task AfterCardPlayed(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        var card = cardPlay.Card;
+        if (card.Owner == Owner.Player && card.Enchantment != null && card.IsUpgradable)
+        {
+            Flash();
+            CardCmd.Upgrade(card);
+        }
+        return Task.CompletedTask;
     }
 }
