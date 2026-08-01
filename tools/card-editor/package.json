@@ -1,0 +1,9 @@
+{
+  "name": "knife-hero-card-editor",
+  "private": true,
+  "type": "module",
+  "description": "Local web app for browsing and editing KnifeHero/localization/eng/*.json",
+  "scripts": {
+    "start": "node --experimental-strip-types server.ts"
+  }
+}

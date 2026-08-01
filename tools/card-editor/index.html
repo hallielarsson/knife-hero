@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Knife Hero — card text</title>
+<style>
+  :root {
+    --bg: #16121a; --panel: #1f1926; --line: #362c40; --ink: #f2ecf5;
+    --dim: #a396b0; --accent: #ff5fa2; --ok: #6ee7a0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 15px/1.5 ui-sans-serif, system-ui, -apple-system, sans-serif;
+  }
+  header {
+    position: sticky; top: 0; z-index: 2; display: flex; gap: 12px; align-items: center;
+    flex-wrap: wrap; padding: 12px 20px; background: var(--panel); border-bottom: 1px solid var(--line);
+  }
+  h1 { font-size: 15px; margin: 0 8px 0 0; font-weight: 600; letter-spacing: .02em; }
+  h1 span { color: var(--accent); }
+  select, input, button {
+    font: inherit; color: var(--ink); background: var(--bg);
+    border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px;
+  }
+  input[type=search] { flex: 1; min-width: 180px; }
+  button { cursor: pointer; }
+  button.save { background: var(--accent); color: #23091a; border-color: var(--accent); font-weight: 600; }
+  button.save:disabled { background: var(--panel); color: var(--dim); border-color: var(--line); font-weight: 400; cursor: default; }
+  #status { color: var(--dim); font-size: 13px; min-width: 90px; }
+  #status.ok { color: var(--ok); }
+  main { padding: 20px; max-width: 900px; margin: 0 auto; display: grid; gap: 14px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+  .card.dirty { border-color: var(--accent); }
+  .id { font: 12px ui-monospace, monospace; color: var(--dim); margin-bottom: 10px; }
+  .field { display: grid; grid-template-columns: 120px 1fr; gap: 10px; align-items: start; margin-top: 8px; }
+  .field > label { color: var(--dim); font-size: 13px; padding-top: 8px; }
+  textarea {
+    width: 100%; resize: vertical; overflow: hidden; font: inherit; color: var(--ink);
+    background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 7px 9px;
+  }
+  textarea:focus { outline: none; border-color: var(--accent); }
+  .empty { color: var(--dim); text-align: center; padding: 40px; }
+  h2.deck {
+    margin: 18px 0 0; font-size: 13px; font-weight: 600; letter-spacing: .09em;
+    text-transform: uppercase; color: var(--accent);
+    border-bottom: 1px solid var(--line); padding-bottom: 8px;
+  }
+  h2.deck:first-child { margin-top: 0; }
+  h2.deck em { color: var(--dim); font-style: normal; font-weight: 400; letter-spacing: 0; text-transform: none; }
+
+  /* stats row — cost / rarity / base values / upgrade bumps, parsed out of the card's C# class */
+  .stats {
+    display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center;
+    margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line);
+  }
+  .stat { display: flex; align-items: center; gap: 6px; }
+  .stat > span { color: var(--dim); font-size: 12px; }
+  .stat input { width: 62px; padding: 4px 7px; text-align: center; }
+  .stat select { padding: 4px 7px; }
+  .stat.changed input, .stat.changed select { border-color: var(--accent); }
+  .ro { color: var(--dim); font-size: 12px; font-family: ui-monospace, monospace; }
+  .nosource { color: var(--dim); font-size: 12px; font-style: italic; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Knife Hero <span>card text</span></h1>
+  <select id="file"></select>
+  <select id="deck"></select>
+  <input id="q" type="search" placeholder="filter by id or text…" autocomplete="off">
+  <button class="save" id="save" disabled>Save</button>
+  <span id="status"></span>
+</header>
+<main id="list"></main>
+
+<script type="module">
+const $ = (id) => document.getElementById(id);
+const fileSel = $("file"), deckSel = $("deck"), q = $("q"), saveBtn = $("save"),
+      status = $("status"), list = $("list");
+
+/* THE DECKS. A card's deck is which base class it extends — the same split tools/cards.py uses for
+ * CARDS_IMPLEMENTED.md, so the editor and the generated doc can't disagree about what's in what.
+ * Loc entries with no class behind them land in "unmatched", which is itself useful: that bucket is
+ * exactly cards.py's "localization keys with no card class" integrity check, shown live. */
+const DECKS = {
+  KnifeHeroCard: "The Gay Blade",
+  CreatureCard: "The Creature",
+  PrideCard: "Prides",
+};
+const UNMATCHED = "Unmatched loc";
+const deckOf = (entry) => (entry.source ? DECKS[entry.source.base] ?? entry.source.base : UNMATCHED);
+
+let entries = [];          // [{ id, fields: { description: "…" }, source?: { cost, rarity, vars, … } }]
+let rarities = [];
+const dirty = new Map();   // "ID.field" -> new loc text, only what actually changed
+const statDirty = new Map(); // "Cls|kind|name" -> { cls, kind, name, value }, C# stat edits
+
+function setStatus(text, ok = false) {
+  status.textContent = text;
+  status.className = ok ? "ok" : "";
+}
+
+function markDirty() {
+  const n = dirty.size + statDirty.size;
+  saveBtn.disabled = n === 0;
+  setStatus(n ? `${n} unsaved` : "");
+}
+
+function cardIsDirty(id, cls) {
+  return [...dirty.keys()].some((k) => k.startsWith(id + ".")) ||
+         (!!cls && [...statDirty.values()].some((e) => e.cls === cls));
+}
+
+/* Auto-grow the textarea to fit its text — card descriptions are one to four lines and scrollbars
+ * inside a 3-line box make them miserable to read. */
+function fit(el) {
+  el.style.height = "auto";
+  el.style.height = el.scrollHeight + "px";
+}
+
+function render() {
+  const needle = q.value.trim().toLowerCase();
+  const deck = deckSel.value;
+  const shown = entries.filter((e) =>
+    (deck === "*" || deckOf(e) === deck) &&
+    (!needle ||
+     e.id.toLowerCase().includes(needle) ||
+     Object.values(e.fields).some((v) => v.toLowerCase().includes(needle))));
+
+  /* Group the decks together. The loc file is in authoring order, which interleaves decks, so
+   * without this each deck heading would reappear every time the file switched back. Sort is stable,
+   * so within a deck the cards stay in the order Hallie wrote them. */
+  const order = [...Object.values(DECKS), UNMATCHED];
+  const rank = (e) => { const i = order.indexOf(deckOf(e)); return i === -1 ? order.length : i; };
+  shown.sort((a, b) => rank(a) - rank(b));
+
+  list.replaceChildren();
+  const grow = [];   // fitted after everything is in the DOM — scrollHeight is 0 before layout
+  if (shown.length === 0) {
+    const p = document.createElement("p");
+    p.className = "empty";
+    p.textContent = "nothing matches.";
+    return void list.append(p);
+  }
+
+  let heading = null;
+  for (const entry of shown) {
+    // Entries arrive in file order; a deck heading goes in wherever the deck changes.
+    const thisDeck = deckOf(entry);
+    if (thisDeck !== heading) {
+      heading = thisDeck;
+      const h = document.createElement("h2");
+      h.className = "deck";
+      h.textContent = thisDeck;
+      const count = shown.filter((e) => deckOf(e) === thisDeck).length;
+      const em = document.createElement("em");
+      em.textContent = `  ${count} card${count === 1 ? "" : "s"}`;
+      h.append(em);
+      list.append(h);
+    }
+
+    const card = document.createElement("section");
+    card.className = "card";
+
+    const title = document.createElement("div");
+    title.className = "id";
+    title.textContent = entry.id;
+    card.append(title);
+
+    for (const [field, value] of Object.entries(entry.fields)) {
+      const key = field ? `${entry.id}.${field}` : entry.id;
+      const row = document.createElement("div");
+      row.className = "field";
+
+      const label = document.createElement("label");
+      label.textContent = field || "(value)";
+      const ta = document.createElement("textarea");
+      ta.rows = 1;   // fit() grows from here; a default rows=2 sets a floor it can never shrink under
+      ta.value = dirty.get(key) ?? value;
+      label.htmlFor = ta.id = `f:${key}`;
+
+      ta.addEventListener("input", () => {
+        // Typing a value back to its original un-dirties it, so Save only ever writes real changes.
+        if (ta.value === value) dirty.delete(key);
+        else dirty.set(key, ta.value);
+        card.classList.toggle("dirty", cardIsDirty(entry.id, entry.source?.cls));
+        fit(ta);
+        markDirty();
+      });
+
+      row.append(label, ta);
+      card.append(row);
+      grow.push(ta);
+    }
+
+    if (entry.source) card.append(statsRow(entry, card));
+    card.classList.toggle("dirty", cardIsDirty(entry.id, entry.source?.cls));
+    list.append(card);
+  }
+
+  for (const ta of grow) fit(ta);
+}
+
+/* The stats strip: cost and rarity from the class declaration, base values from CanonicalVars, and
+ * upgrade bumps from OnUpgrade. CardType and TargetType are shown read-only on purpose — the card's
+ * own OnPlay is written against them, so flipping an Attack to a Skill here would produce a card
+ * whose code and declaration disagree. That's a source edit, not a knob. */
+function statsRow(entry, card) {
+  const src = entry.source;
+  const wrap = document.createElement("div");
+  wrap.className = "stats";
+
+  const field = (labelText, kind, name, current, options) => {
+    const box = document.createElement("div");
+    box.className = "stat";
+    const lab = document.createElement("span");
+    lab.textContent = labelText;
+
+    let input;
+    if (options) {
+      input = document.createElement("select");
+      for (const o of options) {
+        const opt = document.createElement("option");
+        opt.value = opt.textContent = o;
+        input.append(opt);
+      }
+    } else {
+      input = document.createElement("input");
+      input.type = "number";
+      input.step = "1";
+    }
+
+    const key = `${src.cls}|${kind}|${name ?? ""}`;
+    input.value = statDirty.get(key)?.value ?? current;
+    input.addEventListener("change", () => {
+      if (input.value === current) statDirty.delete(key);
+      else statDirty.set(key, { cls: src.cls, kind, name, value: input.value });
+      box.classList.toggle("changed", statDirty.has(key));
+      card.classList.toggle("dirty", cardIsDirty(entry.id, src.cls));
+      markDirty();
+    });
+    box.classList.toggle("changed", statDirty.has(key));
+
+    box.append(lab, input);
+    return box;
+  };
+
+  wrap.append(field("cost", "cost", null, src.cost.value));
+  wrap.append(field("rarity", "rarity", null, src.rarity.value, rarities));
+  for (const v of src.vars) wrap.append(field(v.name, "var", v.name, v.value));
+  for (const u of src.upgrades) wrap.append(field(`+${u.name} on upgrade`, "upgrade", u.name, u.value));
+
+  const meta = document.createElement("span");
+  meta.className = "ro";
+  meta.textContent = `${src.type} · ${src.target} · ${src.file}`;
+  wrap.append(meta);
+  return wrap;
+}
+
+async function load(name) {
+  setStatus("loading…");
+  const res = await fetch(`/api/file?name=${encodeURIComponent(name)}`);
+  const data = await res.json();
+  if (!res.ok) return setStatus(data.error ?? "load failed");
+  entries = data.entries;
+  rarities = data.rarities ?? [];
+  dirty.clear();
+  statDirty.clear();
+  markDirty();
+
+  // Only offer decks this file actually contains — non-card loc files have none, so the picker
+  // collapses to just "all decks" rather than listing buckets that are always empty.
+  const present = [...new Set(entries.map(deckOf))]
+    .sort((a, b) => [...Object.values(DECKS), UNMATCHED].indexOf(a) - [...Object.values(DECKS), UNMATCHED].indexOf(b));
+  const keep = deckSel.value;
+  deckSel.replaceChildren();
+  for (const [value, text] of [["*", "all decks"], ...present.map((d) => [d, d])]) {
+    const opt = document.createElement("option");
+    opt.value = value;
+    opt.textContent = text;
+    deckSel.append(opt);
+  }
+  deckSel.value = present.includes(keep) ? keep : "*";
+
+  render();
+  const withStats = entries.filter((e) => e.source).length;
+  setStatus(`${entries.length} entries${withStats ? `, ${withStats} with stats` : ""}`);
+}
+
+saveBtn.addEventListener("click", async () => {
+  if (dirty.size + statDirty.size === 0) return;
+  setStatus("saving…");
+
+  // Loc text and C# stats are two different files on disk, so two calls. Text first: if the stat
+  // write fails validation, the text edit is still safely landed rather than lost.
+  let saved = 0;
+  if (dirty.size) {
+    const res = await fetch(`/api/file?name=${encodeURIComponent(fileSel.value)}`, {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(Object.fromEntries(dirty)),
+    });
+    const data = await res.json();
+    if (!res.ok) return setStatus(data.error ?? "save failed");
+    saved += data.saved;
+  }
+
+  if (statDirty.size) {
+    const res = await fetch("/api/stats", {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify([...statDirty.values()]),
+    });
+    const data = await res.json();
+    if (!res.ok) return setStatus(data.error ?? "stat save failed");
+    saved += data.applied;
+  }
+
+  setStatus(`saved ${saved} — rebuild to see it`, true);
+  await load(fileSel.value);   // re-read from disk so what you see is what's on disk
+});
+
+// ⌘S / Ctrl-S saves, because you will try it.
+addEventListener("keydown", (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key === "s") { e.preventDefault(); saveBtn.click(); }
+});
+
+q.addEventListener("input", render);
+deckSel.addEventListener("change", render);
+fileSel.addEventListener("change", () => load(fileSel.value));
+
+const { files } = await (await fetch("/api/files")).json();
+for (const f of files) {
+  const opt = document.createElement("option");
+  opt.value = opt.textContent = f;
+  fileSel.append(opt);
+}
+fileSel.value = files.includes("cards.json") ? "cards.json" : files[0];
+await load(fileSel.value);
+</script>
+</body>
+</html>
