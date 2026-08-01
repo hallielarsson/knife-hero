@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using System.Collections.Generic;
 using MegaCrit.Sts2.Core.HoverTips;
+using KnifeHero.KnifeHeroCode.Extensions;
 
 namespace KnifeHero.KnifeHeroCode.Cards;
 
@@ -16,6 +17,9 @@ namespace KnifeHero.KnifeHeroCode.Cards;
    your turn deal 6 damage to a random enemy and gain 6 Block. Upgraded: the Attack also gains Retain. */
 public sealed class RegentPride() : KnifeHeroCard(1, CardType.Power, CardRarity.Rare, TargetType.Self)
 {
+    public override string PortraitPath => "regent_pride.png".CardImagePath();
+    public override string CustomPortraitPath => "regent_pride.png".BigCardImagePath();
+
     public override int MaxUpgradeLevel => 1;
     protected override IEnumerable<IHoverTip> ExtraHoverTips => PrideEnchantment.TipFor<Regent>(6m);
     protected override void OnUpgrade() { }
@@ -35,6 +39,9 @@ public sealed class RegentPride() : KnifeHeroCard(1, CardType.Power, CardRarity.
    you to be hit. */
 public sealed class DykePride() : KnifeHeroCard(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
 {
+    public override string PortraitPath => "dyke_pride.png".CardImagePath();
+    public override string CustomPortraitPath => "dyke_pride.png".BigCardImagePath();
+
     public override int MaxUpgradeLevel => 1;
     protected override IEnumerable<IHoverTip> ExtraHoverTips => PrideEnchantment.TipFor<Parry>(0m);
     protected override void OnUpgrade() { }

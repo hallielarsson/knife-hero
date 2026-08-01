@@ -8,12 +8,16 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
+using KnifeHero.KnifeHeroCode.Extensions;
 
 namespace KnifeHero.KnifeHeroCode.Cards;
 
 /* Pride was a Riot — remove all the target's defense (Block), then deal 5 damage. */
 public sealed class PrideWasARiot() : KnifeHeroCard(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
 {
+    public override string PortraitPath => "pride_was_a_riot.png".CardImagePath();
+    public override string CustomPortraitPath => "pride_was_a_riot.png".BigCardImagePath();
+
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new List<DynamicVar> { new DamageVar(5m, ValueProp.Move) };
 

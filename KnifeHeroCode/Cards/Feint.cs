@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models.Powers;
+using KnifeHero.KnifeHeroCode.Extensions;
 
 namespace KnifeHero.KnifeHeroCode.Cards;
 
@@ -23,6 +24,9 @@ namespace KnifeHero.KnifeHeroCode.Cards;
    "Feint" is a placeholder; hers to mint. */
 public sealed class Feint() : KnifeHeroCard(0, CardType.Skill, CardRarity.Basic, TargetType.AnyEnemy)
 {
+    public override string PortraitPath => "feint.png".CardImagePath();
+    public override string CustomPortraitPath => "feint.png".BigCardImagePath();
+
     // Already free, so the upgrade buys cover rather than cost: 1 Stealth → 2.
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new List<DynamicVar> { new IntVar("Weak", 1m), new IntVar("Stealth", 1m) };

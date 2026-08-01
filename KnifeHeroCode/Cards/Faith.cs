@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
+using KnifeHero.KnifeHeroCode.Extensions;
 
 namespace KnifeHero.KnifeHeroCode.Cards;
 
@@ -19,6 +20,9 @@ namespace KnifeHero.KnifeHeroCode.Cards;
    the next draw rewards your faith — its damage var climbs to 10, once. */
 public sealed class Faith() : KnifeHeroCard(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
 {
+    public override string PortraitPath => "faith.png".CardImagePath();
+    public override string CustomPortraitPath => "faith.png".BigCardImagePath();
+
     private bool _drawnOnce;
     private bool _believed;
 

@@ -39,6 +39,9 @@ public sealed class RainbowStrike() : KnifeHeroCard(1, CardType.Attack, CardRari
 // RAINBOW MATADOR — Gain {Block} Block, then return a Pride from your discard to your hand.
 public sealed class RainbowMatador() : KnifeHeroCard(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
 {
+    public override string PortraitPath => "rainbow_matador.png".CardImagePath();
+    public override string CustomPortraitPath => "rainbow_matador.png".BigCardImagePath();
+
     public override bool GainsBlock => true;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>

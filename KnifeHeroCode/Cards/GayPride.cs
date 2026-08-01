@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
+using KnifeHero.KnifeHeroCode.Extensions;
 
 namespace KnifeHero.KnifeHeroCode.Cards;
 
@@ -30,6 +31,9 @@ namespace KnifeHero.KnifeHeroCode.Cards;
    does NOT intercept it — visibility you chose, not visibility of being found. (Preserved from 1.0.) */
 public sealed class GayPride() : KnifeHeroCard(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
 {
+    public override string PortraitPath => "gay_pride.png".CardImagePath();
+    public override string CustomPortraitPath => "gay_pride.png".BigCardImagePath();
+
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new List<DynamicVar> { new IntVar("Visibility", 1m) };
 

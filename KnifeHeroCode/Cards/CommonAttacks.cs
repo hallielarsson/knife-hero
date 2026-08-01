@@ -10,6 +10,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
+using KnifeHero.KnifeHeroCode.Extensions;
 
 namespace KnifeHero.KnifeHeroCode.Cards;
 
@@ -29,6 +30,9 @@ namespace KnifeHero.KnifeHeroCode.Cards;
    the swing. Pairs filthily with Silent Pride, which pays you 3 Block every time you discard. */
 public sealed class HeadEmptyNoThoughts() : KnifeHeroCard(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
 {
+    public override string PortraitPath => "head_empty_no_thoughts.png".CardImagePath();
+    public override string CustomPortraitPath => "head_empty_no_thoughts.png".BigCardImagePath();
+
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new List<DynamicVar> { new DamageVar(8m, ValueProp.Move) };
 
@@ -53,6 +57,9 @@ public sealed class HeadEmptyNoThoughts() : KnifeHeroCard(1, CardType.Attack, Ca
    walks it back a step. The only attack in the game that makes you harder to find. */
 public sealed class ChillTouch() : KnifeHeroCard(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
 {
+    public override string PortraitPath => "chill_touch.png".CardImagePath();
+    public override string CustomPortraitPath => "chill_touch.png".BigCardImagePath();
+
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new List<DynamicVar> { new DamageVar(7m, ValueProp.Move) };
 
@@ -77,6 +84,9 @@ public sealed class ChillTouch() : KnifeHeroCard(1, CardType.Attack, CardRarity.
    Dead Name turns the drawback off entirely, which is the other way to abuse it. */
 public sealed class DashingStrike() : KnifeHeroCard(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
 {
+    public override string PortraitPath => "dashing_strike.png".CardImagePath();
+    public override string CustomPortraitPath => "dashing_strike.png".BigCardImagePath();
+
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new List<DynamicVar> { new DamageVar(6m, ValueProp.Move) };
 
@@ -109,6 +119,9 @@ public sealed class DashingStrike() : KnifeHeroCard(1, CardType.Attack, CardRari
    (turn it into Shivs). Three ways to cash the same currency, and you'll only ever draw one of them. */
 public sealed class Backstab() : KnifeHeroCard(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
 {
+    public override string PortraitPath => "backstab.png".CardImagePath();
+    public override string CustomPortraitPath => "backstab.png".BigCardImagePath();
+
     /* {Per} is a DynamicVar, not a private field, so the card text can print it and cannot lie after an
        upgrade. It used to be `IsUpgraded ? 3m : 2m` with a hardcoded "2" in the loc string — so an
        upgraded Backstab dealt 3 per Stealth and told you 2, forever, and nothing anywhere would ever

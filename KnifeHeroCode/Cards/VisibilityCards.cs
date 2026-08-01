@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
+using KnifeHero.KnifeHeroCode.Extensions;
 
 namespace KnifeHero.KnifeHeroCode.Cards;
 
@@ -20,6 +21,9 @@ namespace KnifeHero.KnifeHeroCode.Cards;
    resource, which is what makes the loud build exist. */
 public sealed class Honeypot() : KnifeHeroCard(2, CardType.Power, CardRarity.Uncommon, TargetType.Self)
 {
+    public override string PortraitPath => "honeypot.png".CardImagePath();
+    public override string CustomPortraitPath => "honeypot.png".BigCardImagePath();
+
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new List<DynamicVar> { new IntVar("Thorns", 1m) };
 
@@ -38,6 +42,9 @@ public sealed class Honeypot() : KnifeHeroCard(2, CardType.Power, CardRarity.Unc
    deck like this. Works on any Status, not just Visibility. */
 public sealed class SmokeBomb() : KnifeHeroCard(3, CardType.Skill, CardRarity.Rare, TargetType.Self)
 {
+    public override string PortraitPath => "smoke_bomb.png".CardImagePath();
+    public override string CustomPortraitPath => "smoke_bomb.png".BigCardImagePath();
+
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
         new List<CardKeyword> { CardKeyword.Exhaust };   // a one-shot sweep
 
@@ -56,6 +63,9 @@ public sealed class SmokeBomb() : KnifeHeroCard(3, CardType.Skill, CardRarity.Ra
 /* SHADOW DODGE — ⟨1⟩ Skill. Gain {Block} Block. Lose 1 Visibility. The cheap, repeatable cool-down. */
 public sealed class ShadowDodge() : KnifeHeroCard(1, CardType.Skill, CardRarity.Common, TargetType.Self)
 {
+    public override string PortraitPath => "shadow_dodge.png".CardImagePath();
+    public override string CustomPortraitPath => "shadow_dodge.png".BigCardImagePath();
+
     public override bool GainsBlock => true;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
@@ -76,6 +86,9 @@ public sealed class ShadowDodge() : KnifeHeroCard(1, CardType.Skill, CardRarity.
    and a power sharing a display name makes the tooltips fight. Hers to mint. */
 public sealed class GoToGround() : KnifeHeroCard(1, CardType.Skill, CardRarity.Common, TargetType.Self)
 {
+    public override string PortraitPath => "go_to_ground.png".CardImagePath();
+    public override string CustomPortraitPath => "go_to_ground.png".BigCardImagePath();
+
     public override bool GainsBlock => true;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
@@ -94,6 +107,9 @@ public sealed class GoToGround() : KnifeHeroCard(1, CardType.Skill, CardRarity.C
    One of the three Stealth cash-outs (with Backstab and Sneak Attack). */
 public sealed class LookWhatIFoundDownHere() : KnifeHeroCard(1, CardType.Skill, CardRarity.Common, TargetType.Self)
 {
+    public override string PortraitPath => "look_what_i_found_down_here.png".CardImagePath();
+    public override string CustomPortraitPath => "look_what_i_found_down_here.png".BigCardImagePath();
+
     public override bool GainsBlock => true;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
@@ -118,6 +134,9 @@ public sealed class LookWhatIFoundDownHere() : KnifeHeroCard(1, CardType.Skill, 
    Upgrade: no Exhaust. */
 public sealed class DayOfInvisibility() : KnifeHeroCard(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
 {
+    public override string PortraitPath => "day_of_invisibility.png".CardImagePath();
+    public override string CustomPortraitPath => "day_of_invisibility.png".BigCardImagePath();
+
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
         IsUpgraded ? new List<CardKeyword>() : new List<CardKeyword> { CardKeyword.Exhaust };
 
@@ -133,6 +152,9 @@ public sealed class DayOfInvisibility() : KnifeHeroCard(1, CardType.Skill, CardR
    ⁉ COST UNSPECIFIED by Hallie; priced at 1 as a per-turn trickle. Change freely. */
 public sealed class Pickpocket() : KnifeHeroCard(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
 {
+    public override string PortraitPath => "pickpocket.png".CardImagePath();
+    public override string CustomPortraitPath => "pickpocket.png".BigCardImagePath();
+
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await PowerCmd.Apply<PickpocketPower>(choiceContext, Owner.Creature, IsUpgraded ? 2m : 1m,
@@ -145,6 +167,9 @@ public sealed class Pickpocket() : KnifeHeroCard(1, CardType.Power, CardRarity.U
    clutter. Deliberately anti-synergistic with Honeypot: you cannot both refuse Visibility and farm it. */
 public sealed class DeadName() : KnifeHeroCard(2, CardType.Power, CardRarity.Rare, TargetType.Self)
 {
+    public override string PortraitPath => "dead_name.png".CardImagePath();
+    public override string CustomPortraitPath => "dead_name.png".BigCardImagePath();
+
     protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);   // 2 -> 1
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -158,6 +183,9 @@ public sealed class DeadName() : KnifeHeroCard(2, CardType.Power, CardRarity.Rar
    for the loud build — feeds Honeypot, Dashing Strike, and the Visibility payoffs. */
 public sealed class IntoTheStreets() : KnifeHeroCard(1, CardType.Skill, CardRarity.Common, TargetType.Self)
 {
+    public override string PortraitPath => "into_the_streets.png".CardImagePath();
+    public override string CustomPortraitPath => "into_the_streets.png".BigCardImagePath();
+
     public override bool GainsBlock => true;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
@@ -175,6 +203,9 @@ public sealed class IntoTheStreets() : KnifeHeroCard(1, CardType.Skill, CardRari
 /* THE CLOSET — ⟨1⟩ Power. Gain 1 Stealth at the start of each turn. The passive hide-engine. */
 public sealed class TheCloset() : KnifeHeroCard(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
 {
+    public override string PortraitPath => "the_closet.png".CardImagePath();
+    public override string CustomPortraitPath => "the_closet.png".BigCardImagePath();
+
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await PowerCmd.Apply<TheClosetPower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
@@ -186,6 +217,9 @@ public sealed class TheCloset() : KnifeHeroCard(1, CardType.Power, CardRarity.Un
    before clearing it. */
 public sealed class Flank() : KnifeHeroCard(0, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
 {
+    public override string PortraitPath => "flank.png".CardImagePath();
+    public override string CustomPortraitPath => "flank.png".BigCardImagePath();
+
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new List<DynamicVar> { new IntVar("Per", 2m), new IntVar("Bonus", 1m) };
 
@@ -208,6 +242,9 @@ public sealed class Flank() : KnifeHeroCard(0, CardType.Skill, CardRarity.Uncomm
    AfterCardPlayedLate so it survives that break — the same trick the Fade queer-rider uses. */
 public sealed class SneakAttack() : KnifeHeroCard(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
 {
+    public override string PortraitPath => "sneak_attack.png".CardImagePath();
+    public override string CustomPortraitPath => "sneak_attack.png".BigCardImagePath();
+
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new List<DynamicVar> { new IntVar("Per", 3m) };
 
@@ -233,6 +270,9 @@ public sealed class SneakAttack() : KnifeHeroCard(1, CardType.Attack, CardRarity
    payoff: hide, stack the bank, then every swing scales with how hidden you are. */
 public sealed class Assassin() : KnifeHeroCard(2, CardType.Power, CardRarity.Uncommon, TargetType.Self)
 {
+    public override string PortraitPath => "assassin.png".CardImagePath();
+    public override string CustomPortraitPath => "assassin.png".BigCardImagePath();
+
     protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);   // 2 -> 1
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -245,6 +285,9 @@ public sealed class Assassin() : KnifeHeroCard(2, CardType.Power, CardRarity.Unc
    exhaust every Shiv in hand and gain 1 Stealth for each (SmokeKnivesPower). Cover made of blades. */
 public sealed class SmokeBombKnives() : KnifeHeroCard(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
 {
+    public override string PortraitPath => "smoke_bomb_knives.png".CardImagePath();
+    public override string CustomPortraitPath => "smoke_bomb_knives.png".BigCardImagePath();
+
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new List<DynamicVar> { new IntVar("Shivs", 4m) };
 

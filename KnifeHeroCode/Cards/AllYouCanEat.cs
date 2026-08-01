@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.ValueProps;
+using KnifeHero.KnifeHeroCode.Extensions;
 
 namespace KnifeHero.KnifeHeroCode.Cards;
 
@@ -22,6 +23,9 @@ namespace KnifeHero.KnifeHeroCode.Cards;
    That interaction is left in on purpose; flag in playtest if it confuses. */
 public sealed class AllYouCanEat() : KnifeHeroCard(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
 {
+    public override string PortraitPath => "all_you_can_eat.png".CardImagePath();
+    public override string CustomPortraitPath => "all_you_can_eat.png".BigCardImagePath();
+
     // Upgrade: costs 1 less.
     protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
 

@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
+using KnifeHero.KnifeHeroCode.Extensions;
 
 namespace KnifeHero.KnifeHeroCode.Cards;
 
@@ -16,6 +17,9 @@ namespace KnifeHero.KnifeHeroCode.Cards;
    (The pun is load-bearing: Gay Parry / Gay Paris.) */
 public sealed class GayParris() : KnifeHeroCard(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
 {
+    public override string PortraitPath => "gay_parris.png".CardImagePath();
+    public override string CustomPortraitPath => "gay_parris.png".BigCardImagePath();
+
     public override bool GainsBlock => true;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
@@ -39,6 +43,9 @@ public sealed class GayParris() : KnifeHeroCard(1, CardType.Skill, CardRarity.Un
    (2.0: converted from the held/swung Pride to the enchant frame — see PrideEnchantment.cs, Walling.) */
 public sealed class KnifeBlock() : KnifeHeroCard(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
 {
+    public override string PortraitPath => "knife_block.png".CardImagePath();
+    public override string CustomPortraitPath => "knife_block.png".BigCardImagePath();
+
     public override int MaxUpgradeLevel => 1;
     protected override void OnUpgrade() { }
 
@@ -57,6 +64,9 @@ public sealed class KnifeBlock() : KnifeHeroCard(1, CardType.Power, CardRarity.U
 /* BISEXUAL LIGHTNING — ⟨2⟩ Power. At the start of each turn, deal {Zap} to 2 random enemies (always 2). */
 public sealed class BisexualLightning() : KnifeHeroCard(2, CardType.Power, CardRarity.Uncommon, TargetType.Self)
 {
+    public override string PortraitPath => "bisexual_lightning.png".CardImagePath();
+    public override string CustomPortraitPath => "bisexual_lightning.png".BigCardImagePath();
+
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new List<DynamicVar> { new IntVar("Zap", 3m) };
 
@@ -72,6 +82,9 @@ public sealed class BisexualLightning() : KnifeHeroCard(2, CardType.Power, CardR
 /* GAY WRATH MONTH — ⟨3⟩ Power. At the end of your turn, gain 1 Vigor per Pride or Queer card in hand. */
 public sealed class GayWrathMonth() : KnifeHeroCard(3, CardType.Power, CardRarity.Uncommon, TargetType.Self)
 {
+    public override string PortraitPath => "gay_wrath_month.png".CardImagePath();
+    public override string CustomPortraitPath => "gay_wrath_month.png".BigCardImagePath();
+
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await PowerCmd.Apply<GayWrathPower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
@@ -81,6 +94,9 @@ public sealed class GayWrathMonth() : KnifeHeroCard(3, CardType.Power, CardRarit
 /* SOLIDARITY — ⟨2⟩ (1 upgraded) Power. Whenever you play a Queer or Pride card, gain 3 Block. */
 public sealed class Solidarity() : KnifeHeroCard(2, CardType.Power, CardRarity.Uncommon, TargetType.Self)
 {
+    public override string PortraitPath => "solidarity.png".CardImagePath();
+    public override string CustomPortraitPath => "solidarity.png".BigCardImagePath();
+
     protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);   // 2 -> 1
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -92,6 +108,9 @@ public sealed class Solidarity() : KnifeHeroCard(2, CardType.Power, CardRarity.U
 /* KNIFE TO MEET U — ⟨2⟩ (1 upgraded) Power. When you draw a Shiv, draw a card. */
 public sealed class KnifeToMeetU() : KnifeHeroCard(2, CardType.Power, CardRarity.Uncommon, TargetType.Self)
 {
+    public override string PortraitPath => "knife_to_meet_u.png".CardImagePath();
+    public override string CustomPortraitPath => "knife_to_meet_u.png".BigCardImagePath();
+
     protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);   // 2 -> 1
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -104,6 +123,9 @@ public sealed class KnifeToMeetU() : KnifeHeroCard(2, CardType.Power, CardRarity
    fly a flag on a Strike and every replay levels it. See GlowUpPower. */
 public sealed class GlowUp() : KnifeHeroCard(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
 {
+    public override string PortraitPath => "glow_up.png".CardImagePath();
+    public override string CustomPortraitPath => "glow_up.png".BigCardImagePath();
+
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await PowerCmd.Apply<GlowUpPower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);

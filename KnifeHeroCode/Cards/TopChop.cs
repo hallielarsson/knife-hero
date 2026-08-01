@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using System.Collections.Generic;
 using MegaCrit.Sts2.Core.HoverTips;
+using KnifeHero.KnifeHeroCode.Extensions;
 
 namespace KnifeHero.KnifeHeroCode.Cards;
 
@@ -12,6 +13,9 @@ namespace KnifeHero.KnifeHeroCode.Cards;
    (2.0: converted from the old held/swung Pride to the enchant frame — see PrideEnchantment.cs, Top.) */
 public sealed class TopChop() : KnifeHeroCard(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
 {
+    public override string PortraitPath => "top_chop.png".CardImagePath();
+    public override string CustomPortraitPath => "top_chop.png".BigCardImagePath();
+
     public override int MaxUpgradeLevel => 1;
     protected override void OnUpgrade() { }   // the upgrade is the Retain grant (via Bestow)
 

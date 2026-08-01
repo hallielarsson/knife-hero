@@ -28,6 +28,9 @@ namespace KnifeHero.KnifeHeroCode.Cards;
    Stonewall was a riot: it isn't how many banners you're holding. It's how many you already threw. */
 public sealed class Stonewall() : KnifeHeroCard(2, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy)
 {
+    public override string PortraitPath => "stonewall.png".CardImagePath();
+    public override string CustomPortraitPath => "stonewall.png".BigCardImagePath();
+
     public override bool GainsBlock => true;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>

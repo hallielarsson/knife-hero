@@ -5,6 +5,7 @@ using KnifeHero.KnifeHeroCode.Powers;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using KnifeHero.KnifeHeroCode.Extensions;
 
 namespace KnifeHero.KnifeHeroCode.Cards;
 
@@ -17,6 +18,9 @@ namespace KnifeHero.KnifeHeroCode.Cards;
    // PROPOSAL: 1 cost, 3 Poison per shiv. Hallie tunes by feel. */
 public sealed class PoisonCoating() : KnifeHeroCard(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
 {
+    public override string PortraitPath => "poison_coating.png".CardImagePath();
+    public override string CustomPortraitPath => "poison_coating.png".BigCardImagePath();
+
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await PowerCmd.Apply<PoisonCoatingPower>(choiceContext, Owner.Creature, 3m, Owner.Creature, this, false);
@@ -27,6 +31,9 @@ public sealed class PoisonCoating() : KnifeHeroCard(1, CardType.Skill, CardRarit
    // PROPOSAL: 1 cost. Hallie tunes by feel (maybe 0 cost, maybe Exhaust the card itself). */
 public sealed class ExplosiveTip() : KnifeHeroCard(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
 {
+    public override string PortraitPath => "explosive_tip.png".CardImagePath();
+    public override string CustomPortraitPath => "explosive_tip.png".BigCardImagePath();
+
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await PowerCmd.Apply<ExplosiveTipPower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);

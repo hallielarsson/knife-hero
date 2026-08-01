@@ -6,12 +6,16 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
+using KnifeHero.KnifeHeroCode.Extensions;
 
 namespace KnifeHero.KnifeHeroCode.Cards;
 
 // SHIV MAGNET — Gain {Block} Block. Pull every Shiv out of your draw and discard piles into your hand.
 public sealed class ShivMagnet() : KnifeHeroCard(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
 {
+    public override string PortraitPath => "shiv_magnet.png".CardImagePath();
+    public override string CustomPortraitPath => "shiv_magnet.png".BigCardImagePath();
+
     public override bool GainsBlock => true;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>

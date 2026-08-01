@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
+using KnifeHero.KnifeHeroCode.Extensions;
 
 namespace KnifeHero.KnifeHeroCode.Cards;
 
@@ -19,6 +20,9 @@ namespace KnifeHero.KnifeHeroCode.Cards;
    the cost, the Weak/Vulnerable amounts, and the rarity. */
 public sealed class Pin() : KnifeHeroCard(1, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy), IBlade
 {
+    public override string PortraitPath => "pin.png".CardImagePath();
+    public override string CustomPortraitPath => "pin.png".BigCardImagePath();
+
     protected override HashSet<CardTag> CanonicalTags => new() { CardTag.Shiv };
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>

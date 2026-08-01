@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models.Cards;
+using KnifeHero.KnifeHeroCode.Extensions;
 
 namespace KnifeHero.KnifeHeroCode.Cards;
 
@@ -14,6 +15,9 @@ namespace KnifeHero.KnifeHeroCode.Cards;
    the Dazed. */
 public sealed class ExtremelyOnline() : KnifeHeroCard(0, CardType.Power, CardRarity.Uncommon, TargetType.Self)
 {
+    public override string PortraitPath => "extremely_online.png".CardImagePath();
+    public override string CustomPortraitPath => "extremely_online.png".BigCardImagePath();
+
     /* Already free, so the upgrade buys you OUT of the downside instead of the cost: an upgraded
        Extremely Online doesn't add the Dazed. Online without the clutter — the only real upgrade there is. */
     public override int MaxUpgradeLevel => 1;

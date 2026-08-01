@@ -8,6 +8,7 @@ using KnifeHero.KnifeHeroCode.Powers;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using KnifeHero.KnifeHeroCode.Extensions;
 
 namespace KnifeHero.KnifeHeroCode.Cards;
 
@@ -15,6 +16,9 @@ namespace KnifeHero.KnifeHeroCode.Cards;
    Placeholder; flags will come from many cards later. */
 public sealed class Vanish() : KnifeHeroCard(1, CardType.Skill, CardRarity.Common, TargetType.Self)
 {
+    public override string PortraitPath => "vanish.png".CardImagePath();
+    public override string CustomPortraitPath => "vanish.png".BigCardImagePath();
+
     public override int MaxUpgradeLevel => 1;
 
     // {Stealth} as a DynamicVar, so the text prints the real number after upgrade instead of a frozen 2.

@@ -70,6 +70,9 @@ public sealed class Annotate() : CreatureCard(1, CardType.Skill, CardRarity.Basi
 /* Open Book — gain 5 Block and 2 Lessons. */
 public sealed class OpenBook() : CreatureCard(1, CardType.Skill, CardRarity.Common, TargetType.Self), IBook
 {
+    public override string PortraitPath => "open_book.png".CardImagePath();
+    public override string CustomPortraitPath => "open_book.png".BigCardImagePath();
+
     public override bool GainsBlock => true;
 
     // Upgrade favours Lessons over Block — Lessons are what mend you.
@@ -92,6 +95,9 @@ public sealed class OpenBook() : CreatureCard(1, CardType.Skill, CardRarity.Comm
 
 public sealed class Marginalia() : CreatureCard(1, CardType.Power, CardRarity.Common, TargetType.Self), IBook
 {
+    public override string PortraitPath => "marginalia.png".CardImagePath();
+    public override string CustomPortraitPath => "marginalia.png".BigCardImagePath();
+
     private decimal _lessonsNow; // upgrade: also gain 1 Lesson immediately when played
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
@@ -104,6 +110,9 @@ public sealed class Marginalia() : CreatureCard(1, CardType.Power, CardRarity.Co
 
 public sealed class Polymath() : CreatureCard(2, CardType.Power, CardRarity.Uncommon, TargetType.Self), IBook
 {
+    public override string PortraitPath => "polymath.png".CardImagePath();
+    public override string CustomPortraitPath => "polymath.png".BigCardImagePath();
+
     private decimal _stacks = 1m; // upgrade: 2 stacks → 2 Lessons per turn
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
@@ -116,6 +125,9 @@ public sealed class Polymath() : CreatureCard(2, CardType.Power, CardRarity.Unco
    (which Recombinant and Wholeness read) actually climbs. */
 public sealed class Galvanism() : CreatureCard(1, CardType.Skill, CardRarity.Common, TargetType.Self), IBook
 {
+    public override string PortraitPath => "galvanism.png".CardImagePath();
+    public override string CustomPortraitPath => "galvanism.png".BigCardImagePath();
+
     private decimal _str = 1m; // upgrade: +1 Strength
     public override IEnumerable<CardKeyword> CanonicalKeywords => new List<CardKeyword> { CardKeyword.Exhaust };
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -128,6 +140,9 @@ public sealed class Galvanism() : CreatureCard(1, CardType.Skill, CardRarity.Com
 
 public sealed class Solitude() : CreatureCard(1, CardType.Skill, CardRarity.Common, TargetType.Self), IBook
 {
+    public override string PortraitPath => "solitude.png".CardImagePath();
+    public override string CustomPortraitPath => "solitude.png".BigCardImagePath();
+
     private decimal _dex = 1m; // upgrade: +1 Dexterity
     public override IEnumerable<CardKeyword> CanonicalKeywords => new List<CardKeyword> { CardKeyword.Exhaust };
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -140,6 +155,9 @@ public sealed class Solitude() : CreatureCard(1, CardType.Skill, CardRarity.Comm
 
 public sealed class Wretchedness() : CreatureCard(1, CardType.Skill, CardRarity.Common, TargetType.Self), IBook
 {
+    public override string PortraitPath => "wretchedness.png".CardImagePath();
+    public override string CustomPortraitPath => "wretchedness.png".BigCardImagePath();
+
     private decimal _thorns = 2m; // upgrade: +1 Thorns
     public override IEnumerable<CardKeyword> CanonicalKeywords => new List<CardKeyword> { CardKeyword.Exhaust };
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -152,6 +170,9 @@ public sealed class Wretchedness() : CreatureCard(1, CardType.Skill, CardRarity.
 
 public sealed class FireStolen() : CreatureCard(1, CardType.Skill, CardRarity.Common, TargetType.Self), IBook
 {
+    public override string PortraitPath => "fire_stolen.png".CardImagePath();
+    public override string CustomPortraitPath => "fire_stolen.png".BigCardImagePath();
+
     private decimal _regen = 2m; // upgrade: +1 Regeneration
     public override IEnumerable<CardKeyword> CanonicalKeywords => new List<CardKeyword> { CardKeyword.Exhaust };
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -166,6 +187,9 @@ public sealed class FireStolen() : CreatureCard(1, CardType.Skill, CardRarity.Co
 /* Recombinant — the assemblage payoff: hit 3 damage once per Power you hold. */
 public sealed class Recombinant() : CreatureCard(2, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy)
 {
+    public override string PortraitPath => "recombinant.png".CardImagePath();
+    public override string CustomPortraitPath => "recombinant.png".BigCardImagePath();
+
     protected override IEnumerable<DynamicVar> CanonicalVars =>
         new List<DynamicVar> { new DamageVar(3m, ValueProp.Move) };
 
@@ -185,6 +209,9 @@ public sealed class Recombinant() : CreatureCard(2, CardType.Attack, CardRarity.
 /* Quote at Length — the Lesson sink: deal damage equal to your Lessons. */
 public sealed class QuoteAtLength() : CreatureCard(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy)
 {
+    public override string PortraitPath => "quote_at_length.png".CardImagePath();
+    public override string CustomPortraitPath => "quote_at_length.png".BigCardImagePath();
+
     private int _bonus; // upgrade: +3 flat on top of Lessons, so it's never dead early
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
@@ -205,6 +232,9 @@ public sealed class QuoteAtLength() : CreatureCard(1, CardType.Attack, CardRarit
    reason. See BecomeWhoYouArePower. */
 public sealed class BecomeWhoYouAre() : CreatureCard(3, CardType.Power, CardRarity.Rare, TargetType.Self), IBook
 {
+    public override string PortraitPath => "become_who_you_are.png".CardImagePath();
+    public override string CustomPortraitPath => "become_who_you_are.png".BigCardImagePath();
+
     private decimal _strBonus; // upgrade: +1 flat Strength per turn on top of Wholeness
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
@@ -219,6 +249,9 @@ public sealed class BecomeWhoYouAre() : CreatureCard(3, CardType.Power, CardRari
    pulling a card back from the dead is priced. */
 public sealed class DontLookAway() : CreatureCard(1, CardType.Skill, CardRarity.Common, TargetType.Self)
 {
+    public override string PortraitPath => "dont_look_away.png".CardImagePath();
+    public override string CustomPortraitPath => "dont_look_away.png".BigCardImagePath();
+
     private int _griefCost = 2; // upgrade: 1 instead of 2
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
@@ -236,6 +269,9 @@ public sealed class DontLookAway() : CreatureCard(1, CardType.Skill, CardRarity.
    is why the heal is small and per-card rather than scaling on pile size. */
 public sealed class ReadTheRemainder() : CreatureCard(1, CardType.Skill, CardRarity.Common, TargetType.Self)
 {
+    public override string PortraitPath => "read_the_remainder.png".CardImagePath();
+    public override string CustomPortraitPath => "read_the_remainder.png".BigCardImagePath();
+
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         var dead = CardPile.GetCards(Owner, PileType.Exhaust).ToList();
@@ -259,6 +295,9 @@ public sealed class ReadTheRemainder() : CreatureCard(1, CardType.Skill, CardRar
    this is the one card that pays you for carrying it. */
 public sealed class Wallow() : CreatureCard(1, CardType.Skill, CardRarity.Common, TargetType.Self)
 {
+    public override string PortraitPath => "wallow.png".CardImagePath();
+    public override string CustomPortraitPath => "wallow.png".BigCardImagePath();
+
     public override bool GainsBlock => true;
     private int _flat; // upgrade: +3 flat, so it isn't dead at Grief 0
 
@@ -278,6 +317,9 @@ public sealed class Wallow() : CreatureCard(1, CardType.Skill, CardRarity.Common
    (see MendedBody.Recount) — nothing may add to it directly, or the readout and the deck disagree. */
 public sealed class Keening() : CreatureCard(2, CardType.Attack, CardRarity.Uncommon, TargetType.AllEnemies)
 {
+    public override string PortraitPath => "keening.png".CardImagePath();
+    public override string CustomPortraitPath => "keening.png".BigCardImagePath();
+
     private decimal _mult = 2m;   // upgrade: 3× Grief
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

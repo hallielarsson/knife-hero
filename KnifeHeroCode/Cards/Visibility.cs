@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using KnifeHero.KnifeHeroCode.Extensions;
 
 namespace KnifeHero.KnifeHeroCode.Cards;
 
@@ -20,6 +21,9 @@ namespace KnifeHero.KnifeHeroCode.Cards;
    them — Smoke Bomb / Shadow Dodge delete STATUS cards in general, permanently. */
 public sealed class Visibility() : KnifeHeroCard(1, CardType.Status, CardRarity.Status, TargetType.Self)
 {
+    public override string PortraitPath => "visibility.png".CardImagePath();
+    public override string CustomPortraitPath => "visibility.png".BigCardImagePath();
+
     // Playable: 1 energy and it just leaves your hand (played cards go to discard). No other effect.
     protected override Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay) => Task.CompletedTask;
 

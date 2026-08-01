@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using System.Collections.Generic;
 using MegaCrit.Sts2.Core.HoverTips;
+using KnifeHero.KnifeHeroCode.Extensions;
 
 namespace KnifeHero.KnifeHeroCode.Cards;
 
@@ -18,6 +19,9 @@ namespace KnifeHero.KnifeHeroCode.Cards;
    that keeps them coming. */
 public sealed class SilentPride() : KnifeHeroCard(1, CardType.Power, CardRarity.Uncommon, TargetType.Self)
 {
+    public override string PortraitPath => "silent_pride.png".CardImagePath();
+    public override string CustomPortraitPath => "silent_pride.png".BigCardImagePath();
+
     public override int MaxUpgradeLevel => 1;
 
     // The upgrade IS the Retain grant (applied in OnPlay via GrantsRetain).

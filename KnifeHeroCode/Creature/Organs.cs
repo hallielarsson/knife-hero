@@ -180,6 +180,9 @@ public sealed class MendedDiaphragm() : CreatureCard(1, CardType.Skill, CardRari
    The only way to choose to scar. Costs 0 because the cost is the organ, not the energy. */
 public sealed class LetItRot() : CreatureCard(0, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
 {
+    public override string PortraitPath => "let_it_rot.png".CardImagePath();
+    public override string CustomPortraitPath => "let_it_rot.png".BigCardImagePath();
+
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
         new List<CardKeyword> { CardKeyword.Exhaust };
 
@@ -202,6 +205,9 @@ public sealed class LetItRot() : CreatureCard(0, CardType.Skill, CardRarity.Unco
    permanent scar if you don't. */
 public sealed class TheCharnelHouse() : CreatureCard(1, CardType.Skill, CardRarity.Common, TargetType.Self)
 {
+    public override string PortraitPath => "the_charnel_house.png".CardImagePath();
+    public override string CustomPortraitPath => "the_charnel_house.png".BigCardImagePath();
+
     public override IEnumerable<CardKeyword> CanonicalKeywords =>
         new List<CardKeyword> { CardKeyword.Exhaust };
 
@@ -217,6 +223,9 @@ public sealed class TheCharnelHouse() : CreatureCard(1, CardType.Skill, CardRari
    stacks and Wallow/Keening feed. (The "take one if you have none" floor is in MendedBody, not here.) */
 public sealed class TheAppetite() : CreatureCard(2, CardType.Power, CardRarity.Rare, TargetType.Self)
 {
+    public override string PortraitPath => "the_appetite.png".CardImagePath();
+    public override string CustomPortraitPath => "the_appetite.png".BigCardImagePath();
+
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await PowerCmd.Apply<AppetitePower>(choiceContext, Owner.Creature, 1m, Owner.Creature, this, false);
