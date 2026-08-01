@@ -226,11 +226,16 @@ public sealed class Shady : PrideEnchantment
 }
 
 /* TOP — Top Chop's flag. While held, gain {Amount} Vigor at end of turn. The Gay Blade's top lean:
-   offense that sharpens the next swing. (Stabby applies this when it digests a Strike.) */
+   offense that sharpens the next swing. (Stabby flies this on a Strike in your hand.) */
 public sealed class Top : PrideEnchantment
 {
     protected override string? CustomIconPath => "top.png".EnchantmentImagePath();
     public override bool ShowAmount => true;
+
+    /* STACKABLE, unlike every other flag. Stabby can flag the same Strike twice and the lean deepens
+       (CardCmd.Enchant adds to Amount). Without this, EnchantmentModel.CanEnchant returns false on the
+       second application and CardCmd.Enchant THROWS mid-play — the old Stabby turn-hang. */
+    public override bool IsStackable => true;
     protected override IEnumerable<IHoverTip> FlagTips =>
         new List<IHoverTip> { HoverTipFactory.FromPower<VigorPower>() };
 
@@ -243,11 +248,19 @@ public sealed class Top : PrideEnchantment
 }
 
 /* BOTTOM — Bottom Blade's flag. While held, gain {Amount} Block at end of turn. The bottom lean:
-   the wall. (Stabby applies this when it digests a Defend.) */
+   the wall. (Stabby flies this on a Defend in your hand.) */
 public sealed class Bottom : PrideEnchantment
 {
     protected override string? CustomIconPath => "bottom.png".EnchantmentImagePath();
     public override bool ShowAmount => true;
+
+    /* THE ONE FLAG THAT FLIES ON A SKILL. Every other Pride is an Attack-only enchant, but Bottom's whole
+       job is to sit on a Defend — which is a Skill — and turn it into a wall that pays rent while held. */
+    public override bool CanEnchantCardType(CardType cardType) =>
+        cardType == CardType.Attack || cardType == CardType.Skill;
+
+    // Stacks, for the same reason Top does — see the note there.
+    public override bool IsStackable => true;
 
     public override async Task BeforeSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side,
         IEnumerable<Creature> participants)
